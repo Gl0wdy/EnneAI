@@ -5,4 +5,4 @@ load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 DEBUG_TOKEN = os.getenv('DEBUG_TOKEN')
-ADMIN_ID = os.getenv('ADMIN_ID')
+ADMIN_ID = int(os.getenv('ADMIN_ID'))

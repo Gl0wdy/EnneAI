@@ -1,0 +1,53 @@
+{
+  "SP9": {
+    "core_traits": {
+      "comfort_seeking": "Prioritize routines and physical comforts, often engaging in activities like eating, reading, or watching television to maintain a sense of peace.",
+      "practicality": "Grounded and concrete in their approach, focusing on tangible experiences over abstract ideas.",
+      "stubbornness": "Exhibit resistance to change, especially when their comfort is threatened."
+    },
+    "emotional_landscape": {
+      "anger_repression": "Suppress anger to avoid conflict, which may manifest as passive-aggressive behavior or irritability.",
+      "emotional_detachment": "Tend to 'go to sleep' to their own emotions, avoiding awareness of internal discomfort.",
+      "self-neglect": "Overlook personal needs and desires in favor of maintaining external peace."
+    },
+    "behavioral_tendencies": {
+      "routine_adherence": "Stick to familiar habits and routines to create a sense of stability.",
+      "solitude_preference": "Enjoy spending time alone, finding it more relaxing and grounding.",
+      "resistance_to_pressure": "React to external demands with passive resistance, often digging in their heels when feeling pressured."
+    }
+  },
+  "SO9": {
+    "core_traits": {
+      "group_oriented": "Focus on being part of a group, often working hard to meet the group's needs.",
+      "outgoing": "Display sociable and congenial behavior, appearing fun-loving and friendly.",
+      "self-forgetting": "Neglect personal needs by prioritizing the needs of the group."
+    },
+    "emotional_landscape": {
+      "fear_of_disconnection": "Experience anxiety about not belonging, leading to overcompensation through group participation.",
+      "emotional_flatness": "Maintain a cheerful exterior while feeling a persistent sense of not belonging.",
+      "self-doubt": "Question their own existence and sense of self due to constant focus on others."
+    },
+    "behavioral_tendencies": {
+      "workaholism": "Engage in excessive work to support the group, often at the expense of personal well-being.",
+      "conflict_avoidance": "Strive to maintain harmony within the group, avoiding personal conflicts.",
+      "overcommitment": "Take on numerous responsibilities to ensure inclusion and acceptance."
+    }
+  },
+  "SX9": {
+    "core_traits": {
+      "merging": "Blend with significant others, adopting their attitudes, opinions, and feelings.",
+      "gentleness": "Exhibit kind, gentle, and shy characteristics, often avoiding assertiveness.",
+      "identity_through_others": "Seek a sense of self by connecting deeply with another person."
+    },
+    "emotional_landscape": {
+      "boundary_dissolution": "Experience a lack of personal boundaries, leading to difficulty distinguishing their own feelings from others'.",
+      "emotional_suppression": "Avoid expressing true thoughts and feelings to maintain harmony in relationships.",
+      "dependency": "Rely on close relationships to provide a sense of purpose and identity."
+    },
+    "behavioral_tendencies": {
+      "agreement_seeking": "Tend to agree with others to avoid conflict, often suppressing personal opinions.",
+      "relationship_fusion": "Become deeply involved in relationships, sometimes losing their own identity.",
+      "passivity": "Display a lack of initiative, waiting for others to take the lead."
+    }
+  }
+}

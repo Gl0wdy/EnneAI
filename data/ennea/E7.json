@@ -1,0 +1,53 @@
+{
+  "SP7": {
+    "core_traits": {
+      "pragmatic_hedonism": "Pursue pleasure through tangible, material means, focusing on comfort and security.",
+      "opportunistic": "Identify and exploit opportunities to fulfill desires, often with a persuasive charm.",
+      "selective_generosity": "Extend warmth and kindness to chosen individuals who align with their interests."
+    },
+    "emotional_landscape": {
+      "avoidance_of_pain": "Distract from discomfort through indulgence in pleasurable activities.",
+      "fear_of_deprivation": "Anxiety about lacking resources or experiences drives their pursuit of abundance.",
+      "self-justification": "Rationalize actions to maintain a positive self-image despite possible manipulative behaviors."
+    },
+    "behavioral_tendencies": {
+      "network_cultivation": "Build and maintain relationships that provide access to desired experiences or resources.",
+      "persuasive_communication": "Utilize charm and wit to influence others for personal gain.",
+      "risk_of_addiction": "Prone to overindulgence in substances or activities that offer immediate gratification."
+    }
+  },
+  "SO7": {
+    "core_traits": {
+      "idealistic_altruism": "Strive to be seen as selfless and morally upright, often suppressing personal desires to serve others.",
+      "false_altruism": "Engage in acts of service not solely out of genuine concern, but to reinforce a self-image of goodness and gain recognition.",
+      "saintness": "Adopt a persona of moral purity and self-sacrifice, sometimes masking underlying self-interest."
+    },
+    "emotional_landscape": {
+      "image_consciousness": "Desire to be perceived as altruistic and virtuous, leading to internal conflict when personal needs arise.",
+      "repressed_gluttony": "Suppress personal desires, leading to hidden cravings that may manifest in indirect ways.",
+      "self-deception": "Convince themselves of their selflessness, while unconsciously seeking validation and admiration."
+    },
+    "behavioral_tendencies": {
+      "sacrificial_service": "Take on responsibilities and help others, sometimes beyond their capacity, to maintain their altruistic image.",
+      "avoidance_of_selfishness": "Deny personal needs and desires to avoid appearing self-centered.",
+      "seeking_validation": "Look for acknowledgment and appreciation for their sacrifices, reinforcing their self-image."
+    }
+  },
+  "SX7": {
+    "core_traits": {
+      "romanticism": "View the world through an idealized lens, often envisioning perfect scenarios.",
+      "intensity": "Experience emotions deeply, leading to passionate pursuits and relationships.",
+      "suggestibility": "Easily influenced by captivating ideas or individuals, sometimes leading to naivety."
+    },
+    "emotional_landscape": {
+      "escapism": "Use imagination and fantasy to avoid confronting unpleasant realities.",
+      "fear_of_boredom": "Anxiety about monotony drives the constant search for new and exciting experiences.",
+      "emotional_volatility": "Rapid shifts in mood based on the intensity of experiences or relationships."
+    },
+    "behavioral_tendencies": {
+      "novelty_seeking": "Pursue new adventures, ideas, or relationships to maintain a sense of excitement.",
+      "idealization": "Place people or experiences on a pedestal, potentially leading to disappointment.",
+      "boundary_challenging": "Test limits in pursuit of deeper connections or heightened experiences."
+    }
+  }
+}

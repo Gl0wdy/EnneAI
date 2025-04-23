@@ -7,6 +7,11 @@ db = client.chat_db
 collection = db.chat_history
 
 
+async def get_all_users():
+    cursor = collection.find()
+    return [doc async for doc in cursor]
+
+
 async def save_message(user_id: str, role: str, content: str):
     message = {"role": role, "content": content}
 

@@ -1,0 +1,53 @@
+{
+  "SP2": {
+    "core_traits": {
+      "childlike_charm": "Exhibit a youthful, endearing demeanor that unconsciously invites others to care for them.",
+      "self_indulgence": "Seek pleasurable experiences and comforts to distract from inner feelings of deprivation.",
+      "ambivalence_in_relationships": "Display a mix of desire for connection and hesitation, often due to fear of rejection."
+    },
+    "emotional_landscape": {
+      "desire_for_care": "Long to be loved and prioritized without having to earn it, similar to a child's expectation.",
+      "self_protection": "Hesitant to commit deeply, aiming to avoid potential hurt or rejection.",
+      "inner_conflict": "Struggle between wanting independence and craving affection and support."
+    },
+    "behavioral_tendencies": {
+      "playful_dependence": "Use charm and perceived fragility to elicit support and attention from others.",
+      "avoidance_of_responsibility": "May resist long-term commitments, preferring to be cared for rather than care for others.",
+      "emotional_withdrawal": "Tend to retreat when sensing potential rejection or lack of appreciation."
+    }
+  },
+  "SO2": {
+    "core_traits": {
+      "social_influence": "Aim to be central figures in social settings, often taking on leadership or influential roles.",
+      "public_recognition": "Seek acknowledgment and validation from groups, equating social status with self-worth.",
+      "networking_expertise": "Excel at building connections and being indispensable within their communities."
+    },
+    "emotional_landscape": {
+      "need_for_approval": "Driven by a desire to be valued and loved by many, often through public roles.",
+      "identity_through_roles": "Define themselves by their social contributions and the recognition they receive.",
+      "fear_of_obscurity": "Anxious about being overlooked or deemed unimportant within their social circles."
+    },
+    "behavioral_tendencies": {
+      "community_engagement": "Actively participate in organizing events and fostering group cohesion.",
+      "mentorship": "Take on roles that allow them to guide and support others, reinforcing their value.",
+      "image_consciousness": "Maintain a persona that aligns with societal expectations to ensure continued approval."
+    }
+  },
+  "SX2": {
+    "core_traits": {
+      "intense_connection": "Focus deeply on forming strong, intimate bonds with specific individuals.",
+      "emotional_expressiveness": "Openly share feelings and desires to foster closeness and mutual understanding.",
+      "passionate_support": "Demonstrate love through dedicated attention and unwavering support to chosen individuals."
+    },
+    "emotional_landscape": {
+      "fear_of_abandonment": "Highly sensitive to signs of disconnection, fearing loss of their intimate bonds.",
+      "jealousy": "May experience envy when their deep connections are threatened or divided.",
+      "validation_through_intimacy": "Seek affirmation of their worth through the depth and intensity of personal relationships."
+    },
+    "behavioral_tendencies": {
+      "focused_attention": "Prioritize the needs and well-being of their close connections, sometimes to their own detriment.",
+      "emotional_intensity": "Engage in relationships with fervor, often leading to dramatic expressions of love and concern.",
+      "boundary_blurring": "May struggle to maintain personal boundaries, becoming deeply enmeshed with others."
+    }
+  }
+}
