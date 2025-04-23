@@ -1,0 +1,8 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+DEBUG_TOKEN = os.getenv('DEBUG_TOKEN')
+ADMIN_ID = os.getenv('ADMIN_ID')
