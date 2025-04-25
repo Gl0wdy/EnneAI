@@ -1,0 +1,53 @@
+{
+  "SP5": {
+    "core_traits": {
+      "self_sufficiency": "Prioritize autonomy and independence, often minimizing needs to avoid reliance on others.",
+      "privacy": "Highly value personal space and boundaries, creating a 'castle' to retreat into.",
+      "emotional_detachment": "Tend to suppress emotions, focusing on intellectual pursuits over emotional expression."
+    },
+    "emotional_landscape": {
+      "fear_of_intrusion": "Experience anxiety about others encroaching on their personal space or resources.",
+      "aversion_to_dependency": "Discomfort with relying on others, leading to isolation.",
+      "need_for_control": "Desire to manage their environment to prevent unexpected demands or intrusions."
+    },
+    "behavioral_tendencies": {
+      "minimalism": "Adopt a minimalist lifestyle to reduce external dependencies.",
+      "withdrawal": "Pull away from social interactions to conserve energy.",
+      "information_hoarding": "Accumulate knowledge as a means of feeling secure and prepared."
+    }
+  },
+  "SO5": {
+    "core_traits": {
+      "intellectual_engagement": "Seek to understand complex systems and ideas, often becoming experts in specific fields.",
+      "abstract_thinking": "Focus on theoretical concepts and overarching principles.",
+      "community_observation": "Observe social structures and dynamics, often from a detached standpoint."
+    },
+    "emotional_landscape": {
+      "fear_of_incompetence": "Concerned about not knowing enough or being seen as uninformed.",
+      "desire_for_recognition": "Seek acknowledgment for their knowledge and insights.",
+      "emotional_distance": "Maintain a level of detachment to preserve objectivity."
+    },
+    "behavioral_tendencies": {
+      "knowledge_sharing": "Engage in teaching or mentoring roles to disseminate information.",
+      "network_building": "Form connections based on shared intellectual interests.",
+      "idealism": "Pursue high ideals and abstract goals, sometimes at the expense of practical considerations."
+    }
+  },
+  "SX5": {
+    "core_traits": {
+      "intensity": "Experience emotions deeply, leading to passionate interests and relationships.",
+      "romanticism": "Hold idealized views of love and connection.",
+      "emotional_expressiveness": "More openly display emotions compared to other Type 5 subtypes."
+    },
+    "emotional_landscape": {
+      "fear_of_rejection": "Anxiety about being misunderstood or emotionally exposed.",
+      "desire_for_connection": "Seek deep, meaningful relationships while fearing vulnerability.",
+      "inner_conflict": "Struggle between the need for intimacy and the desire for independence."
+    },
+    "behavioral_tendencies": {
+      "creative_expression": "Channel intense emotions into artistic or creative pursuits.",
+      "selective_sharing": "Open up emotionally to a chosen few, seeking profound connections.",
+      "idealization": "Place partners or close connections on a pedestal, leading to potential disappointment."
+    }
+  }
+}

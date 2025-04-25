@@ -6,3 +6,6 @@ class SendingState(StatesGroup):
 
 class ConfirmationState(StatesGroup):
     confirm = State()
+
+class ReviewState(StatesGroup):
+    review = State()

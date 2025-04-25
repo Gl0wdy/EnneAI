@@ -7,7 +7,6 @@ import bot.keyboards as kb
 import bot.database as db
 from bot.config import ADMIN_ID
 from bot.fsm import SendingState
-import asyncio
 
 
 admin_router = Router(name='router')
@@ -21,19 +20,20 @@ async def admin_panel(message: Message):
 
 
 @admin_router.message(lambda x: x.text == 'Рассылка')
-async def sending(message: Message, context: FSMContext):
+async def sending(message: Message, state: FSMContext):
     if message.from_user.id != ADMIN_ID:
         return
-    await context.set_state(SendingState.enter_content)
+    await state.set_state(SendingState.enter_content)
     await message.answer('Отправьте контент для рассылки:')
 
 
 @admin_router.message(SendingState.enter_content)
-async def enter_sending(message: Message, context: FSMContext):
-    await context.clear()
+async def enter_sending(message: Message, state: FSMContext):
+    await state.clear()
     users = await db.get_all_users()
-    tasks = (
-        await message.copy_to(u['user_id']) for u in users
-    )
-    await asyncio.gather(*tasks)
+    async for i in users:
+        try:
+            await message.copy_to(i['user_id'])
+        except:
+            pass
     await message.answer(f'Успешно разослано всем пользователем ({len(users)})')
