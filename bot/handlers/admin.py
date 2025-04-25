@@ -46,4 +46,4 @@ async def sending(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
     with open('app.log', 'r', encoding='utf-8') as file:
-        await message.answer_document(InputFileUnion(file))
+        await message.answer_document(file)
