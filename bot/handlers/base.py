@@ -49,12 +49,12 @@ async def cancel(message: Message):
 
 @base_router.message(ConfirmationState.confirm)
 async def confirmation_process(message: Message, state: FSMContext):
-    if message.text == 'Да':
+    if message.text == '✅Да':
         await db.clear_history(message.from_user.id)
         await message.answer('🗑 История чата успешно удалена. Теперь Наранхо ничего не помнит.',
                              reply_markup=ReplyKeyboardRemove())
         await state.clear()
-    elif message.text == 'Нет':
+    elif message.text == '❌Нет':
         await message.answer('История чата не была очищена. Можете продолжать диалог.',
                              reply_markup=ReplyKeyboardRemove())
         await state.clear()
