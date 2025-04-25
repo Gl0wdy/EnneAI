@@ -1,5 +1,5 @@
 from aiogram import Router
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart, Command, ChatMemberUpdatedFilter, JOIN_TRANSITION
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.enums import ChatAction
 from aiogram.fsm.context import FSMContext
@@ -27,7 +27,8 @@ async def start_command(message: Message):
              '3. Сравнить 2 и более эннеатипа/подтипа между собой\n'
              '4. Помочь с изучением эннеаграммы\n'
              '5. [Работать в группах](https://t.me/typologyAIchannel/20)\n'
-             'Просто напиши мне вопрос или выбери один из предложенных!\n',
+             'Просто напиши мне вопрос или выбери один из предложенных!\n\n'
+             'P.S: пока что я хорош только в эннеаграмме. Вместо сокращенных названий (со7) лучше пиши полные (социальная Е7) - так результат будет точнее.',
         reply_markup=kb.main_markup
     )
     
@@ -131,3 +132,13 @@ async def message_handler(message: Message):
         await waiting_msg.delete()
         await db.save_group_message(message.chat.id, message.from_user.username, 'assistant', response)
         await message.reply(response, parse_mode='Markdown')
+
+
+@base_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=JOIN_TRANSITION))
+async def on_group_adding(message: Message):
+    await message.answer(text='*Я - Наранхо, и я могу помочь вам с типированием по эннеаграмме.*\n'
+                                'Чтобы обратиться ко мне, просто отметь и задай свой вопрос. '
+                                'Например: "@typologyAIbot типируй участников чата".\n'
+                                'Также я способен читать историю чата в диапазоне двухста сообщений.'
+                                'Подробнее обо мне вы можете узнать в [новостном канале](https://t.me/typologyAIchannel)\n\n'
+                                '*❗️ ДЛЯ КОРРЕКТНОЙ РАБОТЫ БОТА ЕМУ НУЖНО ВЫДАТЬ ПРАВА АДМИНА*')

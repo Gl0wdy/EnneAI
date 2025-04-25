@@ -3,7 +3,9 @@ import json
 import re
 
 
-def get_enneadata(path: str = '/bots/EnneAI/data/ennea'):
+PATH = '/bots/EnneAI/data/ennea'
+
+def get_enneadata(path: str = 'EnneAI/data/ennea'):
     res = []
     for i in os.listdir(path):
         with open(f'{path}/{i}', 'r', encoding='utf-8') as file:
