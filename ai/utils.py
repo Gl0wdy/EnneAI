@@ -3,7 +3,7 @@ import json
 import re
 
 
-def get_enneadata(path: str = 'bots/EnneAI/data/ennea'):
+def get_enneadata(path: str = '/bots/EnneAI/data/ennea'):
     res = []
     for i in os.listdir(path):
         with open(f'{path}/{i}', 'r', encoding='utf-8') as file:
@@ -18,6 +18,5 @@ def get_enneadata(path: str = 'bots/EnneAI/data/ennea'):
 def parse_buttons(text: str):
     buttons = re.findall(r'<([^>]+)>', text)
     for i in buttons:
-        print(i)
         text = text.replace(f'<{i}>', '')
     return text, buttons
