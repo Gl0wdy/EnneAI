@@ -2,6 +2,8 @@ from qdrant_client.http.models import Distance, VectorParams, PointStruct
 from qdrant_client import AsyncQdrantClient
 from sentence_transformers import SentenceTransformer
 
+from utils.logger import logger
+
 
 class VectorDb:
     def __init__(self):
@@ -32,12 +34,15 @@ class VectorDb:
         )
 
     async def search(self, query: str, collection_name: str = 'collection'):
-        response = await self.client.query_points(
-            collection_name=collection_name,
-            query=self.model.encode(query).tolist(),
-            limit=25,
-            with_payload=True
-        )
+        try:
+            response = await self.client.query_points(
+                collection_name=collection_name,
+                query=self.model.encode(query).tolist(),
+                limit=25,
+                with_payload=True
+            )
+        except Exception as err:
+            logger.error('Error in ai/vector_db.py', exc_info=err)
         return [hit.payload['text'] for hit in response.points]
 
     async def get_collections(self):

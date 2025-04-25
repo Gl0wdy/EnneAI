@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, InputFileUnion
 from aiogram.fsm.context import FSMContext
 
 import bot.keyboards as kb
@@ -31,9 +31,19 @@ async def sending(message: Message, state: FSMContext):
 async def enter_sending(message: Message, state: FSMContext):
     await state.clear()
     users = await db.get_all_users()
+    c = 0
     async for i in users:
         try:
             await message.copy_to(i['user_id'])
+            c += 1
         except:
             pass
-    await message.answer(f'Успешно разослано всем пользователем ({len(users)})')
+    await message.answer(f'Успешно разослано всем пользователем ({c})')
+
+
+@admin_router.message(lambda x: x.text == 'Логи')
+async def sending(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return
+    with open('app.log', 'r', encoding='utf-8') as file:
+        await message.answer_document(InputFileUnion(file))

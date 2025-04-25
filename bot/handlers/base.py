@@ -36,9 +36,16 @@ async def start_command(message: Message):
 async def clear_history(message: Message, state: FSMContext):
     if message.chat.type == 'private':
         await state.set_state(ConfirmationState.confirm)
-        await message.answer('Вы уверены, что хотите стереть историю чата? Это нельзя отменить.',
+        await message.answer('❗️ Вы уверены, что хотите стереть историю чата? Это нельзя отменить.',
                             reply_markup=kb.confirm_markup)
-    
+        
+
+@base_router.message(Command(commands='cancel'))
+async def cancel(message: Message):
+    if message.chat.type == 'private':
+        await db.set_busy_state(message.from_user.id, is_busy=False)
+        await message.answer('✅ Ошибка исправлена, можете отправлять следующий запрос.')
+
 
 @base_router.message(ConfirmationState.confirm)
 async def confirmation_process(message: Message, state: FSMContext):
@@ -70,7 +77,7 @@ async def message_handler(message: Message):
     if message.chat.type == 'private':
         is_busy = await db.get_busy_state(user_id)
         if is_busy:
-            await message.answer('Дождитесь завершения предыдущего запроса.')
+            await message.answer('Дождитесь завершения предыдущего запроса.\nЗавис бот? Используй /cancel')
             return
         await db.set_busy_state(user_id, True)
         await db.save_message(user_id, 'user', text)

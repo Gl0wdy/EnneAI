@@ -3,6 +3,8 @@ from g4f import AsyncClient
 from ai.vector_db import VectorDb
 from ai.utils import get_enneadata
 
+from utils.logger import logger
+
 
 AI_PROMT = '''
 Ты - нейросеть "Клаудио Наранхо". Ты разбираешься в типологиях, но сейчас ТОЛЬКО в эннеаграмме.
@@ -69,17 +71,17 @@ class Chat:
             {'role': 'system', 'content': AI_GROUP_PROMT if is_group else AI_PROMT}
         ] + chat_history
 
-        response = await self._client.chat.completions.create(
-            messages=messages,
-            model='deepseek-v3',
-        )
+        try:
+            response = await self._client.chat.completions.create(
+                messages=messages,
+                model='deepseek-v3',
+            )
+        except Exception as err:
+            logger.error('Error in ai/completions.py', exc_info=err)
+
         response_content = response.choices[0].message.content
         if response_content == 'Request error occurred:':
             print('error')
             return await self.create(request, collections, chat_history)
         response_content = response_content.split('---')[0]
         return response_content
-        
-    # @TODO
-    async def deep_create(self, request: str, collections: list | str, depth: int = 2):
-        pass
