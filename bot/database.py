@@ -26,8 +26,7 @@ async def save_group_message(group_id: int, username: str, role: str, content: s
         {"group_id": group_id},
         {"history": 1}
     )
-    
-    if doc and "history" in doc and len(doc["history"]) > MAX_GROUP_HISTORY_LENGTH:
+    if doc and "history" in doc and len(doc["history"]) > 200:
         await group_collection.update_one(
             {"group_id": group_id},
             {"$pop": {"history": -1}}
@@ -52,6 +51,15 @@ async def save_message(user_id: str, role: str, content: str):
         },
         upsert=True
     )
+    doc = await group_collection.find_one(
+        {"user_id": user_id},
+        {"history": 1}
+    )
+    if doc and "history" in doc and len(doc["history"]) > 150:
+        await group_collection.update_one(
+            {"user_id": user_id},
+            {"$pop": {"history": -1}}
+        )
 
 
 async def get_history(user_id: str) -> List[Dict[str, str]]:

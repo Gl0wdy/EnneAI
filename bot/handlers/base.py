@@ -8,6 +8,7 @@ import bot.database as db
 import bot.keyboards as kb
 from bot.fsm import ConfirmationState, ReviewState
 from ai.completions import Chat
+from ai.utils import parse_buttons
 
 from bot.config import ADMIN_ID
 import re
@@ -20,17 +21,23 @@ chat = Chat()
 @base_router.message(CommandStart())
 async def start_command(message: Message):
     await message.answer(
-        text='Привет, я - Клаудио Наранхо, чилийский психиатр, доктор медицины, гештальт-терапевт, и я готов помочь с вопросами по эннеаграмме и твоему типу.\n\nP.S пиши названия сабтипов полностью, чтобы результат был более корректным (вместо "со7" лучше писать "социальная е7", например)'
+        text='*Я - Клаудио Наранхо, и я готов помочь тебе с эннеаграммой.* '
+             'Я могу:\n1. Типировать тебя, персонажа или что-либо ещё\n'
+             '2. Рассказать об эннеатипах и их подтипах\n'
+             '3. Сравнить 2 и более эннеатипа/подтипа между собой\n'
+             '4. Помочь с изучением эннеаграммы\n'
+             '5. [Работать в группах](https://t.me/typologyAIchannel/20)\n'
+             'Просто напиши мне вопрос или выбери один из предложенных!\n',
+        reply_markup=kb.main_markup
     )
-    await message.answer('Также рекомендую подписаться на [новостной канал](https://t.me/typologyAIchannel), чтобы не пропускать новую информацию о боте.',
-                         parse_mode='markdown')
     
 
 @base_router.message(Command(commands='clear'))
 async def clear_history(message: Message, state: FSMContext):
-    await state.set_state(ConfirmationState.confirm)
-    await message.answer('Вы уверены, что хотите стереть историю чата? Это нельзя отменить.',
-                         reply_markup=kb.confirm_markup)
+    if message.chat.type == 'private':
+        await state.set_state(ConfirmationState.confirm)
+        await message.answer('Вы уверены, что хотите стереть историю чата? Это нельзя отменить.',
+                            reply_markup=kb.confirm_markup)
     
 
 @base_router.message(ConfirmationState.confirm)
@@ -77,9 +84,12 @@ async def message_handler(message: Message):
             collections='naranjo',
             chat_history=chat_history
         )
+        cleared_text, buttons_data = parse_buttons(response)
+        buttons = kb.create_buttons(buttons_data)
+
         await waiting_msg.delete()
-        await db.save_message(user_id, 'system', response)
-        await message.reply(response, parse_mode='Markdown')
+        await db.save_message(user_id, 'system', cleared_text)
+        await message.reply(cleared_text, parse_mode='Markdown', reply_markup=buttons)
         await db.set_busy_state(user_id, False)
         
     elif message.chat.type == 'supergroup':

@@ -1,5 +1,6 @@
 import os
 import json
+import re
 
 
 def get_enneadata(path: str = 'EnneAI\\data\\ennea'):
@@ -12,5 +13,11 @@ def get_enneadata(path: str = 'EnneAI\\data\\ennea'):
             {str(data)}
             '''
             res.append({'role': 'system', 'content': txt_data})
-
     return res
+
+def parse_buttons(text: str):
+    buttons = re.findall(r'<([^>]+)>', text)
+    for i in buttons:
+        print(i)
+        text = text.replace(f'<{i}>', '')
+    return text, buttons
