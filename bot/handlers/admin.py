@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message, InputFileUnion
+from aiogram.types import Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 
 import bot.keyboards as kb
@@ -45,5 +45,8 @@ async def enter_sending(message: Message, state: FSMContext):
 async def sending(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
-    with open('app.log', 'r', encoding='utf-8') as file:
+    try:
+        file = FSInputFile('app.log', 'app.log')
         await message.answer_document(file)
+    except:
+        await message.answer('Логовый файл пуст.')

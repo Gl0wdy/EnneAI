@@ -43,6 +43,7 @@ class VectorDb:
             )
         except Exception as err:
             logger.error('Error in ai/vector_db.py', exc_info=err)
+            return
         return [hit.payload['text'] for hit in response.points]
 
     async def get_collections(self):

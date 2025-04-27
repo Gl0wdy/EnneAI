@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.filters import CommandStart, Command, ChatMemberUpdatedFilter, JOIN_TRANSITION
 from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.enums import ChatAction
+from aiogram.enums import ChatAction, ChatMemberStatus
 from aiogram.fsm.context import FSMContext
 
 import bot.database as db
@@ -12,6 +12,7 @@ from ai.utils import parse_buttons
 
 from bot.config import ADMIN_ID
 import re
+from datetime import datetime, timezone
 
 
 base_router = Router(name='main')
@@ -20,17 +21,19 @@ chat = Chat()
 
 @base_router.message(CommandStart())
 async def start_command(message: Message):
-    await message.answer(
-        text='*Я - Клаудио Наранхо, и я готов помочь тебе с эннеаграммой.* '
-             'Я могу:\n1. Типировать тебя, персонажа или что-либо ещё\n'
-             '2. Рассказать об эннеатипах и их подтипах\n'
-             '3. Сравнить 2 и более эннеатипа/подтипа между собой\n'
-             '4. Помочь с изучением эннеаграммы\n'
-             '5. [Работать в группах](https://t.me/typologyAIchannel/20)\n'
-             'Просто напиши мне вопрос или выбери один из предложенных!\n\n'
-             'P.S: пока что я хорош только в эннеаграмме. Вместо сокращенных названий (со7) лучше пиши полные (социальная Е7) - так результат будет точнее.',
-        reply_markup=kb.main_markup
-    )
+    if message.chat.type == 'private':
+        await message.answer(
+            text='*Я - Клаудио Наранхо, и я готов помочь тебе с эннеаграммой.* '
+                'Я могу:\n1. Типировать тебя, персонажа или что-либо ещё\n'
+                '2. Рассказать об эннеатипах и их подтипах\n'
+                '3. Сравнить 2 и более эннеатипа/подтипа между собой\n'
+                '4. Помочь с изучением эннеаграммы\n'
+                '5. [Работать в группах](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n'
+                'Просто напиши мне вопрос или выбери один из предложенных!\n\n'
+                'P.S: пока что я хорош только в эннеаграмме. Вместо сокращенных названий (со7) лучше пиши полные (социальная Е7) - так результат будет точнее.\n'
+                'P.P.S: Рекомендую прочитать [мануал](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26) по использованию бота, чтобы повысить качество ответов.',
+            reply_markup=kb.main_markup
+        )
     
 
 @base_router.message(Command(commands='clear'))
@@ -63,11 +66,23 @@ async def confirmation_process(message: Message, state: FSMContext):
         await message.answer('Пожалуйста, выберите действие.')
 
 
-@base_router.message(ReviewState.review)
-async def send_review(message: Message, state: FSMContext):
-    await message.bot.send_message(ADMIN_ID, f'Новый отзыв от @{message.from_user.username}:\n{message.text}')
-    await message.answer('✅ Отзыв успешно отправлен. Спасибо за обратную связь!')
-    await state.clear()
+@base_router.message(Command('floodwait'))
+async def set_floodwait(message: Message):
+    if message.chat.type == 'supergroup':
+        member = await message.bot.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+        if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.CREATOR):
+            await message.reply('У вас недостаточно прав для выполнения этой команды.')
+            return
+        text = message.text.split()
+        if len(text) < 2:
+            await message.reply('Укажите время в секундах. (/floodwait [время])')
+            return
+        seconds = text[-1]
+        if not seconds.isnumeric():
+            await message.answer('Некорректный данные, укажите время в секундах.')
+            return
+        await db.set_floodwait(message.chat.id, int(seconds))
+        await message.reply(f'✅ Параметр успешно обновлён. Теперь ботом могут пользоваться раз в {seconds} секунд.')
     
 
 @base_router.message(lambda x: bool(x.text) | bool(x.caption))
@@ -101,25 +116,41 @@ async def message_handler(message: Message):
         await db.set_busy_state(user_id, False)
         
     elif message.chat.type == 'supergroup':
+        bot = await message.bot.get_me()
+        if not re.search(f'^@{bot.username}', message.text):
+            await db.save_group_message(
+                group_id=message.chat.id,
+                username=message.from_user.username,
+                role='system',
+                content=message.text
+            )
+            return
+        floodwait = await db.get_floodwait(message.chat.id)
+        last_message = await db.get_last_request(message.chat.id)
+        if last_message:
+            now = datetime.now()
+            diff = (now - last_message).total_seconds()
+            if diff < floodwait:
+                await message.reply(f'*❌ Ограничение на всю группу:*\nподождите {int(floodwait - diff)} секунд перед следующим запросом.')
+                return
+            
+        await db.set_last_request(message.chat.id)
         await db.save_group_message(
-            group_id=message.chat.id,
-            username=message.from_user.username,
-            role='user',
-            content=message.text
-        )
+                group_id=message.chat.id,
+                username=message.from_user.username,
+                role='user',
+                content=message.text
+            )
         group_chat_history = await db.get_group_history(message.chat.id)
 
         if (reply_to := message.reply_to_message):
             reply_to_text = reply_to.caption if reply_to.caption else reply_to.text
             reply_to_context = {
                 'role': 'user',
-                'content': f'ИСПОЛЬЗУЙ ЭТО СООБЩЕНИЕ ОТ {reply_to.from_user.username} В КОНТЕКСТЕ:\n{reply_to_text}'
+                'content': f'@{reply_to.from_user.username}:\n{reply_to_text}'
             }
             group_chat_history.insert(-2, reply_to_context)
 
-        bot = await message.bot.get_me()
-        if not re.search(f'@{bot.username}', message.text):
-            return
         waiting_msg = await message.reply('⏳')
         await message.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
 
@@ -129,9 +160,15 @@ async def message_handler(message: Message):
             chat_history=group_chat_history,
             is_group=True
         )
+        cleared_text, _ = parse_buttons(response)
         await waiting_msg.delete()
-        await db.save_group_message(message.chat.id, message.from_user.username, 'assistant', response)
-        await message.reply(response, parse_mode='Markdown')
+        await db.save_group_message(
+            group_id=message.chat.id, 
+            username=message.from_user.username,
+            role='assistant',
+            content=cleared_text
+        )
+        await message.reply(cleared_text, parse_mode='Markdown')
 
 
 @base_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=JOIN_TRANSITION))
@@ -139,6 +176,6 @@ async def on_group_adding(message: Message):
     await message.answer(text='*Я - Наранхо, и я могу помочь вам с типированием по эннеаграмме.*\n'
                                 'Чтобы обратиться ко мне, просто отметь и задай свой вопрос. '
                                 'Например: "@typologyAIbot типируй участников чата".\n'
-                                'Также я способен читать историю чата в диапазоне двухста сообщений.'
-                                'Подробнее обо мне вы можете узнать в [новостном канале](https://t.me/typologyAIchannel)\n\n'
+                                'Также я способен читать историю чата в диапазоне ста сообщений.'
+                                'Подробнее обо мне вы можете узнать в [мануале](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n\n'
                                 '*❗️ ДЛЯ КОРРЕКТНОЙ РАБОТЫ БОТА ЕМУ НУЖНО ВЫДАТЬ ПРАВА АДМИНА*')
