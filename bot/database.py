@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from typing import List, Dict
+from typing import List, Dict, Literal
 from datetime import datetime, timezone
 
 
@@ -73,6 +73,15 @@ async def save_message(user_id: str, role: str, content: str):
         },
         upsert=True
     )
+    await collection.update_one(
+        {
+            'user_id': user_id,
+            'collection': {'$exists': False}
+        },
+        {
+            '$set': {'collection': 'dynamic'}
+        }
+    )
     doc = await group_collection.find_one(
         {"user_id": user_id},
         {"history": 1}
@@ -139,3 +148,15 @@ async def set_last_request(chat_id: int):
 async def get_last_request(chat_id: int):
     doc = await collection.find_one({"chat_id": chat_id}, {"last_request": 1})
     return doc.get("last_request", False) if doc else False
+
+
+async def set_collection(user_id: int, new_collection: Literal['ennea', 'socionics', 'psychosophy']):
+    await collection.update_one(
+        {"user_id": user_id},
+        {"$set": {"collection": new_collection}},
+        upsert=True
+    )
+
+async def get_collection(user_id: int):
+    doc = await collection.find_one({"user_id": user_id}, {"collection": 1})
+    return doc.get("collection", "dynamic") if doc else "dynamic"

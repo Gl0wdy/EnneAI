@@ -1,0 +1,735 @@
+[
+  {
+    "enneagram": "sp8",
+    "focus": "Триада тела",
+    "traits": [
+      "anti-social",
+      "anti-intellectual",
+      "territorial",
+      "pragmatic power-seeker",
+      "stoically dominant",
+      "seeking adrenaline"
+    ],
+    "anti_traits": [
+      "tricky",
+      "calculating",
+      "intellectual",
+      "emotionally intelligent",
+      "approval-seeking",
+      "vulnerable",
+      "idealistic"
+    ],
+    "socionics": "SLE",
+    "psychosophy": [
+      "VFLE",
+      "VFEL"
+    ],
+    "neurosis": "Страх уязвимости приводит к навязчивому контролю над окружающей средой, отвергая эмоции, чтобы избежать воспринимаемой слабости.",
+    "childhood": "Вырос в среде, где уязвимость была небезопасной, что привело к сосредоточению внимания на контроле и самозащите."
+  },
+  {
+    "enneagram": "so8",
+    "focus": "Триада тела",
+    "traits": [
+      "anti-social",
+      "extraverted",
+      "seeking adrenaline",
+      "anti-intellectual",
+      "tribe leader",
+      "publicly assertive",
+      "justice-driven",
+      "mobilizing"
+    ],
+    "anti_traits": [
+      "intellectual",
+      "apathetic",
+      "submissive",
+      "planning",
+      "indecisive",
+      "self-doubting"
+    ],
+    "socionics": "SEE",
+    "psychosophy": "VFLE",
+    "neurosis": "Fear of social powerlessness manifests as hyper-assertiveness and tribal dominance, masking insecurity through public justice enforcement.",
+    "childhood": "Felt responsible for protecting others, developing a strong sense of justice and leadership."
+  },
+  {
+    "enneagram": "sx8",
+    "focus": "Триада тела",
+    "traits": [
+      "anti-social",
+      "extraverted",
+      "anti-intellectual",
+      "explosive temper",
+      "seeking adrenaline",
+      "intense bonds",
+      "protective in relationships",
+      "unhinged and hyperemotional",
+      "magnetically dangerous"
+    ],
+    "anti_traits": [
+      "smart",
+      "intellectual",
+      "passive",
+      "avoidant",
+      "calculating",
+      "diplomatic",
+      "restrained"
+    ],
+    "socionics": "SEE",
+    "psychosophy": [
+      "VFLE",
+      "VFEL"
+    ],
+    "neurosis": "Fear of betrayal fuels possessive loyalty, conflating intensity with safety in relationships.",
+    "childhood": "Experienced betrayal or loss in close relationships, leading to intense and sometimes confrontational bonds."
+  },
+  {
+    "enneagram": "sp9",
+    "focus": "Триада тела",
+    "traits": [
+      "dissociated",
+      "comfort-seeking",
+      "resistant to disruption",
+      "quietly stubborn",
+      "routine-bound"
+    ],
+    "anti_traits": [
+      "confrontational",
+      "attention-seeking",
+      "emotionally volatile",
+      "impulsive",
+      "showy"
+    ],
+    "socionics": "SLI",
+    "psychosophy": "FLEV",
+    "neurosis": "Fear of disruption leads to passive stubbornness, prioritizing comfort over authentic engagement.",
+    "childhood": "Felt overlooked or unimportant, leading to a focus on comfort and routine to maintain peace."
+  },
+  {
+    "enneagram": "so9",
+    "focus": "Триада тела",
+    "traits": [
+      "dissociated",
+      "extraverted",
+      "sociable peacemaker",
+      "group-oriented",
+      "optimistically detached",
+      "conflict-easing charisma"
+    ],
+    "anti_traits": [
+      "aggressive",
+      "isolated",
+      "rigid",
+      "aloof",
+      "contrarian"
+    ],
+    "socionics": [
+      "SEI",
+      "ESE"
+    ],
+    "psychosophy": [
+      "FELV",
+      "FVLE"
+    ],
+    "neurosis": "Fear of conflict creates over-identification with group harmony, detaching from personal needs.",
+    "childhood": "Believed that merging with group expectations was necessary to avoid conflict and gain acceptance."
+  },
+  {
+    "enneagram": "sx9",
+    "focus": "Триада тела",
+    "traits": [
+      "dissociated",
+      "emotionally diffused",
+      "idealistic",
+      "relationship-focused",
+      "soul-merging"
+    ],
+    "anti_traits": [
+      "emotionally intense",
+      "dominant",
+      "assertively independent",
+      "calculative",
+      "emotionally sharp"
+    ],
+    "socionics": [
+      "SEI",
+      "ESE"
+    ],
+    "psychosophy": "FELV",
+    "neurosis": "Fear of losing identity in relationships results in emotional diffusion, idealizing connection to avoid confrontation.",
+    "childhood": "Prioritized harmony in close relationships, often suppressing personal desires to maintain connection."
+  },
+  {
+    "enneagram": "sp1",
+    "focus": "Триада тела",
+    "traits": [
+      "morally rigid",
+      "disciplined",
+      "private conscience",
+      "self-contained",
+      "self-restraining"
+    ],
+    "anti_traits": [
+      "impulsive",
+      "loudly moralizing",
+      "hedonistic",
+      "reckless",
+      "attention-hungry"
+    ],
+    "socionics": "LSE",
+    "psychosophy": [
+      "LVFE",
+      "LFVE"
+    ],
+    "neurosis": "Fear of imperfection enforces rigid self-discipline, suppressing impulses to maintain moral purity.",
+    "childhood": "Felt love was conditional upon being 'good' or perfect, leading to internalized anger and self-criticism."
+  },
+  {
+    "enneagram": "so1",
+    "focus": "Триада тела",
+    "traits": [
+      "morally rigid",
+      "publicly principled",
+      "moral leader",
+      "corrective",
+      "virtue-signaling",
+      "self-righteous"
+    ],
+    "anti_traits": [
+      "amoral",
+      "socially passive",
+      "reckless",
+      "amoral",
+      "socially slippery"
+    ],
+    "socionics": [
+      "LSE",
+      "LIE"
+    ],
+    "psychosophy": [
+      "VFLE",
+      "VLFE",
+      "LVFE"
+    ],
+    "neurosis": "Fear of moral failure compels public correction of others, conflating criticism with righteousness.",
+    "childhood": "Grew up feeling responsible for upholding moral standards, suppressing personal emotions to meet societal expectations."
+  },
+  {
+    "enneagram": "sx1",
+    "focus": "Триада тела",
+    "traits": [
+      "morally rigid",
+      "extraverted",
+      "morally intense",
+      "idealistic in relationships",
+      "black-and-white loyalty",
+      "zealously attached"
+    ],
+    "anti_traits": [
+      "careless",
+      "emotionally distant",
+      "neutral in values",
+      "hedonistic",
+      "ambivalent"
+    ],
+    "socionics": [
+      "LSE",
+      "LIE"
+    ],
+    "psychosophy": [
+      "VFLE",
+      "VLFE"
+    ],
+    "neurosis": "Fear of moral compromise creates black-and-white loyalty, idealizing relationships to avoid ambiguity.",
+    "childhood": "Experienced inconsistency in close relationships, prompting a desire to correct or perfect others to ensure safety."
+  },
+  {
+    "enneagram": "sp2",
+    "focus": "Триада сердца",
+    "traits": [
+      "servicing and people-pleasing",
+      "extraverted",
+      "quietly helpful",
+      "physically attentive",
+      "seeks unconditional love",
+      "affectionate servant",
+      "naive"
+    ],
+    "anti_traits": [
+      "demanding",
+      "emotionally intrusive",
+      "publicly performative",
+      "pushy",
+      "vain"
+    ],
+    "socionics": "ESE",
+    "psychosophy": [
+      "FEVL",
+      "FELV"
+    ],
+    "neurosis": "Fear of being unloved fuels covert caretaking, seeking validation through 'selfless' acts.",
+    "childhood": "Felt valued only when taking care of others, leading to neglect of personal needs."
+  },
+  {
+    "enneagram": "so2",
+    "focus": "Триада сердца",
+    "traits": [
+      "servicing and people-pleasing",
+      "extraverted",
+      "manipulative leader",
+      "calculating and secretly egoistic",
+      "seeks submissiveness as reward",
+      "benevolent manipulator"
+    ],
+    "anti_traits": [
+      "withdrawn",
+      "neglecting",
+      "self-denying",
+      "invisible",
+      "directionless"
+    ],
+    "socionics": "EIE",
+    "psychosophy": [
+      "VELF",
+      "VEFL"
+    ],
+    "neurosis": "Fear of irrelevance drives manipulative helpfulness, leveraging dependency to secure loyalty.",
+    "childhood": "Believed love was earned through being indispensable in group settings, often suppressing personal desires."
+  },
+  {
+    "enneagram": "sx2",
+    "focus": "Триада сердца",
+    "traits": [
+      "servicing and people-pleasing",
+      "extraverted",
+      "seeks intimate love",
+      "intimate caretaker",
+      "emotionally intense",
+      "devoted and often naive",
+      "flirtatious",
+      "clingy devotion"
+    ],
+    "anti_traits": [
+      "cold",
+      "uninterested in connection",
+      "casual",
+      "stoic",
+      "reserved"
+    ],
+    "socionics": "ESE",
+    "psychosophy": "FEVL",
+    "neurosis": "Fear of rejection demands intense emotional investment, conflating intimacy with control.",
+    "childhood": "Associated love with intense one-on-one connections, sometimes becoming overly dependent on close relationships."
+  },
+  {
+    "enneagram": "sp3",
+    "focus": "Триада сердца",
+    "traits": [
+      "achievement-focused",
+      "efficient",
+      "seeks security in money",
+      "private achiever",
+      "humble"
+    ],
+    "anti_traits": [
+      "lazy",
+      "boastful",
+      "messy",
+      "unambitious",
+      "scattered",
+      "ascetic"
+    ],
+    "socionics": [
+      "LSE",
+      "LIE"
+    ],
+    "psychosophy": [
+      "FVLE"
+    ],
+    "neurosis": "Fear of inadequacy hides behind pragmatic achievement, equating security with self-worth.",
+    "childhood": "Learned that success and productivity were the paths to receiving attention and approval."
+  },
+  {
+    "enneagram": "so3",
+    "focus": "Триада сердца",
+    "traits": [
+      "achievement-focused",
+      "extraverted",
+      "morally relativistic",
+      "socially adaptive",
+      "polished, but fragile",
+      "narcissistic and competitive",
+      "vain",
+      "success-obsessed"
+    ],
+    "anti_traits": [
+      "altruistic",
+      "transparent",
+      "honest",
+      "sincere",
+      "unimpressive",
+      "ascetic"
+    ],
+    "socionics": "LIE",
+    "psychosophy": "FLVE",
+    "neurosis": "Fear of worthlessness compels social chameleonism, polishing image to mask inner emptiness.",
+    "childhood": "Felt compelled to embody the ideal image to gain acceptance within community or family structures."
+  },
+  {
+    "enneagram": "sx3",
+    "focus": "Триада сердца",
+    "traits": [
+      "achievement-focused",
+      "extraverted",
+      "seductive achiever",
+      "charismatic",
+      "driven by beautiful admiration",
+      "glamorous performer"
+    ],
+    "anti_traits": [
+      "emotionally dull",
+      "indifferent to attention",
+      "emotionally flat",
+      "forgettable",
+      "self-effacing"
+    ],
+    "socionics": "ESE",
+    "psychosophy": "FEVL",
+    "neurosis": "Fear of ordinariness manifests as seductive charm, seeking admiration to validate existence.",
+    "childhood": "Believed personal value was tied to being attractive or desirable to others, leading to performance in relationships."
+  },
+  {
+    "enneagram": "sp4",
+    "focus": "Триада сердца",
+    "traits": [
+      "authenticity-driven",
+      "introverted",
+      "private melancholy",
+      "creative through solitude",
+      "aesthetic-focused",
+      "aesthetic monk"
+    ],
+    "anti_traits": [
+      "emotionally explosive",
+      "attention-seeking",
+      "chaotic",
+      "needy",
+      "melodramatic"
+    ],
+    "socionics": [
+      "ESI",
+      "EII"
+    ],
+    "psychosophy": [
+      "EFLV",
+      "EVFL"
+    ],
+    "neurosis": "Fear of inadequacy withdraws into private melancholy, romanticizing suffering to avoid exposure.",
+    "childhood": "Grew up feeling emotionally neglected, leading to a focus on personal suffering and uniqueness."
+  },
+  {
+    "enneagram": "so4",
+    "focus": "Триада сердца",
+    "traits": [
+      "authenticity-driven",
+      "introverted",
+      "expressive outsider",
+      "socially envious",
+      "ideals vs reality tension",
+      "symbolic martyr"
+    ],
+    "anti_traits": [
+      "socially confident",
+      "conventional",
+      "competitive",
+      "emotionally dull",
+      "grounded"
+    ],
+    "socionics": [
+      "EII",
+      "IEI"
+    ],
+    "psychosophy": "ELVF",
+    "neurosis": "Fear of being ordinary fuels envious comparison, clinging to outsider status to feel unique.",
+    "childhood": "Felt different or misunderstood within groups, fostering a sense of longing for belonging."
+  },
+  {
+    "enneagram": "sx4",
+    "focus": "Триада сердца",
+    "traits": [
+      "authenticity-driven",
+      "hateful, but rationalizing",
+      "hysterical intensity",
+      "raw emotional expression",
+      "identity-obsessed",
+      "intimacy-possessed"
+    ],
+    "anti_traits": [
+      "neutral",
+      "emotionally distant",
+      "bland",
+      "superficial",
+      "emotionally even"
+    ],
+    "socionics": "ESI",
+    "psychosophy": [
+      "EFVL",
+      "ELVF"
+    ],
+    "neurosis": "Fear of being unlovable exaggerates emotional extremes, conflating intensity with authenticity.",
+    "childhood": "Experienced intense emotional highs and lows in close relationships, seeking depth to fill inner voids."
+  },
+  {
+    "enneagram": "sp5",
+    "focus": "Триада головы",
+    "traits": [
+      "detached",
+      "introverted",
+      "humble",
+      "self-contained",
+      "knowledge-focused",
+      "withdrawn",
+      "minimalist thinker"
+    ],
+    "anti_traits": [
+      "needy",
+      "cynical",
+      "emotionally expressive",
+      "team-dependent",
+      "scattered",
+      "engaged"
+    ],
+    "socionics": [
+      "ILI"
+    ],
+    "psychosophy": [
+      "LFEV",
+      "FLEV"
+    ],
+    "neurosis": "Fear of incompetence isolates behind knowledge-hoarding, withdrawing to avoid demands.",
+    "childhood": "Felt overwhelmed by demands, retreating into solitude and valuing self-sufficiency."
+  },
+  {
+    "enneagram": "so5",
+    "focus": "Триада головы",
+    "traits": [
+      "detached",
+      "introverted",
+      "hyper-intellectual",
+      "observer",
+      "coldly analytical",
+      "disconnected from emotions",
+      "elitist"
+    ],
+    "anti_traits": [
+      "emotionally reactive",
+      "tribal",
+      "assertive",
+      "warm",
+      "tribally expressive"
+    ],
+    "socionics": [
+      "ILI",
+      "LII"
+    ],
+    "psychosophy": [
+      "LVEF",
+      "LFVE"
+    ],
+    "neurosis": "Fear of helplessness detaches into cold analysis, rejecting emotion to feel in control.",
+    "childhood": "Believed that knowledge and expertise were necessary to gain social standing and avoid feelings of inadequacy."
+  },
+  {
+    "enneagram": "sx5",
+    "focus": "Триада головы",
+    "traits": [
+      "detached",
+      "introverted",
+      "mystical",
+      "focused on deep connections",
+      "conceptual intensity",
+      "enigmatic romantic"
+    ],
+    "anti_traits": [
+      "open-hearted",
+      "practical",
+      "surface-level",
+      "grounded",
+      "emotionally clear"
+    ],
+    "socionics": "IEI",
+    "psychosophy": "LEVF, LEFV",
+    "neurosis": "Fear of intrusion obsesses over mystical depth, using concepts to guard against vulnerability.",
+    "childhood": "Sought deep connections but feared intrusion, leading to a push-pull dynamic in relationships."
+  },
+  {
+    "enneagram": "sp6",
+    "focus": "Триада головы",
+    "traits": [
+      "anxiety-driven",
+      "introverted",
+      "prepared",
+      "responsible",
+      "skeptically warm",
+      "cautiously committed"
+    ],
+    "anti_traits": [
+      "impulsive",
+      "naive",
+      "chaotic",
+      "carefree",
+      "unstructured"
+    ],
+    "socionics": [
+      "LII",
+      "IEI"
+    ],
+    "psychosophy": [
+      "LEFV",
+      "LFEV"
+    ],
+    "neurosis": "Fear of uncertainty fixates on preparedness, masking anxiety with skeptical warmth.",
+    "childhood": "Grew up in unpredictable environments, leading to heightened vigilance and self-reliance."
+  },
+  {
+    "enneagram": "so6",
+    "focus": "Триада головы",
+    "traits": [
+      "anxiety-driven",
+      "introverted",
+      "loyalist",
+      "rigid and rational",
+      "lawful",
+      "rigidly dependable"
+    ],
+    "anti_traits": [
+      "rebellious",
+      "independent to a fault",
+      "apathetic",
+      "chaotic",
+      "emotionally unstable"
+    ],
+    "socionics": [
+      "LII",
+      "LSI"
+    ],
+    "psychosophy": "LVFE",
+    "neurosis": "Fear of disloyalty enforces rigid rationality, projecting stability to protect the group.",
+    "childhood": "Felt the need to adhere strictly to group norms to find security and avoid rejection."
+  },
+  {
+    "enneagram": "sx6",
+    "focus": "Триада головы",
+    "traits": [
+      "anxiety-driven",
+      "introverted",
+      "devoted or defiant",
+      "passionate loyalty",
+      "bond through tension",
+      "counter-phobic"
+    ],
+    "anti_traits": [
+      "emotionally stable",
+      "detached",
+      "consistently warm",
+      "distant",
+      "even-tempered"
+    ],
+    "socionics": "LSI",
+    "psychosophy": "LFVE",
+    "neurosis": "Fear of betrayal bonds through tension, oscillating between devotion and defiance.",
+    "childhood": "Experienced trust issues in close relationships, oscillating between dependence and skepticism."
+  },
+  {
+    "enneagram": "sp7",
+    "focus": "Триада головы",
+    "traits": [
+      "charlatanism",
+      "intellectual narcissist",
+      "future planner",
+      "escapes through stimulation",
+      "deceitful and mentally gluttonous",
+      "chaotic and charismatic",
+      "cynical and sarcastic"
+    ],
+    "anti_traits": [
+      "systematically ascetic",
+      "boring",
+      "rigid",
+      "consistent",
+      "apathetic"
+    ],
+    "socionics": [
+      "ILE",
+      "LIE"
+    ],
+    "psychosophy": [
+      "VLFE",
+      "FLVE",
+      "FLEV"
+    ],
+    "neurosis": "Fear of deprivation escapes into stimulation, planning futures to avoid present pain.",
+    "childhood": "Learned to seek pleasure and avoid pain by focusing on material comforts and planning for security."
+  },
+  {
+    "enneagram": "so7",
+    "focus": "Триада головы",
+    "traits": [
+      "charlatanism",
+      "hyper-intellectual",
+      "saintliness",
+      "deceitful and imaginary",
+      "false altruist",
+      "visionary optimist",
+      "abstract narcissist"
+    ],
+    "anti_traits": [
+      "gloomy",
+      "emotional",
+      "disengaged",
+      "empathy-focused",
+      "self-doubting"
+    ],
+    "socionics": [
+      "ILE",
+      "LIE"
+    ],
+    "psychosophy": [
+      "VLFE",
+      "VLEF"
+    ],
+    "neurosis": "Fear of suffering masks as saintly optimism, avoiding gloom through performative altruism.",
+    "childhood": "Felt the need to be entertaining and 'saint' to gain social acceptance and distract from inner anxieties."
+  },
+  {
+    "enneagram": "sx7",
+    "focus": "Триада головы",
+    "traits": [
+      "charlatanism",
+      "extraverted",
+      "romantic escapist",
+      "playfully seductive",
+      "spontaneous connector",
+      "explosive lover"
+    ],
+    "anti_traits": [
+      "cautious",
+      "emotionally closed",
+      "predictable",
+      "self-controlled",
+      "introspective"
+    ],
+    "socionics": "IEE",
+    "psychosophy": "ELFV",
+    "neurosis": "Fear of boredom seeks endless, often pointless novelty, using spontaneity to evade emotional depth.",
+    "childhood": "Pursued intense experiences and relationships to escape feelings of emptiness or limitation."
+  },
+  {
+    "systems": {
+      "socionics": "Describes how characters process information and interact with the world",
+      "enneagram": "Identifies core motivations and fears (instincts: sp=self-preservation, so=social, sx=sexual)",
+      "psychosophy": "Prioritization of mental aspects: V = Volition, E = Emotion, L = Logic, F = Physics. 1st aspect is confident, 2nd is flexible, 3rd is vulnerable and 4th is submissive."
+    }
+  }
+]

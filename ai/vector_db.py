@@ -3,6 +3,7 @@ from qdrant_client import AsyncQdrantClient
 from sentence_transformers import SentenceTransformer
 
 from utils.logger import logger
+from collections import defaultdict
 
 
 class VectorDb:
@@ -16,7 +17,7 @@ class VectorDb:
         if not exists:
             await self.client.create_collection(
                 collection_name=name,
-                vectors_config=VectorParams(size=self.vector_dim, distance=Distance.COSINE, **kwargs)  # ✅ Размер совпадает с моделью
+                vectors_config=VectorParams(size=self.vector_dim, distance=Distance.COSINE, **kwargs)
             )
     
     async def insert_data(self, collection_name: str = 'collection', *args):
@@ -38,13 +39,39 @@ class VectorDb:
             response = await self.client.query_points(
                 collection_name=collection_name,
                 query=self.model.encode(query).tolist(),
-                limit=25,
+                limit=12,
                 with_payload=True
             )
         except Exception as err:
             logger.error('Error in ai/vector_db.py', exc_info=err)
             return
         return [hit.payload['text'] for hit in response.points]
+    
+
+    async def classify_search(self, query: str, collection_name: str = 'texts'):
+        query_vector = self.model.encode(query).tolist()
+        hits = await self.client.search(
+            collection_name=collection_name,
+            query_vector=query_vector,
+            limit=5
+        )
+        label_scores = defaultdict(float)
+        for hit in hits:
+            label = hit.payload['label']
+            score = hit.score
+            label_scores[label] += score
+        predicted_label = max(label_scores.items(), key=lambda x: x[1])[0]
+        return predicted_label
+    
+
+    async def insert_clasiffy_data(self, collection_name: str, data: list[tuple]):
+        points = []
+        for idx, (text, label) in enumerate(data):
+            vector = self.model.encode(text).tolist()
+            points.append(PointStruct(id=idx, vector=vector, payload={"label": label, "text": text}))
+
+        await self.client.upsert(collection_name=collection_name, points=points)
+
 
     async def get_collections(self):
         collections = await self.client.get_collections()

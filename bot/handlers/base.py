@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.filters import CommandStart, Command, ChatMemberUpdatedFilter, JOIN_TRANSITION
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from aiogram.enums import ChatAction, ChatMemberStatus
 from aiogram.fsm.context import FSMContext
 
@@ -10,9 +10,9 @@ from bot.fsm import ConfirmationState, ReviewState
 from ai.completions import Chat
 from ai.utils import parse_buttons
 
-from bot.config import ADMIN_ID
 import re
-from datetime import datetime, timezone
+from datetime import datetime
+import asyncio
 
 
 base_router = Router(name='main')
@@ -23,15 +23,15 @@ chat = Chat()
 async def start_command(message: Message):
     if message.chat.type == 'private':
         await message.answer(
-            text='*Я - Клаудио Наранхо, и я готов помочь тебе с эннеаграммой.* '
-                'Я могу:\n1. Типировать тебя, персонажа или что-либо ещё\n'
-                '2. Рассказать об эннеатипах и их подтипах\n'
-                '3. Сравнить 2 и более эннеатипа/подтипа между собой\n'
-                '4. Помочь с изучением эннеаграммы\n'
-                '5. [Работать в группах](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n'
+            text='*Я - Клаудио Наранхо, и я готов помочь тебе с типологиями.* '
+                'Я могу:\n1. Типировать что угодно (кроме персонажей, этим занимается [другой бот](https://t.me/fictionalAIbot)\n'
+                '2. Рассказать о соционике, эннеаграмме и психософии\n'
+                '3. Сравнить 2 и более типа между собой (как по функциям, так и в общем)\n'
+                '4. Помочь с изучением типологий\n'
+                '5. Провести вас на путь интеграции типа'
+                '6. [Работать в группах](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n'
                 'Просто напиши мне вопрос или выбери один из предложенных!\n\n'
-                'P.S: пока что я хорош только в эннеаграмме. Вместо сокращенных названий (со7) лучше пиши полные (социальная Е7) - так результат будет точнее.\n'
-                'P.P.S: Рекомендую прочитать [мануал](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26) по использованию бота, чтобы повысить качество ответов.',
+                '_P.S: Рекомендую прочитать [мануал](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26) по использованию бота, чтобы повысить качество ответов._',
             reply_markup=kb.main_markup
         )
     
@@ -49,6 +49,37 @@ async def cancel(message: Message):
     if message.chat.type == 'private':
         await db.set_busy_state(message.from_user.id, is_busy=False)
         await message.answer('✅ Ошибка исправлена, можете отправлять следующий запрос.')
+
+
+@base_router.message(Command(commands=['settings']))
+async def settings(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    curr_database = await db.get_collection(user_id)
+    markup = kb.set_collection_buttons(user_id, curr_database)
+    msg = await message.answer(f'📋 *Пожалуйста, выберите базу знаний:*\n'
+                         '- dynamic (BETA) - алгоритм сам решает, какую базу знаний стоит использовать. не всегда работает корректно.\n'
+                         '- ennea - база знаний эннеаграммы\n'
+                         '- socionics - база знаний соционики\n'
+                         '- psychosophy - база знаний психософии\n'
+                         '_❗️ Наранхо работает однозначно, понятно и корректно только с типологией, соответствующей выбранной БЗ._',
+                         reply_markup=markup)
+    await state.set_data({'msg': msg})
+
+
+@base_router.callback_query(lambda x: x.data.startswith('set'))
+async def set_database(callback: CallbackQuery, state: FSMContext):
+    data = callback.data.split('__')[-1]
+    collection, uid = data.split('_')
+    await db.set_collection(int(uid), collection)
+    selection_msg = (await state.get_data())['msg']
+    markup = kb.set_collection_buttons(uid, collection)
+    await selection_msg.edit_text(f'🆕 *Установлена база знаний "{collection}":*\n'
+                         '- dynamic (BETA) - алгоритм сам решает, какую базу знаний стоит использовать. не всегда работает корректно.\n'
+                         '- ennea - база знаний эннеаграммы\n'
+                         '- socionics - база знаний соционики\n'
+                         '- psychosophy - база знаний психософии\n'
+                         '❗️ Наранхо работает однозначно, понятно и корректно только с типологией, соответствующей выбранной БЗ.',
+                         reply_markup=markup)
 
 
 @base_router.message(ConfirmationState.confirm)
@@ -99,20 +130,33 @@ async def message_handler(message: Message):
         await db.save_message(user_id, 'user', text)
         chat_history = await db.get_history(user_id)
 
-        waiting_msg = await message.answer('⏳')
+        selected_collection = await db.get_collection(user_id)
+        if selected_collection == 'dynamic':
+            collection = await chat.vector_db.classify_search(text)
+            status_msg = await message.answer(f'✅ *Запрос принят.* Запрос отнесён к базе знаний "{collection}"\n_Настроить используемую базу знаний - /settings_')
+        else:
+            collection = selected_collection
+            status_msg = await message.answer(f'*✅ Запрос принят.* Используемая база знаний - "{collection}"')
+        waiting_msg = await message.answer('⌛️')
         await message.bot.send_chat_action(user_id, ChatAction.TYPING)
-
         response = await chat.create(
             request=text,
-            collections='naranjo',
+            collections=collection,
             chat_history=chat_history
         )
+        await status_msg.delete()
+        await waiting_msg.delete()
         cleared_text, buttons_data = parse_buttons(response)
         buttons = kb.create_buttons(buttons_data)
 
-        await waiting_msg.delete()
+        if len(cleared_text) >= 4096:
+            chunked = [cleared_text[:4090] + '...', '...' + cleared_text[4090:]]
+            first = await message.answer(chunked[0], parse_mode='Markdown')
+            await first.reply(chunked[1], parse_mode='Markdown', reply_markup=buttons)
+        else:
+            await message.answer(cleared_text, parse_mode='Markdown', reply_markup=buttons)
+
         await db.save_message(user_id, 'system', cleared_text)
-        await message.reply(cleared_text, parse_mode='Markdown', reply_markup=buttons)
         await db.set_busy_state(user_id, False)
         
     elif message.chat.type == 'supergroup':
@@ -156,7 +200,7 @@ async def message_handler(message: Message):
 
         response = await chat.create(
             request=text.split(maxsplit=1)[-1],
-            collections='naranjo',
+            collections='ennea',
             chat_history=group_chat_history,
             is_group=True
         )

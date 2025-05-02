@@ -50,3 +50,10 @@ async def sending(message: Message):
         await message.answer_document(file)
     except:
         await message.answer('Логовый файл пуст.')
+
+
+@admin_router.message(lambda x: x.text == 'Юзеры')
+async def sending(message: Message):
+    users_cursor = await db.get_all_users()
+    c = len([i async for i in users_cursor])
+    await message.answer(f'Количество живых юзеров: {c}')
