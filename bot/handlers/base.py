@@ -19,6 +19,12 @@ base_router = Router(name='main')
 chat = Chat()
 
 
+@base_router.message()
+async def catch_all(message: Message):
+    if message.chat.type == 'private':
+        await message.reply('*❗️ Сервер Наранхо закрыт на тех. обслуживание!* Вот-вот выйдет _обновление..._ Следите за новостями в [канале](https://t.me/typologyAIchannel)')
+
+
 @base_router.message(CommandStart())
 async def start_command(message: Message):
     if message.chat.type == 'private':
