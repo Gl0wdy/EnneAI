@@ -304,6 +304,10 @@ class Chat:
                 model='gpt-4o'
             )
         except Exception as err:
+            response = await self._client.chat.completions.create(
+                messages=messages,
+                model='deepseek-v3'
+            )
             logger.error('Error in ai/completions.py', exc_info=err)
 
         response_content = response.choices[0].message.content
