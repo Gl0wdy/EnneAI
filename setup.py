@@ -9,7 +9,7 @@ async def main():
     db = VectorDb()
     
     for catalog in ('socionics', 'ennea', 'psychosophy'):
-        chunks = ex.extract_from_folder(f'/bots/EnneAI/data/books/{catalog}')
+        chunks = ex.extract_from_folder(f'/root/bots/EnneAI/data/books/{catalog}')
         print('1. Chunks extracted')
 
         await db.client.delete_collection(catalog)
