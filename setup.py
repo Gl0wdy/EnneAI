@@ -8,7 +8,7 @@ async def main():
     ex = Extractor()
     db = VectorDb()
     
-    for catalog in ('socionics',):
+    for catalog in ('socionics', 'ennea', 'psychosophy'):
         chunks = ex.extract_from_folder(f'EnneAI/data/books/{catalog}')
         print('1. Chunks extracted')
 
