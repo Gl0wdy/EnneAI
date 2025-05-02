@@ -4,7 +4,7 @@ import re
 
 
 
-def get_enneadata(path: str = '/bots/EnneAI/data/files/ennea_short.json'):
+def get_enneadata(path: str = '/root/bots/EnneAI/data/files/ennea_short.json'):
     with open(path, "r", encoding="utf-8") as file:
         data = json.load(file)
     res = ''
@@ -35,7 +35,7 @@ def get_enneadata(path: str = '/bots/EnneAI/data/files/ennea_short.json'):
     return [{'role': 'system', 'content': f'КРАТКИЕ СВЕДЕНИЯ ОБ ЭННЕАТИПАХ:\n\n{res}'}]
 
 
-def get_py_data(path: str = '/bots/EnneAI/data/files/psychosophy_short.json'):
+def get_py_data(path: str = '/root/bots/EnneAI/data/files/psychosophy_short.json'):
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
         output = []
@@ -57,7 +57,7 @@ def get_py_data(path: str = '/bots/EnneAI/data/files/psychosophy_short.json'):
     return output
 
 
-def get_socio_data(path: str = '/bots/EnneAI/data/files/socio_short.json'):
+def get_socio_data(path: str = '/root/bots/EnneAI/data/files/socio_short.json'):
     res = ''
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
@@ -68,7 +68,7 @@ def get_socio_data(path: str = '/bots/EnneAI/data/files/socio_short.json'):
 
 
 def get_classifier_data():
-    path = '/bots/EnneAI/data/classifier.json'
+    path = '/root/bots/EnneAI/data/classifier.json'
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
     return data
