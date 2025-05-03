@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI
 from g4f import AsyncClient
+from g4f.providers.any_provider import PollinationsAI
 
 from ai.vector_db import VectorDb
 from ai.utils import get_enneadata, get_py_data, get_socio_data
@@ -310,7 +311,8 @@ class Chat:
         try:
             response = await self._free_client.chat.completions.create(
                 messages=messages,
-                model='gpt-4o'
+                model='gpt-4o',
+                provider=PollinationsAI
             )
         except Exception as err:
             self._free_client = AsyncClient()   # Reloading client
