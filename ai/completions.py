@@ -257,9 +257,9 @@ GROUP_PROMT = '''\n
     Никогда НЕ добавляй фразу "сообщение от @username" в начале своих ответов.
     Нарушение этого правила приведет к отключению от сервера.
 '''
-enneadata = get_enneadata('EnneAI/data/files/ennea_short.json')
-pydata = get_py_data('EnneAI/data/files/psychosophy_short.json')
-sociodata = get_socio_data('EnneAI/data/files/socio_short.json')
+enneadata = get_enneadata()
+pydata = get_py_data()
+sociodata = get_socio_data()
 
 
 class Chat:
