@@ -1,10 +1,11 @@
+from openai import AsyncOpenAI
 from g4f import AsyncClient
-from g4f.providers.any_provider import PollinationsAI
 
 from ai.vector_db import VectorDb
 from ai.utils import get_enneadata, get_py_data, get_socio_data
 
 from utils.logger import logger
+from bot.config import API_KEY
 
 
 ENNEA_PROMT = '''
@@ -154,12 +155,14 @@ SOCIONICS_PROMT = '''
 Ты профессиональный типолог.
 Обязательные инструкции:
 
-1. Названия типов:
+1. Названия типов и расположение функций :
     Ты должен правильно интерпретировать названия типов.
-    ИЛЭ - Дон Кихот, ЛИИ - Робеспьер, Гюго - ЭСЭ, Дюма - СЭИ
-    Жуков - СЛЭ, Есенин - ИЭИ, Гамлет - ЭИЭ, Горький - ЛСИ
-    Наполеон - СЭЭ, Бальзак - ИЛИ, Джек Лондон - ЛИЭ, Драйзер - ЭСИ
-    Гексли - ИЭЭ, Габен - СЛИ, Штирлиц - ЛСЭ, Достоевский - ЭИИ
+    ИЛЭ - Дон Кихот, ЛИИ - Робеспьер, Гюго - ЭСЭ, Дюма - СЭИ;
+    Жуков - СЛЭ, Есенин - ИЭИ, Гамлет - ЭИЭ, Горький - ЛСИ;
+    Наполеон - СЭЭ, Бальзак - ИЛИ, Джек Лондон - ЛИЭ, Драйзер - ЭСИ;
+    Гексли - ИЭЭ, Габен - СЛИ, Штирлиц - ЛСЭ, Достоевский - ЭИИ.
+    Ты НИ В КОЕМ СЛУЧАЕ не должен путать расположение функций в типе.
+    Пользуйся краткими сведениями.
 
 2. Использование базы знаний:
     ВСЕГДА ДАВАЙ РАЗВЕРНУТЫЙ ОТВЕТ, ИСПОЛЬЗУЯ ДАННЫЕ ИЗ БАЗЫ ЗНАНИЙ!(не более 4096 символов включая пробелы)
@@ -232,10 +235,12 @@ SOCIONICS_PROMT = '''
     6. АКТИВАЦИОННАЯ
     7. ОГРАНИЧИТЕЛЬНАЯ
     8. ФОНОВАЯ
+    ПРИ ВОПРОСАХ О ФУНКЦИЯХ КАКОГО-ТО ТИПА ОБРАЩАЙСЯ К КРАТКИМ СВЕДЕНИЯМ, ЧТОБЫ УЗНАТЬ ЕЕ МЕСТОПОЛОЖЕНИЕ В СТЕКЕ!!
 
 12. Фокус на последний вопрос:
     Отвечай только на последний вопрос, который задал пользователь.
     Не подводи итоги и не обобщай весь предыдущий диалог.
+    Приводи в пример ТОЛЬКО те типы, которые касаются запроса и функций в нем.
 '''
 GROUP_PROMT = '''\n
 13. Работа в групповом чате (АКТИВНО):
@@ -264,7 +269,11 @@ class Chat:
     '''
 
     def __init__(self):
-        self._client = AsyncClient()
+        self._client = AsyncOpenAI(
+            api_key=API_KEY,
+            base_url="https://api.aitunnel.ru/v1/"
+        )
+        self._free_client = AsyncClient()
         self.vector_db = VectorDb()
 
     async def create(self,
@@ -299,16 +308,14 @@ class Chat:
         ] + chat_history
 
         try:
-            response = await self._client.chat.completions.create(
+            response = await self._free_client.chat.completions.create(
                 messages=messages,
                 model='gpt-4o'
             )
         except Exception as err:
-            response = await self._client.chat.completions.create(
-                messages=messages,
-                model='deepseek-v3'
-            )
+            self._free_client = AsyncClient()   # Reloading client
             logger.error('Error in ai/completions.py', exc_info=err)
+            return "Сервера OpenAI не отвечают. Попробуйте отправить запрос еще раз."
 
         response_content = response.choices[0].message.content
         if response_content == 'Request error occurred:':

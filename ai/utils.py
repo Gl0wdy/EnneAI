@@ -58,13 +58,13 @@ def get_py_data(path: str = '/root/bots/EnneAI/data/files/psychosophy_short.json
 
 
 def get_socio_data(path: str = '/root/bots/EnneAI/data/files/socio_short.json'):
-    res = ''
+    res = []
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
         for type, vals in data.items():
-            res += f'Краткая информация о {type}:\nфункции: {vals["functions"]}\nквадра:{vals["quadra"]}\n\n'
+            res.append(f'Краткая информация о {type}:\nфункции: {vals["functions"]}\nквадра:{vals["quadra"]}\nНазвание: {vals['name']}\n\n')
     
-    return [{'role': 'system', 'content': res}]
+    return [{'role': 'system', 'content': i} for i in res]
 
 
 def get_classifier_data():

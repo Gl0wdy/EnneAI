@@ -19,12 +19,6 @@ base_router = Router(name='main')
 chat = Chat()
 
 
-@base_router.message()
-async def catch_all(message: Message):
-    if message.chat.type == 'private':
-        await message.reply('*❗️ Сервер Наранхо закрыт на тех. обслуживание!* Вот-вот выйдет _обновление..._ Следите за новостями в [канале](https://t.me/typologyAIchannel)')
-
-
 @base_router.message(CommandStart())
 async def start_command(message: Message):
     if message.chat.type == 'private':
@@ -34,10 +28,10 @@ async def start_command(message: Message):
                 '2. Рассказать о соционике, эннеаграмме и психософии\n'
                 '3. Сравнить 2 и более типа между собой (как по функциям, так и в общем)\n'
                 '4. Помочь с изучением типологий\n'
-                '5. Провести вас на путь интеграции типа'
+                '5. Провести вас на путь интеграции типа\n'
                 '6. [Работать в группах](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n'
                 'Просто напиши мне вопрос или выбери один из предложенных!\n\n'
-                '_P.S: Рекомендую прочитать [мануал](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26) по использованию бота, чтобы повысить качество ответов._',
+                'P.S: Рекомендую прочитать [мануал](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26) по использованию бота, чтобы повысить качество ответов.',
             reply_markup=kb.main_markup
         )
     
@@ -157,7 +151,7 @@ async def message_handler(message: Message):
 
         if len(cleared_text) >= 4096:
             chunked = [cleared_text[:4090] + '...', '...' + cleared_text[4090:]]
-            first = await message.answer(chunked[0], parse_mode='Markdown')
+            first = await message.reply(chunked[0], parse_mode='Markdown')
             await first.reply(chunked[1], parse_mode='Markdown', reply_markup=buttons)
         else:
             await message.answer(cleared_text, parse_mode='Markdown', reply_markup=buttons)
