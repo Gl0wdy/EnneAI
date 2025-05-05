@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List, Dict, Literal
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 client = AsyncIOMotorClient("mongodb://localhost:27017")
@@ -62,7 +62,7 @@ async def get_group_history(group_id: int):
     return []
 
 
-async def save_message(user_id: str, role: str, content: str):
+async def save_message(user_id: str, role: str, content: str, premium: bool = False):
     message = {"role": role, "content": content}
 
     await collection.update_one(
@@ -82,13 +82,23 @@ async def save_message(user_id: str, role: str, content: str):
             '$set': {'collection': 'dynamic'}
         }
     )
+    await collection.update_one(
+        {
+            'user_id': user_id,
+            'premium': {'$exists': False}
+        },
+        {
+            '$set': {'premium': False}
+        }
+    )
     doc = await group_collection.find_one(
         {"user_id": user_id},
         {"history": 1}
     )
     if doc and "history" in doc:
         chat_history_length = len(doc["history"])
-        while chat_history_length > 80:
+        limit = 150 if premium else 80
+        while chat_history_length > limit:
             await group_collection.update_one(
                 {"user_id": user_id},
                 {"$pop": {"history": -1}}
@@ -160,3 +170,23 @@ async def set_collection(user_id: int, new_collection: Literal['ennea', 'socioni
 async def get_collection(user_id: int):
     doc = await collection.find_one({"user_id": user_id}, {"collection": 1})
     return doc.get("collection", "dynamic") if doc else "dynamic"
+
+
+async def set_status(user_id: int, premium: bool = True, period = None):
+    if period:
+        end_date = datetime.now() + period
+    else:
+        end_date = None
+    await collection.update_one(
+        {"user_id": user_id},
+        {"$set": {"premium": premium, "end_date": end_date}},
+        upsert=True
+    )
+
+async def get_status(user_id: int):
+    doc = await collection.find_one({"user_id": user_id}, {"premium": 1, "end_date": 1})
+    end_date = doc.get("end_date", None)
+    if end_date and datetime.now() > end_date:
+        await set_status(user_id, False)
+        return False
+    return doc.get("premium", False) if doc else False

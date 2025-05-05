@@ -6,7 +6,10 @@ from aiogram.fsm.context import FSMContext
 import bot.keyboards as kb
 import bot.database as db
 from bot.config import ADMIN_ID
-from bot.fsm import SendingState
+from bot.fsm import SendingState, PremiumState
+
+from datetime import timedelta
+from ai.utils import read_session_data
 
 
 admin_router = Router(name='router')
@@ -25,6 +28,35 @@ async def sending(message: Message, state: FSMContext):
         return
     await state.set_state(SendingState.enter_content)
     await message.answer('Отправьте контент для рассылки:')
+
+
+@admin_router.message(lambda x: x.text == 'Выдать премиум')
+async def give_premium(message: Message, state: FSMContext):
+    await message.answer('Введите ID и период в днях через пробел')
+    await state.set_state(PremiumState.giving)
+
+
+@admin_router.message(lambda x: x.text == 'Доход')
+async def stats(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return
+    errors = read_session_data()['errors']
+    users = await db.get_all_users()
+    premium_counter = 0
+    async for i in users:
+        premium_counter += int(i.get('premium', False))
+    res = 299 * premium_counter
+    await message.answer(f'Всего получено: {res} Р\nС учетом ошибок: {res - errors * 5} Р\nС учетом сервера: {res - errors * 5 - 1000} Р')
+
+
+@admin_router.message(PremiumState.giving)
+async def give_premium2(message: Message, state: FSMContext):
+    uid, period = message.text.split()
+    period = timedelta(days=int(period))
+    await db.set_status(int(uid), True, period)
+    await message.bot.send_message(chat_id=uid, text=f'*🔓 Вы получили премиум на {period.days} дней!*', message_effect_id="5046509860389126442")
+    await message.answer('Успешно.')
+    await state.clear()
 
 
 @admin_router.message(SendingState.enter_content)

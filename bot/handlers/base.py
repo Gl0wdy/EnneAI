@@ -12,7 +12,9 @@ from ai.utils import parse_buttons
 
 import re
 from datetime import datetime
-import asyncio
+from io import BytesIO
+import fitz
+
 
 
 base_router = Router(name='main')
@@ -114,20 +116,34 @@ async def set_floodwait(message: Message):
             return
         await db.set_floodwait(message.chat.id, int(seconds))
         await message.reply(f'✅ Параметр успешно обновлён. Теперь ботом могут пользоваться раз в {seconds} секунд.')
-    
 
-@base_router.message(lambda x: bool(x.text) | bool(x.caption))
+
+@base_router.message(lambda x: bool(x.text) | bool(x.caption) | bool(x.document))
 async def message_handler(message: Message):
     text = message.caption if message.caption else message.text
     user_id = message.from_user.id
 
     if message.chat.type == 'private':
         is_busy = await db.get_busy_state(user_id)
+        is_premium = await db.get_status(user_id)
+        doc = message.document
+        if doc and not is_premium:
+            await message.answer('🔒 Чтение файлов доступно только с премиум подпиской.')
+            return
+        if doc:
+            file_id = message.document.file_id
+            file = await message.bot.download(file_id)
+            buffer = BytesIO(file.read())
+            with fitz.open(stream=buffer.read(), filetype="pdf") as doc:
+                text = message.caption + ':\n\n'
+                for page in doc:
+                    text += page.get_text()
+
         if is_busy:
             await message.answer('Дождитесь завершения предыдущего запроса.\nЗавис бот? Используй /cancel')
             return
         await db.set_busy_state(user_id, True)
-        await db.save_message(user_id, 'user', text)
+        await db.save_message(user_id, 'user', text, is_premium)
         chat_history = await db.get_history(user_id)
 
         selected_collection = await db.get_collection(user_id)
@@ -142,7 +158,8 @@ async def message_handler(message: Message):
         response = await chat.create(
             request=text,
             collections=collection,
-            chat_history=chat_history
+            chat_history=chat_history,
+            premium=is_premium
         )
         await status_msg.delete()
         await waiting_msg.delete()
@@ -156,7 +173,7 @@ async def message_handler(message: Message):
         else:
             await message.answer(cleared_text, parse_mode='Markdown', reply_markup=buttons)
 
-        await db.save_message(user_id, 'system', cleared_text)
+        await db.save_message(user_id, 'system', cleared_text, is_premium)
         await db.set_busy_state(user_id, False)
         
     elif message.chat.type == 'supergroup':

@@ -74,6 +74,18 @@ def get_classifier_data():
     return data
 
 
+def read_session_data():
+    with open('EnneAI/data/session.json', 'r', encoding='utf-8') as file:
+        return json.load(file)
+    
+
+def write_error():
+    data = read_session_data()
+    data['errors'] += 1
+    with open('EnneAI/data/session.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
+
+
 def parse_buttons(text: str):
     buttons = re.findall(r'<([^>]+)>', text)
     for i in buttons:

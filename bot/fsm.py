@@ -9,3 +9,6 @@ class ConfirmationState(StatesGroup):
 
 class ReviewState(StatesGroup):
     review = State()
+
+class PremiumState(StatesGroup):
+    giving = State()

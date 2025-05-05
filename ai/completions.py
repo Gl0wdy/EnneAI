@@ -3,7 +3,7 @@ from g4f import AsyncClient
 from g4f.providers.any_provider import PollinationsAI
 
 from ai.vector_db import VectorDb
-from ai.utils import get_enneadata, get_py_data, get_socio_data
+from ai.utils import get_enneadata, get_py_data, get_socio_data, write_error
 
 from utils.logger import logger
 from bot.config import API_KEY
@@ -258,9 +258,9 @@ GROUP_PROMT = '''\n
     Никогда НЕ добавляй фразу "сообщение от @username" в начале своих ответов.
     Нарушение этого правила приведет к отключению от сервера.
 '''
-enneadata = get_enneadata()
-pydata = get_py_data()
-sociodata = get_socio_data()
+enneadata = get_enneadata('EnneAI/data/files/ennea_short.json')
+pydata = get_py_data('EnneAI/data/files/psychosophy_short.json')
+sociodata = get_socio_data('EnneAI/data/files/socio_short.json')
 
 
 class Chat:
@@ -281,7 +281,8 @@ class Chat:
                      request: str,
                      collections: list | str,
                      chat_history: list = [],
-                     is_group: bool = False):
+                     is_group: bool = False,
+                     premium: bool = False):
         if isinstance(collections, str):
             data_chunks = await self.vector_db.search(request, collections) or []
         else:
@@ -311,13 +312,21 @@ class Chat:
         try:
             response = await self._free_client.chat.completions.create(
                 messages=messages,
-                model='gpt-4o',
-                provider=PollinationsAI
+                provider=PollinationsAI,
+                model='gpt-4o'
             )
         except Exception as err:
-            self._free_client = AsyncClient()   # Reloading client
-            logger.error('Error in ai/completions.py', exc_info=err)
-            return "Сервера OpenAI не отвечают. Попробуйте отправить запрос еще раз."
+            if premium:
+                response = await self._client.chat.completions.create(
+                    messages=messages,
+                    model='gpt-4o',
+                    max_tokens=4000
+                )
+                write_error()
+            else:
+                self._free_client = AsyncClient()   # Reloading client
+                logger.error('Error in ai/completions.py', exc_info=err)
+                return "Сервера OpenAI не отвечают. Попробуйте отправить запрос еще раз."
 
         response_content = response.choices[0].message.content
         if response_content == 'Request error occurred:':
