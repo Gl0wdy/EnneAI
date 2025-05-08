@@ -13,6 +13,13 @@ async def get_all_users():
     cursor = collection.find()
     return cursor
 
+
+async def get_user(user_id: int):
+    doc = await collection.find_one(
+        {'user_id': user_id}
+    )
+    return doc
+
 async def save_group_message(group_id: int, username: str, role: str, content: str):
     message = {"role": role, "content": f'сообщение от @{username}:\n{content}'}
     await group_collection.update_one(
@@ -97,7 +104,7 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
     )
     if doc and "history" in doc:
         chat_history_length = len(doc["history"])
-        limit = 150 if premium else 80
+        limit = 160 if premium else 80
         while chat_history_length > limit:
             await group_collection.update_one(
                 {"user_id": user_id},

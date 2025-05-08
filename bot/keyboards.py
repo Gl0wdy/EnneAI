@@ -1,4 +1,4 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 
@@ -17,8 +17,7 @@ def set_collection_buttons(user_id: int, selected: str):
 
 main_markup = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='Что такое эннеаграмма?'), KeyboardButton(text='Что ты умеешь?')],
-        [KeyboardButton(text='Типируй меня поэтапно')]
+        [KeyboardButton(text='👤 Профиль'), KeyboardButton(text='⚙️ Настройки')]
     ],
     resize_keyboard=True
 )
@@ -37,4 +36,10 @@ confirm_markup = ReplyKeyboardMarkup(
         [KeyboardButton(text='✅Да'), KeyboardButton(text='❌Нет')]
     ],
     resize_keyboard=True
+)
+
+premium_markup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text='👑 Премиум', url='https://t.me/m/KCKTEdqAM2Iy')]
+    ]
 )

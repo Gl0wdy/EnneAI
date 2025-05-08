@@ -45,7 +45,7 @@ async def stats(message: Message):
     premium_counter = 0
     async for i in users:
         premium_counter += int(i.get('premium', False))
-    res = 299 * premium_counter
+    res = 450 * premium_counter
     await message.answer(f'Всего получено: {res} Р\nС учетом ошибок: {res - errors * 5} Р\nС учетом сервера: {res - errors * 5 - 1000} Р')
 
 
@@ -87,5 +87,10 @@ async def sending(message: Message):
 @admin_router.message(lambda x: x.text == 'Юзеры')
 async def sending(message: Message):
     users_cursor = await db.get_all_users()
-    c = len([i async for i in users_cursor])
-    await message.answer(f'Количество живых юзеров: {c}')
+    premium = 0
+    default = 0
+    async for i in users_cursor:
+        if i.get('premium') == True:
+            premium += 1
+        default += 1
+    await message.answer(f'Количество живых юзеров: {default}\nКоличество премиум юзеров: {premium}')

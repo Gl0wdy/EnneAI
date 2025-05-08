@@ -3,10 +3,11 @@ from aiogram.filters import CommandStart, Command, ChatMemberUpdatedFilter, JOIN
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from aiogram.enums import ChatAction, ChatMemberStatus
 from aiogram.fsm.context import FSMContext
+from aiogram.utils import markdown as md
 
 import bot.database as db
 import bot.keyboards as kb
-from bot.fsm import ConfirmationState, ReviewState
+from bot.fsm import ConfirmationState
 from ai.completions import Chat
 from ai.utils import parse_buttons
 
@@ -14,9 +15,15 @@ import re
 from datetime import datetime
 from io import BytesIO
 import fitz
+import whisper
+from aiogram import Router
+from aiogram.types import Message
+from pydub import AudioSegment
+import asyncio
+import ffmpeg
+import numpy as np
 
-
-
+model = whisper.load_model("base")
 base_router = Router(name='main')
 chat = Chat()
 
@@ -47,22 +54,39 @@ async def clear_history(message: Message, state: FSMContext):
         
 
 @base_router.message(Command(commands='cancel'))
-async def cancel(message: Message):
+async def cancel(message: Message, state: FSMContext):
     if message.chat.type == 'private':
+        await state.clear()
         await db.set_busy_state(message.from_user.id, is_busy=False)
         await message.answer('✅ Ошибка исправлена, можете отправлять следующий запрос.')
 
 
-@base_router.message(Command(commands=['settings']))
+@base_router.message(lambda x: x.text in ('👤 Профиль', '/profile'))
+async def profile(message: Message):
+    user_id = message.from_user.id
+    user = await db.get_user(user_id)
+    history_length = len(user.get('history'))
+    is_premium = user.get('premium', False)
+    end_date = user.get('end_date')
+    days_left = (end_date - datetime.now()).days if is_premium else 0
+    
+    await message.reply(text=f'*👤 Это вы, @{message.from_user.username}:*\n'
+                        f'🆔: {md.code(user_id)}\n📋 Длина истории: {history_length}/{"160" if is_premium else "80"} сообщений\n'
+                        f'📂 Выбранная коллекция: {user.get('collection')}\n' +
+                        (f'👑 Премиум статус до {end_date.strftime('%d.%m.%Y')} ({days_left} д.)' if is_premium else ''),
+                        reply_markup=kb.premium_markup if not is_premium else None)
+
+
+@base_router.message(lambda x: x.text in ('⚙️ Настройки', '/settings'))
 async def settings(message: Message, state: FSMContext):
     user_id = message.from_user.id
     curr_database = await db.get_collection(user_id)
     markup = kb.set_collection_buttons(user_id, curr_database)
-    msg = await message.answer(f'📋 *Пожалуйста, выберите базу знаний:*\n'
-                         '- dynamic (BETA) - алгоритм сам решает, какую базу знаний стоит использовать. не всегда работает корректно.\n'
-                         '- ennea - база знаний эннеаграммы\n'
-                         '- socionics - база знаний соционики\n'
-                         '- psychosophy - база знаний психософии\n'
+    msg = await message.answer(f'📂 *Пожалуйста, выберите базу знаний:*\n'
+                         '1. dynamic (BETA) - алгоритм сам решает, какую базу знаний стоит использовать. не всегда работает корректно.\n'
+                         '2. ennea - база знаний эннеаграммы\n'
+                         '3. socionics - база знаний соционики\n'
+                         '4. psychosophy - база знаний психософии\n\n'
                          '_❗️ Наранхо работает однозначно, понятно и корректно только с типологией, соответствующей выбранной БЗ._',
                          reply_markup=markup)
     await state.set_data({'msg': msg})
@@ -79,8 +103,8 @@ async def set_database(callback: CallbackQuery, state: FSMContext):
                          '- dynamic (BETA) - алгоритм сам решает, какую базу знаний стоит использовать. не всегда работает корректно.\n'
                          '- ennea - база знаний эннеаграммы\n'
                          '- socionics - база знаний соционики\n'
-                         '- psychosophy - база знаний психософии\n'
-                         '❗️ Наранхо работает однозначно, понятно и корректно только с типологией, соответствующей выбранной БЗ.',
+                         '- psychosophy - база знаний психософии\n\n'
+                         '_❗️ Наранхо работает однозначно, понятно и корректно только с типологией, соответствующей выбранной БЗ._',
                          reply_markup=markup)
 
 
@@ -89,11 +113,10 @@ async def confirmation_process(message: Message, state: FSMContext):
     if message.text == '✅Да':
         await db.clear_history(message.from_user.id)
         await message.answer('🗑 История чата успешно удалена. Теперь Наранхо ничего не помнит.',
-                             reply_markup=ReplyKeyboardRemove())
+                             reply_markup=kb.main_markup)
         await state.clear()
     elif message.text == '❌Нет':
-        await message.answer('История чата не была очищена. Можете продолжать диалог.',
-                             reply_markup=ReplyKeyboardRemove())
+        await message.answer('История чата не была очищена. Можете продолжать диалог.')
         await state.clear()
     else:
         await message.answer('Пожалуйста, выберите действие.')
@@ -122,10 +145,11 @@ async def set_floodwait(message: Message):
 async def message_handler(message: Message):
     text = message.caption if message.caption else message.text
     user_id = message.from_user.id
+    user = await db.get_user(user_id)
 
     if message.chat.type == 'private':
-        is_busy = await db.get_busy_state(user_id)
-        is_premium = await db.get_status(user_id)
+        is_busy = user.get('busy')
+        is_premium = user.get('premium')
         doc = message.document
         if doc and not is_premium:
             await message.answer('🔒 Чтение файлов доступно только с премиум подпиской.')
@@ -146,7 +170,7 @@ async def message_handler(message: Message):
         await db.save_message(user_id, 'user', text, is_premium)
         chat_history = await db.get_history(user_id)
 
-        selected_collection = await db.get_collection(user_id)
+        selected_collection = user.get('collection')
         if selected_collection == 'dynamic':
             collection = await chat.vector_db.classify_search(text)
             status_msg = await message.answer(f'✅ *Запрос принят.* Запрос отнесён к базе знаний "{collection}"\n_Настроить используемую базу знаний - /settings_')
@@ -230,6 +254,69 @@ async def message_handler(message: Message):
             content=cleared_text
         )
         await message.reply(cleared_text, parse_mode='Markdown')
+
+
+@base_router.message(lambda x: x.voice)
+async def speesh_recognize(message: Message):
+    user_id = message.from_user.id
+    user = await db.get_user(user_id)
+    is_premium = user.get('premium')
+    if not is_premium:
+        await message.answer('🔒 Голосовые сообщения доступны только с премиум подпиской.')
+        return
+    await db.set_busy_state(user_id, True)
+
+    status = await message.answer('*🗣 Распознаю голос...*')
+    voice = message.voice
+    file = await message.bot.download(voice.file_id)
+    ogg_data = BytesIO(file.read())
+
+    def convert_and_transcribe(ogg_data: BytesIO) -> str:
+        ogg_data.seek(0)
+        audio = AudioSegment.from_file(ogg_data, format="ogg")
+        wav_io = BytesIO()
+        audio.export(wav_io, format="wav")
+        wav_io.seek(0)
+
+        out, _ = (
+            ffmpeg
+            .input('pipe:0')
+            .output('pipe:1', format='s16le', acodec='pcm_s16le', ac=1, ar='16000')
+            .run(input=wav_io.read(), capture_stdout=True, capture_stderr=True)
+        )
+        audio_data = np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
+
+        result = model.transcribe(audio_data, language="ru")
+        return result["text"]
+
+    result_text = await asyncio.to_thread(convert_and_transcribe, ogg_data)
+    sandglasses = await message.answer('⏳')
+    await db.save_message(user_id, 'user', result_text, is_premium)
+
+    collection = user.get('collection')
+    if collection == 'dynamic':
+        collection = await chat.vector_db.classify_search(message.text)
+        status = await status.edit_text(f'<b>✅ Запрос распознан как:</b>\n<blockquote>{result_text}</blockquote>\nЗапрос отнесён к базе знаний "{collection}"\n<i>Настроить используемую базу знаний - /settings</i>',
+                                      parse_mode='HTML')
+    else:
+        collection = collection
+        status = await status.edit_text(f'<b>✅ Запрос распознан как:</b>\n<blockquote>{result_text}</blockquote>\nИспользуемая база знаний - "{collection}"',
+                                      parse_mode='HTML')
+    chat_history = await db.get_history(user_id)
+
+    response = await chat.create(result_text, collection, chat_history, False, is_premium)
+    cleared_text, buttons = parse_buttons(response)
+    buttons = kb.create_buttons(buttons)
+
+    await sandglasses.delete()
+    await status.delete()
+    if len(cleared_text) >= 4096:
+        chunked = [cleared_text[:4090] + '...', '...' + cleared_text[4090:]]
+        first = await message.reply(chunked[0], parse_mode='Markdown')
+        await first.reply(chunked[1], parse_mode='Markdown', reply_markup=buttons)
+    else:
+        await message.answer(cleared_text, parse_mode='Markdown', reply_markup=buttons)
+    await db.set_busy_state(user_id, False)
 
 
 @base_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=JOIN_TRANSITION))
