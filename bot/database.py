@@ -112,8 +112,7 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
         },
         {
             '$set': {'collection': 'dynamic'}
-        },
-        upsert=True
+        }
     )
     await collection.update_one(
         {
@@ -122,8 +121,7 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
         },
         {
             '$set': {'premium': False}
-        },
-        upsert=True
+        }
     )
     doc = await group_collection.find_one(
         {"user_id": user_id},
@@ -280,3 +278,12 @@ async def inc_ref_count(user_id: int):
             {"$inc": {"ref_count": 1}},
             upsert=True
         )
+    
+
+async def pizda(user_id: int):
+    if user_id == 0:
+        return
+    collection.delete_many({
+        'user_id': user_id,
+        'history': {'$exists': False}
+    })
