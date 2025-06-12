@@ -12,3 +12,6 @@ class ReviewState(StatesGroup):
 
 class PremiumState(StatesGroup):
     giving = State()
+
+class LongMemState(StatesGroup):
+    enter = State()

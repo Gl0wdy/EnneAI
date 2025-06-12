@@ -9,11 +9,16 @@ def create_buttons(data: list):
     kb.adjust(2)
     return kb.as_markup(resize_keyboard=True)
 
-def set_collection_buttons(user_id: int, selected: str):
+def settings_buttons(user_id: int, selected: str, group: bool = False):
     kb = InlineKeyboardBuilder()
-    for i in ('dynamic', 'socionics', 'ennea', 'psychosophy'):
-        kb.button(text=f'✅ {i}' if i == selected else i, callback_data=f'set__{i}_{user_id}')
-    return kb.adjust(2).as_markup()
+    data = ['dynamic', 'ennea', 'socionics', 'psychosophy', 'jung']
+    index = data.index(selected)
+    left, right = data[(index - 1) % len(data)],  data[(index + 1) % len(data)]
+    kb.button(text='◀️', callback_data=f'collection__{left}_{user_id}')
+    kb.button(text='📂', callback_data=f'colinfo__{selected}')
+    kb.button(text='▶️', callback_data=f'collection__{right}_{user_id}')
+    kb.button(text='🧠 Долгая память', callback_data=f'long_memory')
+    return kb.adjust(3).as_markup()
 
 main_markup = ReplyKeyboardMarkup(
     keyboard=[
@@ -40,6 +45,7 @@ confirm_markup = ReplyKeyboardMarkup(
 
 premium_markup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='👑 Премиум', url='https://t.me/m/KCKTEdqAM2Iy')]
+        [InlineKeyboardButton(text='👑 Премиум', callback_data='watch__premium')],
+        [InlineKeyboardButton(text='👥 Реферальная программа', callback_data='watch__ref')]
     ]
 )

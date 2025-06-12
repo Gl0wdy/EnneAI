@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 
 import bot.keyboards as kb
 import bot.database as db
-from bot.config import ADMIN_ID
+from config import ADMIN_ID
 from bot.fsm import SendingState, PremiumState
 
 from datetime import timedelta

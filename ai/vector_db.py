@@ -39,7 +39,7 @@ class VectorDb:
             response = await self.client.query_points(
                 collection_name=collection_name,
                 query=self.model.encode(query).tolist(),
-                limit=12,
+                limit=6,
                 with_payload=True
             )
         except Exception as err:

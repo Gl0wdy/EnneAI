@@ -20,6 +20,12 @@ async def get_user(user_id: int):
     )
     return doc
 
+async def get_group(group_id: int):
+    doc = await group_collection.find_one(
+        {'group_id': group_id}
+    )
+    return doc
+
 async def save_group_message(group_id: int, username: str, role: str, content: str):
     message = {"role": role, "content": f'сообщение от @{username}:\n{content}'}
     await group_collection.update_one(
@@ -47,6 +53,15 @@ async def save_group_message(group_id: int, username: str, role: str, content: s
             "$set": {"last_request": None}
         }
     )
+    await group_collection.update_one(
+        {
+            "group_id": group_id,
+            "collection": {"$exists": False}
+        },
+        {
+            "$set": {"collection": "ennea"}
+        }
+    )
 
     doc = await group_collection.find_one(
         {"group_id": group_id},
@@ -69,6 +84,16 @@ async def get_group_history(group_id: int):
     return []
 
 
+async def clear_group_history(group_id: str):
+    await group_collection.update_one(
+        {"group_id": group_id},
+        {
+            "$set": {"history": [], "last_request": None}
+        },
+        upsert=True
+    )
+
+
 async def save_message(user_id: str, role: str, content: str, premium: bool = False):
     message = {"role": role, "content": content}
 
@@ -87,7 +112,8 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
         },
         {
             '$set': {'collection': 'dynamic'}
-        }
+        },
+        upsert=True
     )
     await collection.update_one(
         {
@@ -96,7 +122,8 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
         },
         {
             '$set': {'premium': False}
-        }
+        },
+        upsert=True
     )
     doc = await group_collection.find_one(
         {"user_id": user_id},
@@ -111,6 +138,7 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
                 {"$pop": {"history": -1}}
             )
             chat_history_length -= 1
+    return doc
 
 
 async def get_history(user_id: str) -> List[Dict[str, str]]:
@@ -124,7 +152,7 @@ async def clear_history(user_id: str):
     await collection.update_one(
         {"user_id": user_id},
         {
-            "$set": {"history": [], "busy": False}
+            "$set": {"history": [], "busy": False, "tags": ""}
         },
         upsert=True
     )
@@ -167,21 +195,34 @@ async def get_last_request(chat_id: int):
     return doc.get("last_request", False) if doc else False
 
 
-async def set_collection(user_id: int, new_collection: Literal['ennea', 'socionics', 'psychosophy']):
+async def set_collection(user_id: int, new_collection: Literal['ennea', 'socionics', 'psychosophy'], group: bool = False):
+    if group:
+        await group_collection.update_one(
+            {'group_id': user_id},
+            {'$set': {'collection': new_collection}}
+        )
     await collection.update_one(
         {"user_id": user_id},
         {"$set": {"collection": new_collection}},
         upsert=True
     )
 
-async def get_collection(user_id: int):
-    doc = await collection.find_one({"user_id": user_id}, {"collection": 1})
-    return doc.get("collection", "dynamic") if doc else "dynamic"
+async def get_collection(user_id: int, group: bool = False):
+    if group:
+        doc = await group_collection.find_one({'group_id': user_id}, {'collection': 1})
+        return doc.get("collection", "ennea") if doc else "ennea"
+    else:
+        doc = await collection.find_one({"user_id": user_id}, {"collection": 1})
+        return doc.get("collection", "dynamic") if doc else "dynamic"
 
 
 async def set_status(user_id: int, premium: bool = True, period = None):
     if period:
         end_date = datetime.now() + period
+        user = await get_user(user_id)
+        if (user_end_date := user.get('end_date')):
+            user_days_left = user_end_date - datetime.now()
+            end_date += user_days_left
     else:
         end_date = None
     await collection.update_one(
@@ -197,3 +238,45 @@ async def get_status(user_id: int):
         await set_status(user_id, False)
         return False
     return doc.get("premium", False) if doc else False
+
+
+async def set_tags(user_id: int, tags: str):
+    await collection.update_one(
+        {"user_id": user_id},
+        {"$set": {"tags": tags}},
+        upsert=True
+    )
+
+async def get_tags(user_id: int):
+    doc = await collection.find_one({"user_id": user_id}, {"tags": 1})
+    return doc.get("tags", '')
+
+
+async def set_long_memory(user_id: int, data: str, group: bool = False):
+    if group:
+        await group_collection.update_one(
+            {"group_id": user_id},
+            {"$set": {"long_memory": data}},
+            upsert=True
+        )
+    else:
+        await collection.update_one(
+            {"user_id": user_id},
+            {"$set": {"long_memory": data}},
+            upsert=True
+        )
+
+async def get_long_memory(user_id: int, group: bool = False):
+    if group:
+        doc = await group_collection.find_one({"group_id": user_id}, {"long_memory": 1})
+    else:
+        doc = await collection.find_one({"user_id": user_id}, {"long_memory": 1})
+    return doc.get("long_memory", '')
+
+
+async def inc_ref_count(user_id: int):
+    await collection.update_one(
+            {"user_id": user_id},
+            {"$inc": {"ref_count": 1}},
+            upsert=True
+        )
