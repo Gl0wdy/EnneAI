@@ -5,7 +5,7 @@ class Data:
     prompt = None
 
     def __init__(self, collection: str):
-        self.path = f'root/bots/EnneAI/data/{collection}/'
+        self.path = f'/bots/EnneAI/data/{collection}/'
         self.write('static')
         self.write('prompt.txt')
     
@@ -27,5 +27,5 @@ class Data:
                 total.append({'role': 'system', 'content': f'{f}:\n{text}'})
         setattr(self, field, total)
 
-with open('root/bots/EnneAI/data/group_prompt.txt', 'r', encoding='utf-8') as file:
+with open('/bots/EnneAI/data/group_prompt.txt', 'r', encoding='utf-8') as file:
     GROUP_PROMPT = [{'role': 'system', 'content': file.read()}]

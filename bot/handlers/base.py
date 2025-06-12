@@ -45,11 +45,10 @@ async def start_command(message: Message):
         await message.answer(
             text='*Я - Клаудио Наранхо, и я готов помочь тебе с типологиями.* '
                 'Я могу:\n1. Типировать что угодно (кроме персонажей, этим занимается [другой бот](https://t.me/fictionalAIbot)\n'
-                '2. Рассказать о соционике, эннеаграмме и психософии\n'
+                '2. Рассказать о соционике, эннеаграмме, психософии и классическом Юнге\n'
                 '3. Сравнить 2 и более типа между собой (как по функциям, так и в общем)\n'
                 '4. Помочь с изучением типологий\n'
-                '5. Провести вас на путь интеграции типа\n'
-                '6. [Работать в группах](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n'
+                '5. [Работать в группах](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n'
                 'Просто напиши мне вопрос или выбери один из предложенных!\n\n'
                 'P.S: Рекомендую прочитать [мануал](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26) по использованию бота, чтобы повысить качество ответов.',
             reply_markup=kb.main_markup
