@@ -364,6 +364,8 @@ async def message_handler(message: Message):
 
 @base_router.message(F.voice)
 async def speesh_recognize(message: Message):
+    if message.chat.type != 'private':
+        return
     user_id = message.from_user.id
     user = await db.get_user(user_id)
     is_premium = user.get('premium')
