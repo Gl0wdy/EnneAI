@@ -49,16 +49,6 @@ async def stats(message: Message):
     await message.answer(f'Всего получено: {res} Р\nС учетом ошибок: {res - errors * 5} Р\nС учетом сервера: {res - errors * 5 - 1000} Р')
 
 
-@admin_router.message(lambda x: x.text == 'Авария')
-async def stats(message: Message):
-    if message.from_user.id != ADMIN_ID:
-        return
-    users = await db.get_all_users()
-    async for i in users:
-        await db.pizda(i.get('user_id', 0))
-    await message.answer('удалено')
-
-
 @admin_router.message(PremiumState.giving)
 async def give_premium2(message: Message, state: FSMContext):
     uid, period = message.text.split()

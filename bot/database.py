@@ -280,10 +280,7 @@ async def inc_ref_count(user_id: int):
         )
     
 
-async def pizda(user_id: int):
+async def delete(user_id: int):
     if user_id == 0:
         return
-    collection.delete_many({
-        'user_id': user_id,
-        'history': {'$exists': False}
-    })
+    collection.delete_many({'user_id': user_id})

@@ -66,6 +66,14 @@ async def clear_history(message: Message, state: FSMContext):
         await message.reply('История чата очищена. Наранхо забыл всё об этой группе.')
 
 
+@base_router.message(Command(commands='delete'))
+async def delete_user(message: Message):
+    if message.chat.type != 'private':
+        return
+    await db.delete(message.from_user.id)
+    await message.answer('Ваша запись полностью удалена из БД.')
+
+
 @base_router.message(ConfirmationState.confirm)
 async def confirmation_process(message: Message, state: FSMContext):
     if message.text == '✅Да':
