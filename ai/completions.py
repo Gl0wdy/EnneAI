@@ -21,7 +21,7 @@ class Chat:
             api_key=API_KEY,
             base_url="https://api.aitunnel.ru/v1/"
         )
-        self._free_client = AsyncClient()
+        self._free_client = AsyncClient(provider=PollinationsAI, api_key='XEt4W6qwdhcVJO3j')
         self.vector_db = VectorDb()
 
     async def create(self,
