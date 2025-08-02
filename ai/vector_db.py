@@ -36,7 +36,7 @@ class VectorDb:
 
     async def search(self, query: str, collection_name: str = 'collection'):
         try:
-            response = await self.client.query_points(
+            hits = await self.client.query_points(
                 collection_name=collection_name,
                 query=self.model.encode(query).tolist(),
                 limit=6,
@@ -45,7 +45,7 @@ class VectorDb:
         except Exception as err:
             logger.error('Error in ai/vector_db.py', exc_info=err)
             return
-        return [hit.payload['text'] for hit in response.points]
+        return [hit.payload['text'] for hit in hits.points]
     
 
     async def classify_search(self, query: str, collection_name: str = 'texts'):
@@ -62,7 +62,6 @@ class VectorDb:
             label_scores[label] += score
         predicted_label = max(label_scores.items(), key=lambda x: x[1])[0]
         return predicted_label
-    
 
     async def insert_clasiffy_data(self, collection_name: str, data: list[tuple]):
         points = []
@@ -71,7 +70,6 @@ class VectorDb:
             points.append(PointStruct(id=idx, vector=vector, payload={"label": label, "text": text}))
 
         await self.client.upsert(collection_name=collection_name, points=points)
-
 
     async def get_collections(self):
         collections = await self.client.get_collections()
