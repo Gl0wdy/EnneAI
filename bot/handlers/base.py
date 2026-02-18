@@ -1,6 +1,6 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart, Command, ChatMemberUpdatedFilter, JOIN_TRANSITION, or_f
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, MessageEntity
 from aiogram.enums import ChatAction, ChatMemberStatus
 from aiogram.fsm.context import FSMContext
 from aiogram.utils import markdown as md
@@ -10,20 +10,17 @@ import bot.keyboards as kb
 from bot.fsm import ConfirmationState, LongMemState
 from ai.completions import Chat
 from ai.utils import parse_system_info
+from utils.file_reader import BufferTextReader
 
 import re
 from datetime import datetime, timedelta
-from io import BytesIO
-import fitz
-import whisper
-from pydub import AudioSegment
-import asyncio
-import ffmpeg
-import numpy as np
+import io
 
-model = whisper.load_model("base")
 base_router = Router(name='main')
 chat = Chat()
+
+reader = BufferTextReader()
+SUPPORTED_EXTENSIONS = {".txt", ".pdf", ".fb2", ".epub", ".docx"}
 
 
 @base_router.message(CommandStart())
@@ -49,12 +46,12 @@ async def start_command(message: Message):
                 '3. Сравнить 2 и более типа между собой (как по функциям, так и в общем)\n'
                 '4. Помочь с изучением типологий\n'
                 '5. [Работать в группах](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26)\n'
-                'Просто напиши мне вопрос или выбери один из предложенных!\n\n'
+                '6. Читать твои опросники и разбирать их: просто пришли мне файл в формате txt, pdf, fb2, epub или docx!, '
+                'Просто напиши мне вопрос или выбери один из предложенных.\n\n'
                 'P.S: Рекомендую прочитать [мануал](https://telegra.ph/Klaudio-Naranho--Vash-pomoshchnik-po-tipologiyam-04-26) по использованию бота, чтобы повысить качество ответов.',
             reply_markup=kb.main_markup
         )
     
-
 @base_router.message(Command(commands='clear'))
 async def clear_history(message: Message, state: FSMContext):
     if message.chat.type == 'private':
@@ -241,8 +238,80 @@ async def set_floodwait(message: Message):
         await db.set_floodwait(message.chat.id, int(seconds))
         await message.reply(f'✅ Параметр успешно обновлён. Теперь ботом могут пользоваться раз в {seconds} секунд.')
 
+@base_router.message(F.document)
+async def handle_document(message: Message, bot: Bot):
+    if message.chat.type != 'private':
+        return
+    caption = message.caption
+    doc = message.document
+    filename = doc.file_name or ""
+    ext = filename.rsplit(".", 1)[-1].lower()
 
-@base_router.message(F.text | F.caption | F.document)
+    if f".{ext}" not in SUPPORTED_EXTENSIONS:
+        await message.answer(f"Неподдерживаемый формат. Отправьте: {', '.join(SUPPORTED_EXTENSIONS)}")
+        return
+
+    msg = await message.answer("Читаю файл...")
+
+    buffer = io.BytesIO()
+    await bot.download(doc, destination=buffer)
+
+    try:
+        text = await reader.read(buffer, filename)
+    except Exception as e:
+        await message.answer(f"Ошибка при чтении файла: {e}")
+        return
+    finally:
+        await msg.delete()
+
+    if not text.strip():
+        await message.answer("Файл пустой или не удалось извлечь текст.")
+        return
+    
+    user_id = message.from_user.id
+    user = await db.get_user(user_id)
+    if not user:
+        user = await db.save_message(user_id, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся.')
+    is_busy = user.get('busy')
+
+    if is_busy:
+        await message.answer('Дождитесь завершения предыдущего запроса.\nЗавис бот? Используй /cancel')
+        return
+    await db.set_busy_state(user_id, True)
+    await db.save_message(user_id, 'user', text)
+    chat_history = await db.get_history(user_id)
+
+    selected_collection = user.get('collection')
+    collection = selected_collection
+    status_msg = await message.answer(f'*✅ Запрос принят.* Используемая база знаний - "{collection}"')
+    waiting_msg = await message.answer('⌛️')
+    await message.bot.send_chat_action(user_id, ChatAction.TYPING)
+    tags = user.get('tags', '')
+    long_memory = user.get('long_memory', '')
+    response = await chat.create(
+        request=f'{caption}: \n{text}',
+        collection=collection,
+        chat_history=[{'role': 'system',
+                        'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history,
+        tags=tags
+    )
+    await status_msg.delete()
+    await waiting_msg.delete()
+    cleared = parse_system_info(response)
+    buttons = kb.create_buttons(cleared['buttons'])
+    await db.set_tags(user_id, cleared['tags'])
+
+    if len(cleared['text']) >= 4096:
+        chunked = [cleared['text'][:4090] + '...', '...' + cleared['text'][4090:]]
+        first = await message.reply(chunked[0], parse_mode='Markdown')
+        await first.reply(chunked[1], parse_mode='Markdown', reply_markup=buttons)
+    else:
+        await message.answer(cleared['text'], parse_mode='Markdown', reply_markup=buttons)
+
+    await db.save_message(user_id, 'system', cleared['text'])
+    await db.set_busy_state(user_id, False)
+
+@base_router.message(F.text | F.caption)
 async def message_handler(message: Message):
     text = message.caption if message.caption else message.text
     if message.chat.type == 'private':
@@ -250,36 +319,18 @@ async def message_handler(message: Message):
         user = await db.get_user(user_id)
         if not user:
             user = await db.save_message(user_id, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся.')
-            print(user)
         is_busy = user.get('busy')
-        is_premium = await db.get_status(user_id)
-        doc = message.document
-        if doc and not is_premium:
-            await message.answer('🔒 Чтение файлов доступно только с премиум подпиской.')
-            return
-        if doc:
-            file_id = message.document.file_id
-            file = await message.bot.download(file_id)
-            buffer = BytesIO(file.read())
-            with fitz.open(stream=buffer.read(), filetype="pdf") as doc:
-                text = message.caption + ':\n\n'
-                for page in doc:
-                    text += page.get_text()
 
         if is_busy:
             await message.answer('Дождитесь завершения предыдущего запроса.\nЗавис бот? Используй /cancel')
             return
         await db.set_busy_state(user_id, True)
-        await db.save_message(user_id, 'user', text, is_premium)
+        await db.save_message(user_id, 'user', text)
         chat_history = await db.get_history(user_id)
 
         selected_collection = user.get('collection')
-        if selected_collection == 'dynamic':
-            collection = await chat.vector_db.classify_search(text)
-            status_msg = await message.answer(f'✅ *Запрос принят.* Запрос отнесён к базе знаний "{collection}"\n_Настроить используемую базу знаний - /settings_')
-        else:
-            collection = selected_collection
-            status_msg = await message.answer(f'*✅ Запрос принят.* Используемая база знаний - "{collection}"')
+        collection = selected_collection
+        status_msg = await message.answer(f'*✅ Запрос принят.* Используемая база знаний - "{collection}"')
         waiting_msg = await message.answer('⌛️')
         await message.bot.send_chat_action(user_id, ChatAction.TYPING)
         tags = user.get('tags', '')
@@ -289,7 +340,6 @@ async def message_handler(message: Message):
             collection=collection,
             chat_history=[{'role': 'system',
                            'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history,
-            premium=is_premium,
             tags=tags
         )
         await status_msg.delete()
@@ -305,7 +355,7 @@ async def message_handler(message: Message):
         else:
             await message.answer(cleared['text'], parse_mode='Markdown', reply_markup=buttons)
 
-        await db.save_message(user_id, 'system', cleared['text'], is_premium)
+        await db.save_message(user_id, 'system', cleared['text'])
         await db.set_busy_state(user_id, False)
         
     elif message.chat.type == 'supergroup':
@@ -368,72 +418,6 @@ async def message_handler(message: Message):
             content=cleared['text']
         )
         await message.reply(f'<blockquote expandable>{cleared['text']}</blockquote>', parse_mode='HTML')
-
-
-@base_router.message(F.voice)
-async def speesh_recognize(message: Message):
-    if message.chat.type != 'private':
-        return
-    user_id = message.from_user.id
-    user = await db.get_user(user_id)
-    is_premium = user.get('premium')
-    if not is_premium:
-        await message.answer('🔒 Голосовые сообщения доступны только с премиум подпиской.')
-        return
-    await db.set_busy_state(user_id, True)
-
-    status = await message.answer('*🗣 Распознаю голос...*')
-    voice = message.voice
-    file = await message.bot.download(voice.file_id)
-    ogg_data = BytesIO(file.read())
-
-    def convert_and_transcribe(ogg_data: BytesIO) -> str:
-        ogg_data.seek(0)
-        audio = AudioSegment.from_file(ogg_data, format="ogg")
-        wav_io = BytesIO()
-        audio.export(wav_io, format="wav")
-        wav_io.seek(0)
-
-        out, _ = (
-            ffmpeg
-            .input('pipe:0')
-            .output('pipe:1', format='s16le', acodec='pcm_s16le', ac=1, ar='16000')
-            .run(input=wav_io.read(), capture_stdout=True, capture_stderr=True)
-        )
-        audio_data = np.frombuffer(out, np.int16).flatten().astype(np.float32) / 32768.0
-
-        result = model.transcribe(audio_data, language="ru")
-        return result["text"]
-
-    result_text = await asyncio.to_thread(convert_and_transcribe, ogg_data)
-    sandglasses = await message.answer('⏳')
-    await db.save_message(user_id, 'user', result_text, is_premium)
-
-    collection = user.get('collection')
-    if collection == 'dynamic':
-        collection = await chat.vector_db.classify_search(message.text)
-        status = await status.edit_text(f'<b>✅ Запрос распознан как:</b>\n<blockquote>{result_text}</blockquote>\nЗапрос отнесён к базе знаний "{collection}"\n<i>Настроить используемую базу знаний - /settings</i>',
-                                      parse_mode='HTML')
-    else:
-        collection = collection
-        status = await status.edit_text(f'<b>✅ Запрос распознан как:</b>\n<blockquote>{result_text}</blockquote>\nИспользуемая база знаний - "{collection}"',
-                                      parse_mode='HTML')
-    chat_history = await db.get_history(user_id)
-
-    response = await chat.create(result_text, collection, chat_history, False, is_premium)
-    cleared = parse_system_info(response)
-    buttons = kb.create_buttons(buttons)
-
-    await sandglasses.delete()
-    await status.delete()
-    if len(cleared['text']) >= 4096:
-        chunked = [cleared['text'][:4090] + '...', '...' + cleared['text'][4090:]]
-        first = await message.reply(chunked[0], parse_mode='Markdown')
-        await first.reply(chunked[1], parse_mode='Markdown', reply_markup=buttons)
-    else:
-        await message.answer(cleared['text'], parse_mode='Markdown', reply_markup=buttons)
-    await db.set_busy_state(user_id, False)
-
 
 @base_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=JOIN_TRANSITION))
 async def on_group_adding(message: Message):

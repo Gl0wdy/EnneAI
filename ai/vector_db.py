@@ -9,7 +9,7 @@ from collections import defaultdict
 class VectorDb:
     def __init__(self):
         self.client = AsyncQdrantClient("http://localhost:6333")
-        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
         self.vector_dim = self.model.get_sentence_embedding_dimension()
     
     async def create_collection(self, name: str = 'collection', **kwargs):
@@ -39,7 +39,7 @@ class VectorDb:
             hits = await self.client.query_points(
                 collection_name=collection_name,
                 query=self.model.encode(query).tolist(),
-                limit=6,
+                limit=10,
                 with_payload=True
             )
         except Exception as err:

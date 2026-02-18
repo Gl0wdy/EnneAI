@@ -1,6 +1,8 @@
 from ai.extractor import Extractor
 from ai.vector_db import VectorDb
 from ai.utils import get_classifier_data
+from config import BASE_PATH
+
 import asyncio
 
 
@@ -9,7 +11,7 @@ async def main():
     db = VectorDb()
     
     for catalog in ('socionics', 'ennea', 'psychosophy', 'jung'):
-        chunks = ex.extract_from_folder(f'/root/bots/EnneAI/data/{catalog}/dynamic')
+        chunks = ex.extract_from_folder(BASE_PATH / f'data/{catalog}/dynamic')
         print('1. Chunks extracted')
 
         await db.client.delete_collection(catalog)

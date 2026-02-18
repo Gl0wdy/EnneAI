@@ -7,9 +7,9 @@ import bot.keyboards as kb
 import bot.database as db
 from config import ADMIN_ID
 from bot.fsm import SendingState, PremiumState
+from .base import chat
 
 from datetime import timedelta
-from ai.utils import read_session_data
 
 
 admin_router = Router(name='router')
@@ -21,6 +21,17 @@ async def admin_panel(message: Message):
         return
     await message.answer('Админ-панель открыта.', reply_markup=kb.admin_markup)
 
+@admin_router.message(lambda x: x.text == 'Баланс')
+async def check_balance(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return
+    text = ""
+    total = 0
+    for key, value in chat.key.status.items():
+        total += value
+        text += f'{key}: {value}\n'
+    text += f'\n\nTotal: {total}'
+    await message.answer(text, parse_mode='HTML')
 
 @admin_router.message(lambda x: x.text == 'Рассылка')
 async def sending(message: Message, state: FSMContext):
@@ -34,19 +45,6 @@ async def sending(message: Message, state: FSMContext):
 async def give_premium(message: Message, state: FSMContext):
     await message.answer('Введите ID и период в днях через пробел')
     await state.set_state(PremiumState.giving)
-
-
-@admin_router.message(lambda x: x.text == 'Доход')
-async def stats(message: Message):
-    if message.from_user.id != ADMIN_ID:
-        return
-    errors = read_session_data()['errors']
-    users = await db.get_all_users()
-    premium_counter = 0
-    async for i in users:
-        premium_counter += int(i.get('premium', False))
-    res = 450 * premium_counter
-    await message.answer(f'Всего получено: {res} Р\nС учетом ошибок: {res - errors * 5} Р\nС учетом сервера: {res - errors * 5 - 1000} Р')
 
 
 @admin_router.message(PremiumState.giving)
