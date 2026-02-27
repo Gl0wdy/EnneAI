@@ -28,10 +28,9 @@ sudo docker-compose up -d  # без sudo на Windows
 После установки всех зависимостей бот будет запущен с соответствующим уведомлением.
 
 ## Техническая информация
-
+Последнее обновление - 2.1 (01.03.2026)
  1. Язык разработки: Python 3.12
  2. Векторная база знаний: [Qdrant](https://github.com/qdrant/qdrant)
  3. База данных: MongoDB
  4. АПИ для ТГ АПИ: [aiogram](https://github.com/aiogram/aiogram)
  5. ИИ провайдер: [PollinationsAI](https://github.com/pollinations/pollinations)
-Последнее обновление - 2.1 (01.03.2026)
