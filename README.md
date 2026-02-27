@@ -9,7 +9,7 @@
 ## Установка
 1. Клонируем репозиторий в нужную папку
 ```bash
-git clone https://github.com/username/repo.git
+git clone https://github.com/Gl0wdy/EnneAI.git
 ```
 2. В папке проекта создаем .env и прописываем там это:
 ```
