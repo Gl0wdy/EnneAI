@@ -11,7 +11,7 @@ def create_buttons(data: list):
 
 def settings_buttons(user_id: int, selected: str, group: bool = False):
     kb = InlineKeyboardBuilder()
-    data = ['dynamic', 'ennea', 'socionics', 'psychosophy', 'jung']
+    data = ['ennea', 'socionics', 'psychosophy', 'jung', 'ichazo']
     index = data.index(selected)
     left, right = data[(index - 1) % len(data)],  data[(index + 1) % len(data)]
     kb.button(text='◀️', callback_data=f'collection__{left}_{user_id}')
@@ -43,9 +43,9 @@ confirm_markup = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-premium_markup = InlineKeyboardMarkup(
+rate_markup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='👑 Премиум', callback_data='watch__premium')],
-        [InlineKeyboardButton(text='👥 Реферальная программа', callback_data='watch__ref')]
+        [InlineKeyboardButton(text='1 ⭐️', callback_data='star_1'), InlineKeyboardButton(text='2 ⭐️', callback_data='star_2'), InlineKeyboardButton(text='3 ⭐️', callback_data='star_3')],
+        [InlineKeyboardButton(text='4 🌟', callback_data='star_4'), InlineKeyboardButton(text='1 🤩', callback_data='star_5')]
     ]
 )

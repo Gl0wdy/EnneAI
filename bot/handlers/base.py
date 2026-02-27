@@ -11,6 +11,7 @@ from bot.fsm import ConfirmationState, LongMemState
 from ai.completions import Chat
 from ai.utils import parse_system_info
 from utils.file_reader import BufferTextReader
+from config import ADMIN_ID
 
 import re
 from datetime import datetime, timedelta
@@ -27,6 +28,9 @@ SUPPORTED_EXTENSIONS = {".txt", ".pdf", ".fb2", ".epub", ".docx"}
 async def start_command(message: Message):
     start_args = message.text.split()
     uid = message.from_user.id
+    user = await db.get_user(uid)
+    if not user:
+        await db.save_message(uid, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся.')
     if len(start_args) == 2:
         ref_id = int(start_args[-1])
         ref_user = await db.get_user(ref_id)
@@ -99,16 +103,11 @@ async def profile(message: Message):
     user_id = message.from_user.id
     user = await db.get_user(user_id)
     history_length = len(user.get('history', []))
-    is_premium = await db.get_status(user_id)
     tags = ','.join(user.get('tags', "не распознаны").split(',')[:3]) + '...'
-    end_date = user.get('end_date')
-    days_left = (end_date - datetime.now()).days if is_premium else 0
     await message.reply(text=f'*🫵 Это вы, @{message.from_user.username}:*\n'
-                        f'│ 🆔: {md.code(user_id)}\n│ 📋 История: {history_length}/{"160" if is_premium else "80"} сообщений\n'
+                        f'│ 🆔: {md.code(user_id)}\n│ 📋 История: {history_length}/100 сообщений\n'
                         f'│ 📂 База знаний: {user.get('collection')}\n' + 
-                        f'│ 🏷️ Теги: _{tags}_\n' +
-                        (f'│ 👑 VIP до {end_date.strftime('%d.%m.%Y')} ({days_left + 1} д.)' if is_premium else ''),
-                        reply_markup=kb.premium_markup)
+                        f'│ 🏷️ Теги: _{tags}_\n')
 
 
 @base_router.message(or_f(Command(commands='settings'), F.text == '⚙️ Настройки'))
@@ -195,31 +194,6 @@ async def write_long_memory(message: Message, state: FSMContext):
     await state.set_data(**data)
 
 
-@base_router.callback_query(F.data.startswith('watch'))
-async def watch_menu(callback: CallbackQuery):
-    menu = callback.data.split('__')[-1]
-    user = await db.get_user(callback.from_user.id)
-    ref_count = user.get("ref_count", 5)
-    menus = {
-        'premium': '*👑 Премиум подписка открывает многие возможности:*\n' +
-                '1. Расширение лимитов - _лимит истории сообщений увеличен с 80 до 160_\n' +
-                '2. Чтение опросников - _позволяет отправлять pdf-файлы с опросниками без лимита на количество символов. ' +
-                'Сам опросник сохраняется в вашей истории, благодаря чему его можно обсудить еще глубже._\n' +
-                '3. Распознавание голосовых сообщений - _тут объяснять нечего..._\n' +
-                '4. Функция "вне очереди" - _позволяет "пройти" через очередь даже во время нагрузок на бота. Ответ бота гарантирован._\n' +
-                'Помимо всего прочего, новые функции будут доступны премиум юзерам _сразу_ после их выхода.\n' +
-                'Из интересного: в будущем для VIP-юзеров планируется добавить типирование по [семантике речи](https://vk.com/@e.vasilevs-shpargalka-po-semantike-rechi-dlya-opredeleniya-sociotipa)...\n\n' +
-                '*💸 Текущая цена на подписку: 250₽/месяц.* Купить можно через [бусти](https://boosty.to/enneai/donate) - [оформление через ЛС](https://t.me/m/KCKTEdqAM2Iy)',
-
-        'ref':  '*👥 Реферальная программа позволяет получить премиум на 1 день за каждого приглашенного пользователя.*\n' +
-                f'Ваша ссылка: `t.me/typologyAIbot?start={callback.from_user.id}` - отправьте её другу!\n' +
-                'Учтите, что премиум вы получите только за _новых пользователей_, никогда не пользовавшихся ботом.\n' +
-                (f'\n*Переходов осталось: {5 - ref_count}*') if ref_count else 'Вы исчерпали максимальное кол-во реферальных переходов.'
-    }
-
-    await callback.message.edit_text(menus[menu], reply_markup=kb.premium_markup)
-
-
 @base_router.message(Command('floodwait'))
 async def set_floodwait(message: Message):
     if message.chat.type == 'supergroup':
@@ -237,6 +211,7 @@ async def set_floodwait(message: Message):
             return
         await db.set_floodwait(message.chat.id, int(seconds))
         await message.reply(f'✅ Параметр успешно обновлён. Теперь ботом могут пользоваться раз в {seconds} секунд.')
+
 
 @base_router.message(F.document)
 async def handle_document(message: Message, bot: Bot):
@@ -311,6 +286,7 @@ async def handle_document(message: Message, bot: Bot):
     await db.save_message(user_id, 'system', cleared['text'])
     await db.set_busy_state(user_id, False)
 
+
 @base_router.message(F.text | F.caption)
 async def message_handler(message: Message):
     text = message.caption if message.caption else message.text
@@ -328,8 +304,7 @@ async def message_handler(message: Message):
         await db.save_message(user_id, 'user', text)
         chat_history = await db.get_history(user_id)
 
-        selected_collection = user.get('collection')
-        collection = selected_collection
+        collection = user.get('collection')
         status_msg = await message.answer(f'*✅ Запрос принят.* Используемая база знаний - "{collection}"')
         waiting_msg = await message.answer('⌛️')
         await message.bot.send_chat_action(user_id, ChatAction.TYPING)
@@ -355,8 +330,15 @@ async def message_handler(message: Message):
         else:
             await message.answer(cleared['text'], parse_mode='Markdown', reply_markup=buttons)
 
-        await db.save_message(user_id, 'system', cleared['text'])
+        await db.save_message(user_id, 'assistant', cleared['text'])
         await db.set_busy_state(user_id, False)
+
+        last_review = user.get('last_review')
+        if len(chat_history) + 1 == 20 and (not last_review or (datetime.now() - last_review) > timedelta(days=15)):
+            await message.answer('🌟 *Привет! Предлагаю тебе оценить работу бота.*', 
+                                 reply_markup=kb.rate_markup)
+            await db.set_last_review(user_id)
+
         
     elif message.chat.type == 'supergroup':
         group_id = message.chat.id
@@ -418,6 +400,17 @@ async def message_handler(message: Message):
             content=cleared['text']
         )
         await message.reply(f'<blockquote expandable>{cleared['text']}</blockquote>', parse_mode='HTML')
+
+@base_router.callback_query(F.data.startswith('star'))
+async def handle_rate(callback: CallbackQuery, bot: Bot):
+    stars = callback.data.split('_')[-1]
+    await bot.send_message(
+        chat_id=ADMIN_ID,
+        text=f'Бота оценили на {stars} звёзд.'
+    )
+    await callback.message.answer('🌟')
+    await callback.message.answer('Свои пожелания и предложения вы всегда можете высказать в нашем канале: @typologyAIchannel')
+    await callback.message.delete()
 
 @base_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=JOIN_TRANSITION))
 async def on_group_adding(message: Message):

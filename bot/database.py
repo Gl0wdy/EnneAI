@@ -111,7 +111,7 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
             'collection': {'$exists': False}
         },
         {
-            '$set': {'collection': 'dynamic'}
+            '$set': {'collection': 'ennea'}
         }
     )
     await collection.update_one(
@@ -123,6 +123,7 @@ async def save_message(user_id: str, role: str, content: str, premium: bool = Fa
             '$set': {'premium': False}
         }
     )
+
     doc = await group_collection.find_one(
         {"user_id": user_id},
         {"history": 1}
@@ -166,6 +167,16 @@ async def set_busy_state(user_id: str, is_busy: bool):
 async def get_busy_state(user_id: str) -> bool:
     doc = await collection.find_one({"user_id": user_id}, {"busy": 1})
     return doc.get("busy", False) if doc else False
+
+async def set_last_review(user_id: str):
+    await collection.update_one(
+        {'user_id': user_id},
+        {"$set": {'last_review': datetime.now()}}
+    )
+
+async def get_last_review(user_id: str) -> datetime:
+    doc = await collection.find_one({"user_id": user_id}, {"last_review": 1})
+    return doc.get("review", None)
 
 
 async def set_floodwait(chat_id: int, value: int):

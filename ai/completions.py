@@ -8,6 +8,8 @@ from utils.logger import logger
 from utils.key_rotation import ApiKey
 from config import API_KEYS
 
+from qdrant_client.http.exceptions import ResponseHandlingException
+
 
 class Chat:
     def __init__(self):
@@ -25,7 +27,7 @@ class Chat:
                      tags: str = ""):
         if self.key.main is None:
             await self.key.update_status()
-        print(self.key.main)
+        
         data_chunks = await self.vector_db.search(f"{tags}\n{request}", collection) or []
         data = Data(collection)
         messages = data.static + [
