@@ -16,6 +16,7 @@ from config import ADMIN_ID
 import re
 from datetime import datetime, timedelta
 import io
+import random
 
 base_router = Router(name='main')
 chat = Chat()
@@ -155,7 +156,8 @@ async def set_database(callback: CallbackQuery):
         'dynamic': 'dynamic - динамическая база знаний, которая подстраивается под текущий запрос. Может работать не очень корректно - для долгой беседы рекомендуется ставить конкретную БЗ.',
         'ennea': 'ennea - база знаний эннеаграммы. Основана на учениях Наранхо.',
         'socionics': 'socionics - база знаний соционики. Используется модель А. Информация взята с wikisocion.',
-        'psychosophy': 'psychosophy - база знаний психософии. Основана на трудах Афанасьева.'
+        'psychosophy': 'psychosophy - база знаний психософии. Основана на трудах Афанасьева.',
+        'ichazo': 'ichazo - база знаний поинтов Ичазо.'
     }
     await callback.answer(data[collection], show_alert=True)
 
@@ -176,12 +178,25 @@ async def show_used_chunks(callback: CallbackQuery):
     message_id = int(callback.data.split('_')[-1])
     chunks = await db.get_chunks(message_id)
     
-    text = 'Здесь находится информация, найденная ботом в векторной базе знаний (5 из 10 чанков):\n'
+    text = '📄 *Здесь вы можете увидеть куски информации, найденной ботом в векторной базе знаний.*\n[👉 Посмотреть всю базу знаний бота](https://github.com/Gl0wdy/EnneAI/tree/main/data)\n'
     for n, t in enumerate(chunks, 1):
-        print(len(t))
-        text += f'{n}. <blockquote expandable>{t[:400]}...</blockquote>\n\n'
+        t = t.replace('\n\n', '\n')
+        text += f'{n}. <blockquote expandable>{t[:300]}...</blockquote>\n'
     
     await callback.message.answer(text, parse_mode='HTML')
+    await callback.answer()
+
+
+@base_router.callback_query(F.data.startswith('star'))
+async def handle_rate(callback: CallbackQuery, bot: Bot):
+    stars = callback.data.split('_')[-1]
+    await bot.send_message(
+        chat_id=ADMIN_ID,
+        text=f'Бота оценили на {stars} звёзд.'
+    )
+    await callback.message.answer('🌟')
+    await callback.message.answer('Свои пожелания и предложения вы всегда можете высказать в нашем канале: @typologyAIchannel')
+    await callback.message.delete()
 
 
 @base_router.message(LongMemState.enter)
@@ -271,12 +286,12 @@ async def handle_document(message: Message, bot: Bot):
 
     selected_collection = user.get('collection')
     collection = selected_collection
-    status_msg = await message.answer(f'*✅ Запрос принят.* Используемая база знаний - "{collection}"')
+    status_msg = await message.answer(f'*📋 Опросник принят.* Используемая база знаний - "{collection}"')
     waiting_msg = await message.answer('⌛️')
     await message.bot.send_chat_action(user_id, ChatAction.TYPING)
     tags = user.get('tags', '')
     long_memory = user.get('long_memory', '')
-    response = await chat.create(
+    response, _ = await chat.create(
         request=f'{caption}: \n{text}',
         collection=collection,
         chat_history=[{'role': 'system',
@@ -318,13 +333,24 @@ async def message_handler(message: Message):
         chat_history = await db.get_history(user_id)
 
         collection = user.get('collection')
-        status_msg = await message.answer(f'*✅ Запрос принят.* Используемая база знаний - "{collection}"')
-        waiting_msg = await message.answer('⌛️')
+
+        hear_u = ['Запрос принят.', 'Услышал.', 'Интересно.', 'Хмм...']
+        status_msg = await message.answer(f'*{random.choice(hear_u)}*\nПишу запрос к базе знаний, чтобы найти _лучшие_ результаты... (1/2)')
         await message.bot.send_chat_action(user_id, ChatAction.TYPING)
+        waiting_msg = await message.answer('✍️')
+        rewritten_query = await chat.rewrite_query(text, chat_history)
+        if rewritten_query == 'None':
+            await status_msg.edit_text(f'*Готово.* Дополнительной информации не требуется. (2/2)')
+            await waiting_msg.edit_text('🤔')  
+        else:
+            await status_msg.edit_text(f'*Готово.*\nИщу информацию в базе знаний *{collection}* по запросу: _{rewritten_query}_... (2/2)') 
+            await waiting_msg.edit_text('🔍')  
+        await message.bot.send_chat_action(user_id, ChatAction.TYPING)
+        
         tags = user.get('tags', '')
         long_memory = user.get('long_memory', '')
         response, used_chunks = await chat.create(
-            request=text,
+            request=rewritten_query,
             collection=collection,
             chat_history=[{'role': 'system',
                            'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history,
@@ -343,7 +369,8 @@ async def message_handler(message: Message):
         else:
             sent = await message.answer(cleared['text'], parse_mode='Markdown')
 
-        await sent.edit_reply_markup(reply_markup=kb.ai_response_markup(sent.message_id))
+        if rewritten_query != 'None':
+            await sent.edit_reply_markup(reply_markup=kb.ai_response_markup(sent.message_id))
         await db.save_chunks(user_id, sent.message_id, used_chunks)
         await db.save_message(user_id, 'assistant', cleared['text'])
         await db.set_busy_state(user_id, False)
@@ -416,16 +443,6 @@ async def message_handler(message: Message):
         )
         await message.reply(f'<blockquote expandable>{cleared['text']}</blockquote>', parse_mode='HTML')
 
-@base_router.callback_query(F.data.startswith('star'))
-async def handle_rate(callback: CallbackQuery, bot: Bot):
-    stars = callback.data.split('_')[-1]
-    await bot.send_message(
-        chat_id=ADMIN_ID,
-        text=f'Бота оценили на {stars} звёзд.'
-    )
-    await callback.message.answer('🌟')
-    await callback.message.answer('Свои пожелания и предложения вы всегда можете высказать в нашем канале: @typologyAIchannel')
-    await callback.message.delete()
 
 @base_router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=JOIN_TRANSITION))
 async def on_group_adding(message: Message):
