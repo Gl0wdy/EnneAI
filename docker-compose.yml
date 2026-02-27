@@ -1,0 +1,33 @@
+services:
+  mongodb:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+
+  qdrant:
+    image: qdrant/qdrant
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  bot:
+    build: .
+    env_file: .env
+    depends_on:
+      - mongodb
+      - qdrant
+    restart: unless-stopped
+    command: sh -c "python setup.py && python main.py"
+
+volumes:
+  mongo_data:
+  qdrant_data:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16

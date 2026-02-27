@@ -8,8 +8,6 @@ from utils.logger import logger
 from utils.key_rotation import ApiKey
 from config import API_KEYS
 
-from qdrant_client.http.exceptions import ResponseHandlingException
-
 
 class Chat:
     def __init__(self):

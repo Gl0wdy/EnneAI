@@ -1,12 +1,13 @@
-FROM python:3.14.2-slim
+FROM python:3.12-slim
 
-WORKDIR /app             
+WORKDIR /app
 
-COPY requirements.txt .   
-RUN pip install -r requirements.txt  
+RUN pip install poetry
+RUN poetry config virtualenvs.create false
+
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --no-root
 
 COPY . .
 
-RUN python setup.py 
-
-CMD ["python", "main.py"]     
+CMD ["python", "main.py"]

@@ -1,4 +1,3 @@
-import json
 import re
 
 def parse_system_info(response: str):
