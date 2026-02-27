@@ -13,13 +13,13 @@ git clone https://github.com/Gl0wdy/EnneAI.git
 ```
 2. В папке проекта создаем .env и прописываем там это:
 ```
-API_KEYS=   # здесь список апи ключей от Pollinations через запятую
+API_KEYS="здесь список апи ключей от Pollinations через запятую"
 MONGO_URL=mongodb://admin:secret@mongodb:27017
 QDRANT_URL=http://qdrant:6333
 
-BOT_TOKEN= # Продакшн токен бота
-DEBUG_TOKEN=  # Дебаг токен бота (для тестов и прочего)
-ADMIN_ID=   # Ваш ТГ айди
+BOT_TOKEN="Продакшн токен бота"
+DEBUG_TOKEN="Дебаг токен бота (для тестов и прочего)"
+ADMIN_ID="Ваш ТГ айди"
 ```
 3. Запускаете контейнер (предварительно требуется установить Docker и перейти в склонированный репозиторий)
 ```bash
