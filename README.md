@@ -34,3 +34,4 @@ sudo docker-compose up -d  # без sudo на Windows
  3. База данных: MongoDB
  4. АПИ для ТГ АПИ: [aiogram](https://github.com/aiogram/aiogram)
  5. ИИ провайдер: [PollinationsAI](https://github.com/pollinations/pollinations)
+Последнее обновление - 2.1 (01.03.2026)
