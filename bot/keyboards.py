@@ -20,6 +20,11 @@ def settings_buttons(user_id: int, selected: str, group: bool = False):
     kb.button(text='🧠 Долгая память', callback_data=f'long_memory')
     return kb.adjust(3).as_markup()
 
+def ai_response_markup(message_id: int):
+    kb = InlineKeyboardBuilder()
+    kb.button(text='📚 Источники', callback_data=f'chunks_{message_id}')
+    return kb.as_markup()
+
 main_markup = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text='👤 Профиль'), KeyboardButton(text='⚙️ Настройки')]

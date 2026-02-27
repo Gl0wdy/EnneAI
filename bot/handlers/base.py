@@ -171,6 +171,19 @@ async def set_long_memory(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text('🧠 Введите новые данные в долгую память.\nДля отмены используйте точку.')
 
 
+@base_router.callback_query(F.data.startswith('chunks'))
+async def show_used_chunks(callback: CallbackQuery):
+    message_id = int(callback.data.split('_')[-1])
+    chunks = await db.get_chunks(message_id)
+    
+    text = 'Здесь находится информация, найденная ботом в векторной базе знаний (5 из 10 чанков):\n'
+    for n, t in enumerate(chunks, 1):
+        print(len(t))
+        text += f'{n}. <blockquote expandable>{t[:400]}...</blockquote>\n\n'
+    
+    await callback.message.answer(text, parse_mode='HTML')
+
+
 @base_router.message(LongMemState.enter)
 async def write_long_memory(message: Message, state: FSMContext):
     data = await state.get_data()
@@ -310,7 +323,7 @@ async def message_handler(message: Message):
         await message.bot.send_chat_action(user_id, ChatAction.TYPING)
         tags = user.get('tags', '')
         long_memory = user.get('long_memory', '')
-        response = await chat.create(
+        response, used_chunks = await chat.create(
             request=text,
             collection=collection,
             chat_history=[{'role': 'system',
@@ -326,10 +339,12 @@ async def message_handler(message: Message):
         if len(cleared['text']) >= 4096:
             chunked = [cleared['text'][:4090] + '...', '...' + cleared['text'][4090:]]
             first = await message.reply(chunked[0], parse_mode='Markdown')
-            await first.reply(chunked[1], parse_mode='Markdown', reply_markup=buttons)
+            sent = await first.reply(chunked[1], parse_mode='Markdown')
         else:
-            await message.answer(cleared['text'], parse_mode='Markdown', reply_markup=buttons)
+            sent = await message.answer(cleared['text'], parse_mode='Markdown')
 
+        await sent.edit_reply_markup(reply_markup=kb.ai_response_markup(sent.message_id))
+        await db.save_chunks(user_id, sent.message_id, used_chunks)
         await db.save_message(user_id, 'assistant', cleared['text'])
         await db.set_busy_state(user_id, False)
 
@@ -384,7 +399,7 @@ async def message_handler(message: Message):
                                            message_thread_id=message.message_thread_id)
         selected_collection = await db.get_collection(group_id, group=True)
         long_memory = group.get('long_memory', '')
-        response = await chat.create(
+        response, used_chunks = await chat.create(
             request=text.split(maxsplit=1)[-1],
             collection=selected_collection,
             chat_history=[{'role': 'system',

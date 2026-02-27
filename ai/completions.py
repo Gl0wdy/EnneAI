@@ -27,6 +27,7 @@ class Chat:
             await self.key.update_status()
         
         data_chunks = await self.vector_db.search(f"{tags}\n{request}", collection) or []
+        logger.info(f'Data chunks received: {len(data_chunks)}')
         data = Data(collection)
         messages = data.static + [
             {'role': 'system', 'content': f'БАЗА ЗНАНИЙ N.{n}:\n{chunk}'}
@@ -39,6 +40,7 @@ class Chat:
                 max_tokens=1000,
                 api_key=self.key.main
             )
+            logger.info(f'Response received.')
         except Exception as err:
             error_msg = str(err).lower()
         
@@ -50,4 +52,4 @@ class Chat:
                 return "Сервера Pollinations не отвечают. Попробуйте отправить запрос позже ещё раз."
 
         response_content = response.choices[0].message.content
-        return response_content
+        return response_content, data_chunks

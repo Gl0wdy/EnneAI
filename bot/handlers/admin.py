@@ -21,6 +21,7 @@ async def admin_panel(message: Message):
         return
     await message.answer('Админ-панель открыта.', reply_markup=kb.admin_markup)
 
+
 @admin_router.message(lambda x: x.text == 'Баланс')
 async def check_balance(message: Message):
     if message.from_user.id != ADMIN_ID:
