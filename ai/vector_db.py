@@ -4,11 +4,12 @@ from sentence_transformers import SentenceTransformer
 
 from utils.logger import logger
 from collections import defaultdict
+from config import QDRANT_URL
 
 
 class VectorDb:
     def __init__(self):
-        self.client = AsyncQdrantClient("http://localhost:6333")
+        self.client = AsyncQdrantClient(QDRANT_URL)
         self.model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
         self.vector_dim = self.model.get_sentence_embedding_dimension()
     

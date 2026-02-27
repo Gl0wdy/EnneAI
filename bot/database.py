@@ -1,9 +1,10 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List, Dict, Literal
 from datetime import datetime
+from config import MONGO_URL
 
 
-client = AsyncIOMotorClient("mongodb://localhost:27017")
+client = AsyncIOMotorClient(MONGO_URL)
 db = client.chat_db
 collection = db.chat_history
 group_collection = db.group_chat_history
