@@ -35,7 +35,7 @@ main_markup = ReplyKeyboardMarkup(
 admin_markup = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text='Рассылка'), KeyboardButton(text='Логи')],
-        [KeyboardButton(text='Юзеры'), KeyboardButton(text='Выдать премиум')],
+        [KeyboardButton(text='Юзеры'), KeyboardButton(text='Коллекции')],
         [KeyboardButton(text='Баланс')]
     ],
     resize_keyboard=True

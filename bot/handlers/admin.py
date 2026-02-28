@@ -42,10 +42,26 @@ async def sending(message: Message, state: FSMContext):
     await message.answer('Отправьте контент для рассылки:')
 
 
-@admin_router.message(lambda x: x.text == 'Выдать премиум')
-async def give_premium(message: Message, state: FSMContext):
-    await message.answer('Введите ID и период в днях через пробел')
-    await state.set_state(PremiumState.giving)
+@admin_router.message(lambda x: x.text == 'Коллекции')
+async def give_premium(message: Message):
+    collections_response = chat.vector_db.get_collections()
+    collections_list = collections_response.collections  # ← почти всегда так в qdrant-client
+
+    if not collections_list:
+        await message.answer("Коллекций пока нет.")
+        return
+
+    lines = []
+    for coll in collections_list:
+        name = coll.name
+        points = coll.points if hasattr(coll, 'points') else "?"
+        status = coll.status if hasattr(coll, 'status') else "?"
+        vec_size = coll.config.params.vectors.size if coll.config and coll.config.params and coll.config.params.vectors else "?"
+
+        lines.append(f"📁 {name}\n   • точек: {points:,}\n   • статус: {status}\n   • размер вектора: {vec_size}")
+
+    text = "Список коллекций:\n\n" + "\n\n".join(lines)
+    await message.answer(text)
 
 
 @admin_router.message(PremiumState.giving)
