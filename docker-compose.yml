@@ -19,7 +19,7 @@ services:
       - mongodb
       - qdrant
     restart: unless-stopped
-    command: sh -c "python setup.py && python main.py"
+    command: sh -c "python main.py"
 
 volumes:
   mongo_data:
