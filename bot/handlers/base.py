@@ -307,7 +307,7 @@ async def handle_document(message: Message, bot: Bot):
     if len(cleared['text']) >= 4096:
         chunked = [cleared['text'][:4090] + '...', '...' + cleared['text'][4090:]]
         first = await message.reply(chunked[0], parse_mode='Markdown')
-        await first.reply(chunked[1], parse_mode='Markdown', reply_markup=buttons)
+        await first.reply(chunked[1], parse_mode='Markdown')
     else:
         await message.answer(cleared['text'], parse_mode='Markdown', reply_markup=buttons)
 
