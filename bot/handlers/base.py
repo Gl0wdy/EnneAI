@@ -178,7 +178,7 @@ async def show_used_chunks(callback: CallbackQuery):
     message_id = int(callback.data.split('_')[-1])
     chunks = await db.get_chunks(message_id)
     
-    text = '📄 *Здесь вы можете увидеть куски информации, найденной ботом в векторной базе знаний.*\n[👉 Посмотреть всю базу знаний бота](https://github.com/Gl0wdy/EnneAI/tree/main/data)\n'
+    text = '📄 <b>Здесь вы можете увидеть куски информации, найденной ботом в векторной базе знаний.</b>\n<a href="https://github.com/Gl0wdy/EnneAI/tree/main/data">👉 Посмотреть всю базу знаний бота</a>\n'
     for n, t in enumerate(chunks, 1):
         t = t.replace('\n\n', '\n')
         text += f'{n}. <blockquote expandable>{t[:300]}...</blockquote>\n'
