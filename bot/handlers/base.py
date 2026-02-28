@@ -254,18 +254,18 @@ async def handle_document(message: Message, bot: Bot):
         await message.answer(f"Неподдерживаемый формат. Отправьте: {', '.join(SUPPORTED_EXTENSIONS)}")
         return
 
-    msg = await message.answer("Читаю файл...")
+    status_msg = await message.answer("*Читаю файл...*\n(1/3)")
+    waiting_msg = await message.answer('📁')
 
     buffer = io.BytesIO()
     await bot.download(doc, destination=buffer)
 
     try:
         text = await reader.read(buffer, filename)
+        text = f'{caption}:\n {text}'
     except Exception as e:
         await message.answer(f"Ошибка при чтении файла: {e}")
         return
-    finally:
-        await msg.delete()
 
     if not text.strip():
         await message.answer("Файл пустой или не удалось извлечь текст.")
@@ -281,7 +281,7 @@ async def handle_document(message: Message, bot: Bot):
         await message.answer('Дождитесь завершения предыдущего запроса.\nЗавис бот? Используй /cancel')
         return
     await db.set_busy_state(user_id, True)
-    await db.save_message(user_id, 'user', f'{caption}: \n{text}')
+    await db.save_message(user_id, 'user', text)
     chat_history = await db.get_history(user_id)
 
     selected_collection = user.get('collection')
@@ -291,13 +291,19 @@ async def handle_document(message: Message, bot: Bot):
             await message.answer('Бу. Доступ к ичазо пока закрыт. Скоро этот режим будет доработан, о чем вы будете оповещены в канале: @typologyAIchannel')
             return
     
-    status_msg = await message.answer(f'*📋 Опросник принят.* Используемая база знаний - "{collection}"')
-    waiting_msg = await message.answer('⌛️')
+    await status_msg.edit_text(f'*📋 Опросник принят.*\nПишу запрос к базе знаний... (2/3)')
+    await waiting_msg.edit_text('✍️')
+
+    rewritten_query = await chat.rewrite_query(text, chat_history)
+
+    await status_msg.edit_text('*Готово*.\nУже анализирую ваш файл! (3/3)')
+    await waiting_msg.edit_text('🔍')
+
     await message.bot.send_chat_action(user_id, ChatAction.TYPING)
     tags = user.get('tags', '')
     long_memory = user.get('long_memory', '')
     response, _ = await chat.create(
-        request=f'{caption}: \n{text}',
+        request=rewritten_query,
         collection=collection,
         chat_history=[{'role': 'system',
                         'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history,
@@ -306,7 +312,6 @@ async def handle_document(message: Message, bot: Bot):
     await status_msg.delete()
     await waiting_msg.delete()
     cleared = parse_system_info(response)
-    buttons = kb.create_buttons(cleared['buttons'])
     await db.set_tags(user_id, cleared['tags'])
 
     if len(cleared['text']) >= 4096:
