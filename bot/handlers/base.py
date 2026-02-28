@@ -302,7 +302,7 @@ async def handle_document(message: Message, bot: Bot):
     await message.bot.send_chat_action(user_id, ChatAction.TYPING)
     tags = user.get('tags', '')
     long_memory = user.get('long_memory', '')
-    response, _ = await chat.create(
+    response, used_chunks = await chat.create(
         request=rewritten_query,
         collection=collection,
         chat_history=[{'role': 'system',
@@ -317,10 +317,12 @@ async def handle_document(message: Message, bot: Bot):
     if len(cleared['text']) >= 4096:
         chunked = [cleared['text'][:4090] + '...', '...' + cleared['text'][4090:]]
         first = await message.reply(chunked[0], parse_mode='Markdown')
-        await first.reply(chunked[1], parse_mode='Markdown')
+        sent = await first.reply(chunked[1], parse_mode='Markdown')
     else:
-        await message.answer(cleared['text'], parse_mode='Markdown')
+        sent = await message.answer(cleared['text'], parse_mode='Markdown')
 
+    await db.save_chunks(user_id, sent.message_id, used_chunks)
+    await sent.edit_reply_markup(reply_markup=kb.ai_response_markup(sent.message_id))
     await db.save_message(user_id, 'system', cleared['text'])
     await db.set_busy_state(user_id, False)
 
