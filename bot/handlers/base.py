@@ -286,6 +286,11 @@ async def handle_document(message: Message, bot: Bot):
 
     selected_collection = user.get('collection')
     collection = selected_collection
+
+    if collection == 'ichazo':
+            await message.answer('Бу. Доступ к ичазо пока закрыт. Скоро этот режим будет доработан, о чем вы будете оповещены в канале: @typologyAIchannel')
+            return
+    
     status_msg = await message.answer(f'*📋 Опросник принят.* Используемая база знаний - "{collection}"')
     waiting_msg = await message.answer('⌛️')
     await message.bot.send_chat_action(user_id, ChatAction.TYPING)
@@ -333,6 +338,9 @@ async def message_handler(message: Message):
         chat_history = await db.get_history(user_id)
 
         collection = user.get('collection')
+        if collection == 'ichazo':
+            await message.answer('Бу. Доступ к ичазо пока закрыт. Скоро этот режим будет доработан, о чем вы будете оповещены в канале: @typologyAIchannel')
+            return
 
         hear_u = ['Запрос принят.', 'Услышал.', 'Интересно.', 'Хмм...']
         status_msg = await message.answer(f'*{random.choice(hear_u)}*\nПишу запрос к базе знаний, чтобы найти _лучшие_ результаты... (1/2)')
