@@ -291,12 +291,12 @@ async def handle_document(message: Message, bot: Bot):
             await message.answer('Бу. Доступ к ичазо пока закрыт. Скоро этот режим будет доработан, о чем вы будете оповещены в канале: @typologyAIchannel')
             return
     
-    await status_msg.edit_text(f'*📋 Опросник принят.*\nПишу запрос к базе знаний... (2/3)')
+    await status_msg.edit_text(f'*Опросник принят.*\nПишу запрос к базе знаний... (2/3)')
     await waiting_msg.edit_text('✍️')
 
     rewritten_query = await chat.rewrite_query(text, chat_history)
 
-    await status_msg.edit_text('*Готово*.\nУже анализирую ваш файл! (3/3)')
+    await status_msg.edit_text(f'*Готово*.\nИщу информацию в базе знаний по запросу: _{rewritten_query}_ (3/3)')
     await waiting_msg.edit_text('🔍')
 
     await message.bot.send_chat_action(user_id, ChatAction.TYPING)
