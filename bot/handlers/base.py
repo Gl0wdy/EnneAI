@@ -281,7 +281,7 @@ async def handle_document(message: Message, bot: Bot):
         await message.answer('Дождитесь завершения предыдущего запроса.\nЗавис бот? Используй /cancel')
         return
     await db.set_busy_state(user_id, True)
-    await db.save_message(user_id, 'user', text)
+    await db.save_message(user_id, 'user', f'{caption}: \n{text}')
     chat_history = await db.get_history(user_id)
 
     selected_collection = user.get('collection')
