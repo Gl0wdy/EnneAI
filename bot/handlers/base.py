@@ -294,7 +294,7 @@ async def handle_document(message: Message, bot: Bot):
     await status_msg.edit_text(f'*Опросник принят.*\nПишу запрос к базе знаний... (2/3)')
     await waiting_msg.edit_text('✍️')
 
-    rewritten_query = await chat.rewrite_query(text, chat_history)
+    rewritten_query = await chat.rewrite_query(text, chat_history, collection)
 
     await status_msg.edit_text(f'*Готово*.\nИщу информацию в базе знаний по запросу: _{rewritten_query}_ (3/3)')
     await waiting_msg.edit_text('🔍')
@@ -353,7 +353,7 @@ async def message_handler(message: Message):
         status_msg = await message.answer(f'*{random.choice(hear_u)}*\nПишу запрос к базе знаний, чтобы найти _лучшие_ результаты... (1/2)')
         await message.bot.send_chat_action(user_id, ChatAction.TYPING)
         waiting_msg = await message.answer('✍️')
-        rewritten_query = await chat.rewrite_query(text, chat_history)
+        rewritten_query = await chat.rewrite_query(text, chat_history, collection)
         if rewritten_query == 'None':
             await status_msg.edit_text(f'*Готово.* Дополнительной информации не требуется. (2/2)')
             await waiting_msg.edit_text('🤔')  

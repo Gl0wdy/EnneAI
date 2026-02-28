@@ -48,6 +48,7 @@ REWRITE_PROMPT = f"""Перефразируй запрос пользовате�
 В ПСИХОСОФИИ: ПЕРЕВОДИ СОКРАЩЕНИЯ (1Ф И Т.Д.) В ПОЛНЫЕ (ПЕРВАЯ ФИЗИКА И Т.Д.).
 В ЮНГЕ: ПЕРЕВОДИ СОКРАЩЕНИЯ (ИТ И Т.Д.) В ПОЛНЫЕ (ИНТРОВЕРТНОЕ МЫШЛЕНИЕ И Т.Д.).
 НЕ СМЕШИВАЙ ТИПОЛОГИИ! ЕСЛИ РЕЧЬ ИДЕТ ОБ ЭННЕАГРАММЕ, ТЫ ПИШЕШЬ ТОЛЬКО ПРО ЭННЕАГРАММУ. ЕСЛИ ПРО СОЦИОНИКУ, ТО ТОЛЬКО О СОЦИОНИКЕ И ТАК ДАЛЕЕ!!
+ТЕКУЩАЯ ТИПОЛОГИЯ - [collection]
 """
 
 class Chat:
@@ -56,14 +57,14 @@ class Chat:
         self.key = ApiKey(API_KEYS)
         self.vector_db = VectorDb()
 
-    async def rewrite_query(self, request: str, chat_history: list) -> str:
+    async def rewrite_query(self, request: str, chat_history: list, collection: str) -> str:
         try:
             response = await self._client.chat.completions.create(
                 model='openai',
                 max_tokens=200,
                 api_key=self.key.main,
                 messages=[
-                    {"role": "system", "content": REWRITE_PROMPT},
+                    {"role": "system", "content": REWRITE_PROMPT.replace('[collection]', collection)},
                     *chat_history[-4:],
                     {"role": "user", "content": request}
                 ]
