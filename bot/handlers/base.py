@@ -314,7 +314,7 @@ async def handle_document(message: Message, bot: Bot):
         first = await message.reply(chunked[0], parse_mode='Markdown')
         await first.reply(chunked[1], parse_mode='Markdown')
     else:
-        await message.answer(cleared['text'], parse_mode='Markdown', reply_markup=buttons)
+        await message.answer(cleared['text'], parse_mode='Markdown')
 
     await db.save_message(user_id, 'system', cleared['text'])
     await db.set_busy_state(user_id, False)
