@@ -11,6 +11,7 @@ from bot.fsm import ConfirmationState, LongMemState
 from ai.completions import Chat
 from ai.utils import parse_system_info
 from utils.file_reader import BufferTextReader
+from utils.adverts import show_advert
 from config import ADMIN_ID
 
 import re
@@ -395,6 +396,8 @@ async def message_handler(message: Message):
             await message.answer('🌟 *Привет! Предлагаю тебе оценить работу бота.*', 
                                  reply_markup=kb.rate_markup)
             await db.set_last_review(user_id)
+
+        await show_advert(user_id)
 
         
     elif message.chat.type == 'supergroup':
