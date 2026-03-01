@@ -51,6 +51,6 @@ confirm_markup = ReplyKeyboardMarkup(
 rate_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text='1 ⭐️', callback_data='star_1'), InlineKeyboardButton(text='2 ⭐️', callback_data='star_2'), InlineKeyboardButton(text='3 ⭐️', callback_data='star_3')],
-        [InlineKeyboardButton(text='4 🌟', callback_data='star_4'), InlineKeyboardButton(text='1 🤩', callback_data='star_5')]
+        [InlineKeyboardButton(text='4 🌟', callback_data='star_4'), InlineKeyboardButton(text='5 🤩', callback_data='star_5')]
     ]
 )
