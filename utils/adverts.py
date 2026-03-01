@@ -1,12 +1,7 @@
-import logging
 import aiohttp
+from .logger import logger
+
 from config import ADV_TOKEN
-
-# Call this method wherever you want to show an ad,
-# for example your bot just made its job and
-# it's a great time to show an ad to a user
-
-log = logging.getLogger('adverts')
 
 async def show_advert(user_id: int):
 
@@ -23,4 +18,4 @@ async def show_advert(user_id: int):
 
             if not response.ok:
 
-                log.error('Gramads: %s' % str(await response.json()))
+                logger.error('Gramads: %s' % str(await response.json()))
