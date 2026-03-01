@@ -397,8 +397,6 @@ async def message_handler(message: Message):
                                  reply_markup=kb.rate_markup)
             await db.set_last_review(user_id)
 
-        await show_advert(user_id)
-
         
     elif message.chat.type == 'supergroup':
         group_id = message.chat.id
