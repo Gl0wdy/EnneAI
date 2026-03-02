@@ -20,6 +20,7 @@ dp = Dispatcher()
 
 @dp.startup()
 async def startup():
+    await bot.delete_webhook(drop_pending_updates=True)
     await bot.send_message(ADMIN_ID, '✅ Бот запущен')
 
 @dp.shutdown()
