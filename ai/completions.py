@@ -74,7 +74,7 @@ class Chat:
     async def rewrite_query(self, request: str, chat_history: list, collection: str) -> str:
         try:
             response = await self._client.chat.completions.create(
-                model='openai-fast',
+                model='openai',
                 max_tokens=200,
                 api_key=self.key.main,
                 messages=[
