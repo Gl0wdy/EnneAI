@@ -84,7 +84,8 @@ class Chat:
                 ]
             )
             return response.choices[0].message.content
-        except Exception:
+        except Exception as err:
+            logger.error(f'Smth went wrong while rewriting the "{collection} query"', exc_info=err)
             return request
 
     async def create(self,

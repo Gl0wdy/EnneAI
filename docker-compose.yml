@@ -26,7 +26,7 @@ services:
     env_file: .env
     depends_on:
       - mongodb
-      - qdrantв
+      - qdrant
     restart: "no"
     command: sh -c "python setup.py"
     profiles:
