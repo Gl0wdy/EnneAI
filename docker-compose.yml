@@ -21,6 +21,17 @@ services:
     restart: unless-stopped
     command: sh -c "python main.py"
 
+  setup:
+    build: .
+    env_file: .env
+    depends_on:
+      - mongodb
+      - qdrantв
+    restart: "no"
+    command: sh -c "python setup.py"
+    profiles:
+      - setup
+
 volumes:
   mongo_data:
   qdrant_data:
