@@ -287,10 +287,6 @@ async def handle_document(message: Message, bot: Bot):
 
     selected_collection = user.get('collection')
     collection = selected_collection
-
-    if collection == 'ichazo':
-            await message.answer('Бу. Доступ к ичазо пока закрыт. Скоро этот режим будет доработан, о чем вы будете оповещены в канале: @typologyAIchannel')
-            return
     
     await status_msg.edit_text(f'*Опросник принят.*\nПишу запрос к базе знаний... (2/3)')
     await waiting_msg.edit_text('✍️')
@@ -344,11 +340,7 @@ async def message_handler(message: Message):
         await db.set_busy_state(user_id, True)
         await db.save_message(user_id, 'user', text)
         chat_history = await db.get_history(user_id)
-
         collection = user.get('collection')
-        if collection == 'ichazo':
-            await message.answer('Бу. Доступ к ичазо пока закрыт. Скоро этот режим будет доработан, о чем вы будете оповещены в канале: @typologyAIchannel')
-            return
 
         hear_u = ['Запрос принят.', 'Услышал.', 'Интересно.', 'Хмм...']
         status_msg = await message.answer(f'*{random.choice(hear_u)}*\nПишу запрос к базе знаний, чтобы найти _лучшие_ результаты... (1/2)')
