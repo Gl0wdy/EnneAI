@@ -16,7 +16,7 @@ class ApiKey:
                  }
             ) as response:
                 json = await response.json()
-                self.status[api_key] = float(json['balance'])
+                self.status[api_key] = float(json.get('balance', 0))
             
     async def update_status(self):
         tasks = (
