@@ -115,9 +115,18 @@ class Chat:
             case 'jung':
                 data = jung
         
-        messages = data.prompt + (GROUP_PROMPT if is_group else []) 
-        + [{'role': 'system', 'content': f'БАЗА ЗНАНИЙ N.{n}:\n{chunk}'} for n, chunk in enumerate(data_chunks, 1)] 
-        + (data.static if request != 'None' else [])  + chat_history
+        kb_messages = [
+            {'role': 'system', 'content': f'БАЗА ЗНАНИЙ N.{n}:\n{chunk}'}
+            for n, chunk in enumerate(data_chunks, 1)
+        ]
+
+        messages = (
+            data.prompt
+            + (GROUP_PROMPT if is_group else [])
+            + kb_messages
+            + (data.static if request != 'None' else [])
+            + chat_history
+        )
 
         try:
             response = await self._client.chat.completions.create(
