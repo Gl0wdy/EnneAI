@@ -31,17 +31,11 @@ async def start_command(message: Message):
     uid = message.from_user.id
     user = await db.get_user(uid)
     if not user:
-        await db.save_message(uid, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся.')
+        await db.save_message(uid, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся и расскажи, что ты умеешь.')
     if len(start_args) == 2:
-        ref_id = int(start_args[-1])
-        ref_user = await db.get_user(ref_id)
-        user = await db.get_user(uid)
-        if user is None and ref_user.get('ref_count', 0) < 6:
-            await db.save_message(uid, 'system', 'это первое сообщение пользователя, поздоровайся и объясни свое предназначение!')
-            await message.bot.send_message(ref_id, '*🥳 По вашей реферальной ссылке перешли!*\nВы получаете премиум на 1 день.',
-                                           message_effect_id="5046509860389126442")
-            await db.set_status(ref_id, premium=True, period=timedelta(days=1))
-            await db.inc_ref_count(ref_id)
+        key = start_args[-1]
+        await message.answer('*Вы успешно зарегистрировали свой ключ!*\nТеперь приступаем к работе: задавай боту любой вопрос по выбранной типологии.', message_effect_id='5104841245755180586')
+        print(key)
 
     if message.chat.type == 'private':
         await message.answer(
@@ -294,19 +288,16 @@ async def handle_document(message: Message, bot: Bot):
     await waiting_msg.edit_text('🔍')
 
     await message.bot.send_chat_action(user_id, ChatAction.TYPING)
-    tags = user.get('tags', '')
     long_memory = user.get('long_memory', '')
     response, used_chunks = await chat.create(
         request=rewritten_query,
         collection=collection,
         chat_history=[{'role': 'system',
-                        'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history,
-        tags=tags
+                        'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history
     )
     await status_msg.delete()
     await waiting_msg.delete()
     cleared = parse_system_info(response)
-    await db.set_tags(user_id, cleared['tags'])
 
     if len(cleared['text']) >= 4096:
         chunked = [cleared['text'][:4090] + '...', '...' + cleared['text'][4090:]]
@@ -352,20 +343,17 @@ async def message_handler(message: Message):
             await waiting_msg.edit_text('🔍')  
         await message.bot.send_chat_action(user_id, ChatAction.TYPING)
         
-        tags = user.get('tags', '')
         long_memory = user.get('long_memory', '')
         response, used_chunks = await chat.create(
             request=rewritten_query,
             collection=collection,
             chat_history=[{'role': 'system',
-                           'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history,
-            tags=tags
+                           'content': f'ПОСТОЯННОЕ ХРАНИЛИЩЕ. ЗДЕСЬ ПОСТОЯННАЯ ИНФОРМАЦИЯ, ЗАПИСАННАЯ САМИМ ПОЛЬЗОВАТЕЛЕМ: {long_memory}'}] + chat_history
         )
         await status_msg.delete()
         await waiting_msg.delete()
         cleared = parse_system_info(response)
         buttons = kb.create_buttons(cleared['buttons'])
-        await db.set_tags(user_id, cleared['tags'])
 
         if len(cleared['text']) >= 4096:
             chunked = [cleared['text'][:4090] + '...', '...' + cleared['text'][4090:]]

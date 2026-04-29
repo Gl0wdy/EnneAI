@@ -92,13 +92,12 @@ class Chat:
                      request: str,
                      collection: str,
                      chat_history: list = [],
-                     is_group: bool = False,
-                     tags: str = ""):
+                     is_group: bool = False):
         if self.key.main is None:
             await self.key.update_status()
 
         if request != 'None':
-            data_chunks = await self.vector_db.search(f"{request}\n{tags}", collection) or []
+            data_chunks = await self.vector_db.search(request, collection) or []
         else:
             data_chunks = []
         logger.info(f'Data chunks received: {len(data_chunks)}')
