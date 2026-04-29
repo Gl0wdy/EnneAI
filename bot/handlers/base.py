@@ -11,7 +11,6 @@ from bot.fsm import ConfirmationState, LongMemState
 from ai.completions import Chat
 from ai.utils import parse_system_info
 from utils.file_reader import BufferTextReader
-from utils.adverts import show_advert
 from config import ADMIN_ID
 
 import re
@@ -105,11 +104,9 @@ async def profile(message: Message):
     user_id = message.from_user.id
     user = await db.get_user(user_id)
     history_length = len(user.get('history', []))
-    tags = ','.join(user.get('tags', "не распознаны").split(',')[:3]) + '...'
     await message.reply(text=f'*🫵 Это вы, @{message.from_user.username}:*\n'
                         f'│ 🆔: {md.code(user_id)}\n│ 📋 История: {history_length}/100 сообщений\n'
-                        f'│ 📂 База знаний: {user.get('collection')}\n' + 
-                        f'│ 🏷️ Теги: _{tags}_\n')
+                        f'│ 📂 База знаний: {user.get('collection')}\n')
 
 
 @base_router.message(or_f(Command(commands='settings'), F.text == '⚙️ Настройки'))

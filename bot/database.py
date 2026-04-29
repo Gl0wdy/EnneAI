@@ -47,7 +47,6 @@ async def save_message(user_id: int, role: str, content: str, chunks: list = [])
                 "busy": False,
                 "collection": "ennea",
                 "premium": False,
-                "tags": "",
                 "long_memory": "",
             }
         },
@@ -76,7 +75,7 @@ async def get_last_chunks(user_id: int) -> list:
 async def clear_history(user_id: int):
     await collection.update_one(
         {"user_id": user_id},
-        {"$set": {"history": [], "busy": False, "tags": ""}},
+        {"$set": {"history": [], "busy": False}},
         upsert=True
     )
 
@@ -206,19 +205,6 @@ async def get_status(user_id: int) -> bool:
         await set_status(user_id, False)
         return False
     return doc.get("premium", False)
-
-
-async def set_tags(user_id: int, tags: str):
-    await collection.update_one(
-        {"user_id": user_id},
-        {"$set": {"tags": tags}},
-        upsert=True
-    )
-
-
-async def get_tags(user_id: int) -> str:
-    doc = await collection.find_one({"user_id": user_id}, {"tags": 1})
-    return doc.get("tags", "") if doc else ""
 
 
 async def set_long_memory(user_id: int, data: str, group: bool = False):
