@@ -385,11 +385,6 @@ async def message_handler(message: Message):
 
         
     elif message.chat.type == 'supergroup':
-        uid = message.from_user.id
-        user = await db.get_user(uid)
-        if not user.get('api_key'):
-            await message.answer('[Сначала зарегистрируй свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F&expiry=365&budget=10) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
-            return
         group_id = message.chat.id
         group = await db.get_group(group_id)
         bot = await message.bot.get_me()
@@ -401,6 +396,12 @@ async def message_handler(message: Message):
                 content=message.text
             )
             return
+        else:
+            uid = message.from_user.id
+            user = await db.get_user(uid)
+            if user and not user.get('api_key'):
+                await message.answer('[Сначала зарегистрируй свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F&expiry=365&budget=10) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
+                return
         floodwait = group.get('floodwait', 10)
         last_request = await db.get_last_request(message.chat.id)
         if last_request:
