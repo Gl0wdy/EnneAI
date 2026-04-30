@@ -10,6 +10,7 @@ from bot.fsm import SendingState, PremiumState
 from .base import chat
 
 from datetime import timedelta
+from database import api_key
 
 
 admin_router = Router(name='router')
@@ -21,6 +22,11 @@ async def admin_panel(message: Message):
         return
     await message.answer('Админ-панель открыта.', reply_markup=kb.admin_markup)
 
+@admin_router.message(lambda x: x.text == 'КД')
+async def check_balance(message: Message):
+    if message.from_user.id != ADMIN_ID:
+        return
+    await api_key.reset_cooldowns()
 
 @admin_router.message(lambda x: x.text == 'Баланс')
 async def check_balance(message: Message):

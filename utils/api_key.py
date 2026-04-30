@@ -82,3 +82,7 @@ class ApiKeyManager:
             }
             for doc in docs
         ]
+    
+    async def reset_cooldowns(self):
+        result = await self.col.update_many({}, {"$set": {"cooldown_until": None}})
+        return result.modified_count
