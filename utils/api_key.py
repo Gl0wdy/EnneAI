@@ -1,7 +1,7 @@
+import random
 import asyncio
 import aiohttp
-import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 
@@ -10,7 +10,7 @@ class ApiKeyManager:
         self.col = db["api_keys"]
 
     def _next_hour(self) -> datetime:
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         return now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
 
     async def add_key(self, api_key: str):
@@ -26,7 +26,7 @@ class ApiKeyManager:
         await self.col.delete_one({"_id": api_key})
 
     async def get_key(self) -> str | None:
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         docs = await self.col.find({
             "$or": [
                 {"cooldown_until": None},
@@ -72,7 +72,7 @@ class ApiKeyManager:
 
     async def balances(self) -> list[dict]:
         docs = await self.col.find().to_list(None)
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         return [
             {
                 "key": doc["_id"],

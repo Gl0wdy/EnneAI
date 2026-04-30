@@ -10,7 +10,7 @@ from config import BOT_TOKEN, DEBUG_TOKEN
 
 
 bot = Bot(
-        token=BOT_TOKEN,
+        token=DEBUG_TOKEN,
         default=DefaultBotProperties(
             parse_mode='Markdown',
             link_preview_is_disabled=True
