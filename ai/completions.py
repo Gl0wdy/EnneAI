@@ -13,6 +13,8 @@ psychosophy = Data('psychosophy')
 jung = Data('jung')
 ichazo = Data('ichazo')
 
+MAX_RETRIES = 5
+
 def build_rewrite_prompt(collection: str) -> str:
     match collection:
         case 'ennea':
@@ -70,38 +72,37 @@ class Chat:
         self._client = AsyncClient(provider=PollinationsAI)
         self.vector_db = VectorDb()
 
-    async def rewrite_query(self, request: str, chat_history: list, collection: str) -> str:
-        try:
+    async def rewrite_query(self, request: str, chat_history: list, collection: str) -> str | None:
+        for _ in range(MAX_RETRIES):
             key = await api_key.get_key()
-            response = await self._client.chat.completions.create(
-                model='openai',
-                max_tokens=200,
-                api_key=key,
-                messages=[
-                    {"role": "system", "content": build_rewrite_prompt(collection)},
-                    *chat_history[-4:],
-                    {"role": "user", "content": request}
-                ]
-            )
-            return response.choices[0].message.content
-        except Exception as err:
-            error_msg = str(err).lower()
-            if "402" in error_msg or "balance" in error_msg:
-                await api_key.put_on_cooldown(key)
-                return await self.rewrite_query(request, collection, chat_history)
-            else:
-                logger.error('Error in ai/completions.py', exc_info=err)
-            return "Ничего не найдено"
+            if not key:
+                return None
+            try:
+                response = await self._client.chat.completions.create(
+                    model='openai',
+                    max_tokens=200,
+                    api_key=key,
+                    messages=[
+                        {"role": "system", "content": build_rewrite_prompt(collection)},
+                        *chat_history[-4:],
+                        {"role": "user", "content": request}
+                    ]
+                )
+                return response.choices[0].message.content
+            except Exception as err:
+                error_msg = str(err).lower()
+                if "402" in error_msg or "balance" in error_msg:
+                    await api_key.put_on_cooldown(key)
+                    continue
+                logger.error('Error in rewrite_query', exc_info=err)
+                return None
+        return None
 
     async def create(self,
                      request: str,
                      collection: str,
                      chat_history: list = [],
                      is_group: bool = False):
-        key = await api_key.get_key()
-        if not key:
-            return "Не нашлось ни одного работающего ключа :(", []
-
         if request != 'None':
             data_chunks = await self.vector_db.search(request, collection) or []
         else:
@@ -119,7 +120,7 @@ class Chat:
                 data = ichazo
             case 'jung':
                 data = jung
-        
+
         kb_messages = [
             {'role': 'system', 'content': f'БАЗА ЗНАНИЙ N.{n}:\n{chunk}'}
             for n, chunk in enumerate(data_chunks, 1)
@@ -133,21 +134,25 @@ class Chat:
             + chat_history
         )
 
-        try:
-            response = await self._client.chat.completions.create(
-                messages=messages,
-                model='grok',
-                max_tokens=1000,
-                api_key=key
-            )
-            logger.info('Response received.')
-        except Exception as err:
-            error_msg = str(err).lower()
-            if "402" in error_msg or "balance" in error_msg:
-                await api_key.put_on_cooldown(key)
-                return await self.create(request, collection, chat_history, is_group)
-            else:
+        for _ in range(MAX_RETRIES):
+            key = await api_key.get_key()
+            if not key:
+                return "Не нашлось ни одного работающего ключа :(", []
+            try:
+                response = await self._client.chat.completions.create(
+                    messages=messages,
+                    model='grok',
+                    max_tokens=1000,
+                    api_key=key
+                )
+                logger.info('Response received.')
+                return response.choices[0].message.content, data_chunks
+            except Exception as err:
+                error_msg = str(err).lower()
+                if "402" in error_msg or "balance" in error_msg:
+                    await api_key.put_on_cooldown(key)
+                    continue
                 logger.error('Error in ai/completions.py', exc_info=err)
-            return "Сервера Pollinations не отвечают. Попробуйте отправить запрос позже ещё раз.", []
+                return "Сервера Pollinations не отвечают. Попробуйте отправить запрос позже ещё раз.", []
 
-        return response.choices[0].message.content, data_chunks
+        return "Не нашлось ни одного работающего ключа :(", []
