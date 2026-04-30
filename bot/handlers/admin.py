@@ -10,7 +10,7 @@ from bot.fsm import SendingState, PremiumState
 from .base import chat
 
 from datetime import timedelta
-from database import api_key
+from bot.database import api_key
 
 
 admin_router = Router(name='router')
