@@ -77,7 +77,7 @@ class ApiKeyManager:
             {
                 "key": doc["_id"],
                 "balance": doc["balance"],
-                "available": not doc["cooldown_until"] or doc["cooldown_until"] <= now,
+                "available": not doc["cooldown_until"] or doc["cooldown_until"].replace(tzinfo=timezone.utc) <= now,
                 "cooldown_until": doc["cooldown_until"]
             }
             for doc in docs
