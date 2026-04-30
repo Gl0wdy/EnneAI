@@ -26,13 +26,12 @@ async def admin_panel(message: Message):
 async def check_balance(message: Message):
     if message.from_user.id != ADMIN_ID:
         return
-    text = ""
+    await db.api_key.update_balances()
+    balances = await db.api_key.balances()
     total = 0
-    for key, value in chat.key.status.items():
-        total += value
-        text += f'{key}: {value}\n'
-    text += f'\n\nTotal: {total}'
-    await message.answer(text, parse_mode='HTML')
+    for d in balances:
+        total += d['balance']
+    await message.answer(f'Всего ключей: {len(balances)}\nОбщий баланс: {total} pollen', parse_mode='HTML')
 
 @admin_router.message(lambda x: x.text == 'Рассылка')
 async def sending(message: Message, state: FSMContext):
@@ -45,7 +44,7 @@ async def sending(message: Message, state: FSMContext):
 @admin_router.message(lambda x: x.text == 'Коллекции')
 async def give_premium(message: Message):
     collections_response = chat.vector_db.get_collections()
-    collections_list = collections_response.collections  # ← почти всегда так в qdrant-client
+    collections_list = collections_response.collections
 
     if not collections_list:
         await message.answer("Коллекций пока нет.")

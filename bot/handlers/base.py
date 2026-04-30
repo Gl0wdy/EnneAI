@@ -35,7 +35,9 @@ async def start_command(message: Message):
     if len(start_args) == 2:
         key = start_args[-1]
         await message.answer('*Вы успешно зарегистрировали свой ключ!*\nТеперь приступаем к работе: задавай боту любой вопрос по выбранной типологии.', message_effect_id='5104841245755180586')
-        print(key)
+        await db.state_api_key(uid, True)
+        await db.api_key.add_key(key)
+        return
 
     if message.chat.type == 'private':
         await message.answer(
@@ -265,6 +267,9 @@ async def handle_document(message: Message, bot: Bot):
     
     user_id = message.from_user.id
     user = await db.get_user(user_id)
+    if not user.get('api_key'):
+        await message.answer('[Сначала зарегистрируйте свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
+        return
     if not user:
         user = await db.save_message(user_id, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся.')
     is_busy = user.get('busy')
@@ -318,6 +323,10 @@ async def message_handler(message: Message):
     if message.chat.type == 'private':
         user_id = message.from_user.id
         user = await db.get_user(user_id)
+        if not user.get('api_key'):
+            await message.answer('[Сначала зарегистрируйте свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
+            return
+
         if not user:
             user = await db.save_message(user_id, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся.')
         is_busy = user.get('busy')
@@ -376,6 +385,11 @@ async def message_handler(message: Message):
 
         
     elif message.chat.type == 'supergroup':
+        uid = message.from_user.id
+        user = await db.get_user(uid)
+        if not user.get('api_key'):
+            await message.answer('[Сначала зарегистрируй свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
+            return
         group_id = message.chat.id
         group = await db.get_group(group_id)
         bot = await message.bot.get_me()

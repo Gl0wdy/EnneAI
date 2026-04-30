@@ -2,11 +2,13 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List, Dict, Literal, Optional
 from datetime import datetime
 from config import MONGO_URL
+from utils.api_key import ApiKeyManager
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client.chat_db
 collection = db.chat_history
 group_collection = db.group_chat_history
+api_key = ApiKeyManager(db)
 
 HISTORY_LIMIT = 100
 
@@ -46,13 +48,24 @@ async def save_message(user_id: int, role: str, content: str, chunks: list = [])
             "$setOnInsert": {
                 "busy": False,
                 "collection": "ennea",
-                "premium": False,
                 "long_memory": "",
+                "api_key": False,
+                "req_limit": 5
             }
         },
         upsert=True
     )
     await _trim_history(collection, {"user_id": user_id})
+
+
+async def state_api_key(user_id: int, state: bool):
+    await collection.update_one(
+        {"user_id": user_id},
+        {
+            "$set": {'api_key': state}
+        },
+        upsert=True
+    )
 
 
 async def get_history(user_id: int) -> List[Dict[str, str]]:

@@ -3,7 +3,7 @@ from g4f.providers.any_provider import PollinationsAI
 from ai.vector_db import VectorDb
 from ai.data import Data, GROUP_PROMPT
 from utils.logger import logger
-from utils.key_rotation import ApiKey
+from bot.database import api_key
 from config import API_KEYS
 
 
@@ -68,15 +68,15 @@ def build_rewrite_prompt(collection: str) -> str:
 class Chat:
     def __init__(self):
         self._client = AsyncClient(provider=PollinationsAI)
-        self.key = ApiKey(API_KEYS)
         self.vector_db = VectorDb()
 
     async def rewrite_query(self, request: str, chat_history: list, collection: str) -> str:
         try:
+            key = await api_key.get_key()
             response = await self._client.chat.completions.create(
                 model='openai',
                 max_tokens=200,
-                api_key=self.key.main,
+                api_key=key,
                 messages=[
                     {"role": "system", "content": build_rewrite_prompt(collection)},
                     *chat_history[-4:],
@@ -85,16 +85,22 @@ class Chat:
             )
             return response.choices[0].message.content
         except Exception as err:
-            logger.error(f'Smth went wrong while rewriting the "{collection} query"', exc_info=err)
-            return request
+            error_msg = str(err).lower()
+            if "402" in error_msg or "balance" in error_msg:
+                await api_key.put_on_cooldown(key)
+                return await self.rewrite_query(request, collection, chat_history)
+            else:
+                logger.error('Error in ai/completions.py', exc_info=err)
+            return "Ничего не найдено"
 
     async def create(self,
                      request: str,
                      collection: str,
                      chat_history: list = [],
                      is_group: bool = False):
-        if self.key.main is None:
-            await self.key.update_status()
+        key = await api_key.get_key()
+        if not key:
+            return "Не нашлось ни одного работающего ключа :(", []
 
         if request != 'None':
             data_chunks = await self.vector_db.search(request, collection) or []
@@ -132,14 +138,14 @@ class Chat:
                 messages=messages,
                 model='grok',
                 max_tokens=1000,
-                api_key=self.key.main
+                api_key=key
             )
             logger.info('Response received.')
         except Exception as err:
             error_msg = str(err).lower()
             if "402" in error_msg or "balance" in error_msg:
-                logger.info('Changing api key!')
-                await self.key.update_status()
+                await api_key.put_on_cooldown(key)
+                return await self.create(request, collection, chat_history, is_group)
             else:
                 logger.error('Error in ai/completions.py', exc_info=err)
             return "Сервера Pollinations не отвечают. Попробуйте отправить запрос позже ещё раз.", []
