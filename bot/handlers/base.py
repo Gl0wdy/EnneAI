@@ -268,7 +268,7 @@ async def handle_document(message: Message, bot: Bot):
     user_id = message.from_user.id
     user = await db.get_user(user_id)
     if not user.get('api_key'):
-        await message.answer('[Сначала зарегистрируйте свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
+        await message.answer('[Сначала зарегистрируйте свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F&expiry=never&budget=10) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
         return
     if not user:
         user = await db.save_message(user_id, 'system', 'юзер впервые взаимодействует с тобой, поздоровайся.')
@@ -388,7 +388,7 @@ async def message_handler(message: Message):
         uid = message.from_user.id
         user = await db.get_user(uid)
         if not user.get('api_key'):
-            await message.answer('[Сначала зарегистрируй свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
+            await message.answer('[Сначала зарегистрируй свой ключ!](https://enter.pollinations.ai/authorize?redirect_uri=https%3A%2F%2Fgl0wdy.github.io%2Fenneai-callback%2F&expiry=never&budget=10) Наранхо - бесплатный бот без рекламы, и эта мера необходима для поддержания его стабильной работы.\n\n[Подробнее о программе здесь](https://github.com/pollinations/pollinations/blob/main/BRING_YOUR_OWN_POLLEN.md)')
             return
         group_id = message.chat.id
         group = await db.get_group(group_id)
