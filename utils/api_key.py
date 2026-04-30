@@ -4,6 +4,8 @@ import aiohttp
 from datetime import datetime, timedelta, timezone
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+from utils.logger import logger
+
 
 class ApiKeyManager:
     def __init__(self, db: AsyncIOMotorDatabase):
@@ -33,6 +35,8 @@ class ApiKeyManager:
                 {"cooldown_until": {"$lte": now}}
             ]
         }).to_list(None)
+
+        logger.info(f'Available keys: {len(docs)}')
 
         if not docs:
             return None
