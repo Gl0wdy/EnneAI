@@ -141,7 +141,7 @@ class Chat:
             try:
                 response = await self._client.chat.completions.create(
                     messages=messages,
-                    model='grok',
+                    model='openai',
                     max_tokens=1000,
                     api_key=key
                 )
