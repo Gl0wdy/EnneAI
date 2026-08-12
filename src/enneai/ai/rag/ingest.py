@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from docchunker import DocChunker
-from transformers import dataclass
+from dataclasses import dataclass
 
 import enneai.ai.rag.storage as storage
 

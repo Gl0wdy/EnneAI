@@ -38,8 +38,6 @@ _client_lock = asyncio.Lock()
 
 @dataclass(slots=True)
 class ScoredChunk:
-    """A chunk as returned from Qdrant, with a retrieval score attached."""
-
     chunk_id: str
     book_id: str
     book_title: str
@@ -102,8 +100,6 @@ async def ensure_collection() -> None:
 
 
 def _chunk_point_id(book_id: str, chunk_index: int) -> str:
-    """Deterministic UUID so re-ingesting the same book updates existing
-    points in place instead of duplicating them."""
     return str(uuid.uuid5(_NAMESPACE, f"{book_id}:{chunk_index}"))
 
 
@@ -158,24 +154,28 @@ async def upsert_document_chunks(
     metadata: dict[str, Any],
     source_path: str | None,
     raw_chunks: Iterable[Any],
-    language: str | None = None,
     batch_size: int = INGEST_BATCH_SIZE,
 ) -> int:
     await ensure_collection()
+
     client = await get_client()
     embedder = get_embedding_service()
 
     prepared: list[dict[str, Any]] = []
+
     for raw in raw_chunks:
         text = getattr(raw, "text", "") or ""
+
         if not text.strip():
             continue
-        metadata = getattr(raw, "metadata", None) or {}
+
+        chunk_metadata = getattr(raw, "metadata", None) or {}
+
         prepared.append(
             {
                 "text": text,
-                "headings": _extract_headings(metadata),
-                "node_type": metadata.get("node_type"),
+                "headings": _extract_headings(chunk_metadata),
+                "node_type": chunk_metadata.get("node_type"),
             }
         )
 
@@ -183,23 +183,55 @@ async def upsert_document_chunks(
 
     for idx, p in enumerate(prepared):
         p["chunk_index"] = idx
-        p["embedded_text"] = _build_embedded_text(p["headings"], p["text"])
+        p["embedded_text"] = _build_embedded_text(
+            p["headings"],
+            p["text"],
+        )
 
     total = 0
+
     for start in range(0, len(prepared), batch_size):
         batch = prepared[start : start + batch_size]
+
         if not batch:
             continue
 
-        texts = [p["embedded_text"] for p in batch]
+        texts = [
+            p["embedded_text"]
+            for p in batch
+        ]
+
         dense_vectors, sparse_vectors = await asyncio.gather(
             embedder.embed_passages(texts),
             embedder.embed_passages_sparse(texts),
         )
 
         points = []
-        for p, dense_vec, sparse_vec in zip(batch, dense_vectors, sparse_vectors):
-            point_id = _chunk_point_id(metadata["book_id"], p["chunk_index"])
+
+        for p, dense_vec, sparse_vec in zip(
+            batch,
+            dense_vectors,
+            sparse_vectors,
+        ):
+            point_id = _chunk_point_id(
+                metadata["book_id"],
+                p["chunk_index"],
+            )
+
+            payload = {
+                **metadata,
+
+                "chunk_id": point_id,
+                "source_path": source_path,
+                "chunk_index": p["chunk_index"],
+                "text": p["text"],
+                "embedded_text": p["embedded_text"],
+                "headings": p["headings"],
+                "headings_text": " > ".join(p["headings"]),
+                "node_type": p["node_type"],
+                "char_count": len(p["text"]),
+            }
+
             points.append(
                 qm.PointStruct(
                     id=point_id,
@@ -207,24 +239,25 @@ async def upsert_document_chunks(
                         DENSE_VECTOR_NAME: dense_vec,
                         SPARSE_VECTOR_NAME: sparse_vec.as_qdrant(),
                     },
-                    payload={
-                        "chunk_id": point_id,
-                        "source_path": source_path,
-                        "chunk_index": p["chunk_index"],
-                        "text": p["text"],
-                        "embedded_text": p["embedded_text"],
-                        "headings": p["headings"],
-                        "headings_text": " > ".join(p["headings"]),
-                        "node_type": p["node_type"],
-                        "language": language,
-                        "char_count": len(p["text"]),
-                    }.update(metadata),
+                    payload=payload,
                 )
             )
 
-        await client.upsert(collection_name=COLLECTION_NAME, points=points, wait=True)
+        await client.upsert(
+            collection_name=COLLECTION_NAME,
+            points=points,
+            wait=True,
+        )
+
         total += len(points)
-        logger.info("Upserted %d chunks for book_id=%r (running total %d)", len(points), metadata["book_id"], total)
+
+        logger.info(
+            "Upserted %d chunks for book_id=%r "
+            "(running total %d)",
+            len(points),
+            metadata["book_id"],
+            total,
+        )
 
     return total
 

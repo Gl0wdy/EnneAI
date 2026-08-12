@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 try: 
     from .reranker import RankedChunk
-except ImportError:  # direct script run
+except ImportError: 
     from enneai.ai.rag.reranker import RankedChunk
 
 DEFAULT_MAX_CONTEXT_CHARS = 6000
@@ -60,8 +60,6 @@ def build_context(
         )
         block = f"{header_line}\n{chunk.text.strip()}"
 
-        # Always include at least one chunk, even if it alone exceeds the
-        # budget -- an empty context is worse than a slightly oversized one.
         if used_chars + len(block) > max_chars and parts:
             break
 

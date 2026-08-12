@@ -65,8 +65,6 @@ class EmbeddingService:
 
     @classmethod
     async def warmup(cls) -> "EmbeddingService":
-        """Call once at application startup so the (slow, blocking) model
-        loading happens before the first request instead of during it."""
         return await asyncio.to_thread(cls.get)
 
     def _encode_dense_sync(self, texts: list[str], is_query: bool) -> list[list[float]]:

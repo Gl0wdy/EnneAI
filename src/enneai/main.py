@@ -5,7 +5,7 @@ async def main():
     await warmup()
     while True:
         query = input("Enter your query: ")
-        context = await retrieve(query, rerank_top_n=15)
+        context = await retrieve(query, rerank_top_n=25)
         print(f"{context.text}\n") 
         print("==================\n")   
 
