@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 
-try:  # package import
+try:
     from .context import RagContext, build_context
     from .embeddings import EmbeddingService
     from .reranker import Reranker
@@ -35,7 +35,7 @@ async def warmup() -> None:
 async def retrieve(
     query: str,
     *,
-    book_id: str | None = None,
+    metadata: dict[str, str] | None = None,
     heading_query: str | None = None,
     candidate_limit: int = DEFAULT_CANDIDATE_LIMIT,
     rerank_top_n: int = DEFAULT_RERANK_TOP_N,
@@ -43,7 +43,7 @@ async def retrieve(
 ) -> RagContext:
     candidates = await hybrid_search(
         query,
-        book_id=book_id,
+        metadata=metadata,
         heading_query=heading_query,
         limit=candidate_limit,
     )

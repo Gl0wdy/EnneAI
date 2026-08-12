@@ -1,0 +1,98 @@
+{
+    "character_neurosis.pdf": {
+        "book_id": "character_neurosis",
+        "title": "Character and Neurosis: An Integrative View",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Compares the enneagram of personality types with other psychological character typing systems and discusses of the origins of each type."
+    },
+    "dramatis_personae.pdf": {
+        "book_id": "dramatis_personae",
+        "title": "Dramatis personae: Eneatipos, cine y literatura",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Dramatis personae is a book by psychiatrist Claudio Naranjo that maps the 27 sub-types of the Enneagram personality system using famous characters from cinema and literature."
+    },
+    "E1.pdf": {
+        "book_id": "E1",
+        "title": "Psychology of Enneatypes — Enneatype 1",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 1. Enneagram Type 1 — Anger/Wrath. The volume examines the conservation, sexual, and social subtypes of Enneatype 1."
+    },
+
+    "E2.docx": {
+        "book_id": "E2",
+        "title": "Psychology of Enneatypes — Enneatype 2",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 2. Enneagram Type 2 — Pride. The volume examines the conservation, sexual, and social subtypes of Enneatype 2."
+    },
+
+    "E3.docx": {
+        "book_id": "E3",
+        "title": "Psychology of Enneatypes — Enneatype 3",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 3. Enneagram Type 3 — Vanity/Deceit. The volume examines the conservation, sexual, and social subtypes of Enneatype 3."
+    },
+
+    "E4.pdf": {
+        "book_id": "E4",
+        "title": "Psychology of Enneatypes — Enneatype 4",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 4. Enneagram Type 4 — Envy. The volume examines the conservation, sexual, and social subtypes of Enneatype 4."
+    },
+
+    "E5.docx": {
+        "book_id": "E5",
+        "title": "Psychology of Enneatypes — Enneatype 5",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 5. Enneagram Type 5 — Avarice. The volume examines the conservation, sexual, and social subtypes of Enneatype 5."
+    },
+
+    "E6.docx": {
+        "book_id": "E6",
+        "title": "Psychology of Enneatypes — Enneatype 6",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 6. Enneagram Type 6 — Fear/Cowardice. The volume examines the conservation, sexual, and social subtypes of Enneatype 6."
+    },
+
+    "E7.docx": {
+        "book_id": "E7",
+        "title": "Psychology of Enneatypes — Enneatype 7",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 7. Enneagram Type 7 — Gluttony. The volume examines the conservation, sexual, and social subtypes of Enneatype 7."
+    },
+
+    "E8.docx": {
+        "book_id": "E8",
+        "title": "Psychology of Enneatypes — Enneatype 8",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 8. Enneagram Type 8 — Lust. The volume examines the conservation, sexual, and social subtypes of Enneatype 8."
+    },
+
+    "E9.pdf": {
+        "book_id": "E9",
+        "title": "Psychology of Enneatypes — Enneatype 9",
+        "author": "Claudio Naranjo",
+        "language": "en",
+        "category": "enneagram",
+        "about": "Psychology of Enneatypes — Enneatype 9. Enneagram Type 9 — Sloth/Indolence. The volume examines the conservation, sexual, and social subtypes of Enneatype 9."
+    }
+}

@@ -10,9 +10,9 @@ from typing import Any, Iterable
 from qdrant_client import AsyncQdrantClient
 from qdrant_client import models as qm
 
-try:  # package import (e.g. `from enneai.ai.rag import storage`)
+try: 
     from .embeddings import DENSE_VECTOR_SIZE, get_embedding_service
-except ImportError:  # direct script run (e.g. `python ingest.py`)
+except ImportError:
     from enneai.ai.rag.embeddings import DENSE_VECTOR_SIZE, get_embedding_service
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ ON_DISK_PAYLOAD = os.getenv("RAG_ON_DISK_PAYLOAD", "false").lower() == "true"
 
 INGEST_BATCH_SIZE = int(os.getenv("RAG_INGEST_BATCH_SIZE", "32"))
 
-_NAMESPACE = uuid.UUID("6f2f1d0a-9d2b-4c9b-8b6b-9a2f9e2c9d10")  # fixed, project-local
+_NAMESPACE = uuid.UUID("6f2f1d0a-9d2b-4c9b-8b6b-9a2f9e2c9d10")
 
 _client: AsyncQdrantClient | None = None
 _client_lock = asyncio.Lock()
@@ -155,8 +155,7 @@ def _merge_small_chunks(prepared: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 async def upsert_document_chunks(
     *,
-    book_id: str,
-    book_title: str,
+    metadata: dict[str, Any],
     source_path: str | None,
     raw_chunks: Iterable[Any],
     language: str | None = None,
@@ -200,7 +199,7 @@ async def upsert_document_chunks(
 
         points = []
         for p, dense_vec, sparse_vec in zip(batch, dense_vectors, sparse_vectors):
-            point_id = _chunk_point_id(book_id, p["chunk_index"])
+            point_id = _chunk_point_id(metadata["book_id"], p["chunk_index"])
             points.append(
                 qm.PointStruct(
                     id=point_id,
@@ -210,8 +209,6 @@ async def upsert_document_chunks(
                     },
                     payload={
                         "chunk_id": point_id,
-                        "book_id": book_id,
-                        "book_title": book_title,
                         "source_path": source_path,
                         "chunk_index": p["chunk_index"],
                         "text": p["text"],
@@ -221,13 +218,13 @@ async def upsert_document_chunks(
                         "node_type": p["node_type"],
                         "language": language,
                         "char_count": len(p["text"]),
-                    },
+                    }.update(metadata),
                 )
             )
 
         await client.upsert(collection_name=COLLECTION_NAME, points=points, wait=True)
         total += len(points)
-        logger.info("Upserted %d chunks for book_id=%r (running total %d)", len(points), book_id, total)
+        logger.info("Upserted %d chunks for book_id=%r (running total %d)", len(points), metadata["book_id"], total)
 
     return total
 
