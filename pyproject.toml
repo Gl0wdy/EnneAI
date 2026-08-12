@@ -1,5 +1,5 @@
 [project]
-name = "bot"
+name = "enneai"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,7 +7,14 @@ authors = [
     { name = "Gl0wdy", email = "glowdyyk@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "docchunker>=0.3.0",
+    "fastembed>=0.8.0",
+    "pymupdf>=1.28.2",
+    "python-docx>=1.2.0",
+    "qdrant-client>=1.19.0",
+    "sentence-transformers>=5.7.0",
+]
 
 [project.scripts]
 bot = "bot:main"
