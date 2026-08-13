@@ -10,7 +10,7 @@ from sentence_transformers import CrossEncoder
 
 try: 
     from .storage import ScoredChunk
-except ImportError:  # direct script run
+except ImportError: 
     from enneai.ai.rag.storage import ScoredChunk
 
 logger = logging.getLogger(__name__)

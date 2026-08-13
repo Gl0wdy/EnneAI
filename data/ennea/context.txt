@@ -1,0 +1,347 @@
+ENNEAGRAM — CORE REFERENCE
+
+The Enneagram is a personality typology consisting of nine core personality types, traditionally numbered from One to Nine. Each type describes a characteristic pattern of attention, motivation, emotional reactions, defensive strategies, interpersonal behavior, and underlying psychological fixation.
+
+The nine core types are:
+
+Type 1 — The Reformer / Perfectionist
+Core themes: perfection, correctness, improvement, responsibility, standards, criticism.
+Typical fixation: resentment / anger expressed through control, correction, and judgment.
+Typical passion: anger.
+Core desire: to be good, correct, virtuous, and aligned with an internal standard.
+Core fear: being wrong, corrupt, defective, or morally bad.
+
+Type 2 — The Helper / Giver
+Core themes: helping, giving, interpersonal connection, being needed, emotional involvement.
+Typical fixation: flattering / excessive focus on others' needs and approval.
+Typical passion: pride.
+Core desire: to be loved and needed.
+Core fear: being unwanted, unloved, or unnecessary.
+
+Type 3 — The Achiever / Performer
+Core themes: achievement, success, efficiency, image, adaptation, recognition.
+Typical fixation: vanity / identification with an image of success.
+Typical passion: deceit / self-deception through identification with an image.
+Core desire: to have value and be successful.
+Core fear: being worthless or without value.
+
+Type 4 — The Individualist / Romantic
+Core themes: identity, uniqueness, emotional depth, longing, authenticity, difference.
+Typical fixation: melancholy / excessive focus on what is missing.
+Typical passion: envy.
+Core desire: to have a meaningful and authentic identity.
+Core fear: having no identity, significance, or personal uniqueness.
+
+Type 5 — The Investigator / Observer
+Core themes: knowledge, observation, privacy, autonomy, understanding, withdrawal.
+Typical fixation: avarice / withholding oneself and one's resources.
+Typical passion: avarice.
+Core desire: to be capable, knowledgeable, and self-sufficient.
+Core fear: being helpless, incapable, invaded, or depleted.
+
+Type 6 — The Loyalist / Skeptic
+Core themes: security, uncertainty, doubt, loyalty, anticipation of danger, authority.
+Typical fixation: doubt / fear-driven questioning and projection.
+Typical passion: fear.
+Core desire: to have security, support, certainty, and trustworthy guidance.
+Core fear: being without support, guidance, security, or certainty.
+
+Type 7 — The Enthusiast / Adventurer
+Core themes: freedom, possibilities, stimulation, planning, variety, avoidance of limitation.
+Typical fixation: planning / escaping discomfort through possibilities and future-oriented thinking.
+Typical passion: gluttony.
+Core desire: to be satisfied, free, stimulated, and avoid pain.
+Core fear: being trapped, deprived, limited, or emotionally stuck in suffering.
+
+Type 8 — The Challenger / Protector
+Core themes: strength, autonomy, control, intensity, confrontation, protection.
+Typical fixation: vengeance / excessive intensity and assertion of justice or power.
+Typical passion: lust.
+Core desire: to be strong, autonomous, and in control of one's own life.
+Core fear: being controlled, weak, harmed, or vulnerable.
+
+Type 9 — The Peacemaker / Mediator
+Core themes: peace, stability, harmony, avoidance of conflict, merging, inertia.
+Typical fixation: indolence / forgetting oneself and one's priorities.
+Typical passion: laziness / psychological inertia.
+Core desire: to have inner stability and peace.
+Core fear: loss, conflict, separation, or disruption of inner stability.
+
+NOTE:
+Terminology and interpretations can differ between Enneagram traditions. When analyzing Claudio Naranjo's ideas, prioritize Naranjo's terminology and conceptual framework from the RAG sources over generic modern Enneagram terminology.
+
+--------------------------------------------------
+CENTERS / TRIADS
+--------------------------------------------------
+
+The nine types are divided into three Centers of Intelligence, each containing three types.
+
+1. Emotional / Heart Center:
+Types 2, 3, 4.
+
+Core theme: image, identity, value, relationship, and emotional recognition.
+
+Type 2 — focus on being needed and interpersonal connection.
+Type 3 — focus on achievement, image, and recognition.
+Type 4 — focus on identity, uniqueness, and emotional significance.
+
+2. Intellectual / Head Center:
+Types 5, 6, 7.
+
+Core theme: fear, uncertainty, anticipation, planning, and mental strategies.
+
+Type 5 — withdraws and gathers knowledge.
+Type 6 — anticipates danger and seeks security or certainty.
+Type 7 — generates possibilities and escapes limitation through planning and stimulation.
+
+3. Instinctive / Gut Center:
+Types 8, 9, 1.
+
+Core theme: instinct, autonomy, action, control, anger, and resistance.
+
+Type 8 — expresses instinctive intensity outwardly.
+Type 9 — suppresses or disconnects from instinctive priorities.
+Type 1 — controls and transforms instinct through standards and self-control.
+
+The three centers are sometimes also called:
+
+Heart / Feeling Center → 2, 3, 4
+Head / Thinking Center → 5, 6, 7
+Gut / Instinctive Center → 8, 9, 1
+
+--------------------------------------------------
+TRIADS
+--------------------------------------------------
+
+The Enneagram can be divided into different triads depending on the psychological characteristic being examined.
+
+The most important basic triad is the Centers triad:
+
+Gut: 8, 9, 1
+Heart: 2, 3, 4
+Head: 5, 6, 7
+
+Other triadic groupings describe different psychological patterns and should not be confused with the three Centers.
+
+Repression / Control-related patterns:
+1, 2, 6
+
+Image / Hysterical or social-image-related patterns:
+2, 3, 4
+
+Fear / Anxiety-related patterns:
+5, 6, 7
+
+Aggressive / Assertive patterns:
+3, 7, 8
+
+Dependent / Compliant patterns:
+1, 2, 6
+
+Withdrawn patterns:
+4, 5, 9
+
+NOTE:
+Different Enneagram schools use different names and classifications for these triads. When a specific classification is discussed, identify which tradition it belongs to rather than presenting all classifications as universally accepted.
+
+--------------------------------------------------
+HORNEVIAN GROUPS
+--------------------------------------------------
+
+The Hornevian groups describe three interpersonal strategies:
+
+Assertive types:
+3, 7, 8
+
+These types tend to move toward what they want directly and assertively.
+
+Compliant / Dutiful types:
+1, 2, 6
+
+These types tend to orient themselves toward rules, expectations, obligations, authority, or what they believe they should do.
+
+Withdrawn types:
+4, 5, 9
+
+These types tend to withdraw from direct engagement and retreat into an internal psychological space.
+
+--------------------------------------------------
+HARMONIC GROUPS
+--------------------------------------------------
+
+The Harmonic Groups describe how types tend to respond when their needs are frustrated or when they encounter difficulty.
+
+Positive Outlook Group:
+2, 7, 9
+
+These types tend to maintain a positive or optimistic orientation and may avoid directly confronting painful reality.
+
+Competency Group:
+1, 3, 5
+
+These types tend to rely on competence, rationality, standards, effectiveness, or mastery when dealing with problems.
+
+Reactive / Emotional Realness Group:
+4, 6, 8
+
+These types tend to respond more directly and emotionally to difficulty and may emphasize the seriousness or reality of the situation.
+
+--------------------------------------------------
+INSTINCTUAL SUBTYPES
+--------------------------------------------------
+
+Each of the nine types can be expressed through three instinctual variants:
+
+Self-Preservation (SP):
+Focus on survival, resources, physical security, comfort, health, boundaries, and material stability.
+
+Sexual / One-to-One (SX):
+Focus on intensity, attraction, chemistry, fusion, competition, energetic charge, and one-to-one connection.
+
+Social (SO):
+Focus on groups, belonging, social position, participation, recognition, roles, and collective structures.
+
+Each Enneagram type therefore has three instinctual variants.
+
+For example:
+
+Type 5:
+SP5 — self-preservation expression of Type 5
+SX5 — one-to-one expression of Type 5
+SO5 — social expression of Type 5
+
+Type 4:
+SP4 — self-preservation expression of Type 4
+SX4 — one-to-one expression of Type 4
+SO4 — social expression of Type 4
+
+And so on for all nine types.
+
+--------------------------------------------------
+SUBTYPE TERMINOLOGY
+--------------------------------------------------
+
+In Claudio Naranjo's tradition, the combination of a core Enneagram type and an instinctual drive produces a specific subtype character.
+
+There are 27 subtype configurations:
+
+Type 1:
+SP1, SX1, SO1
+
+Type 2:
+SP2, SX2, SO2
+
+Type 3:
+SP3, SX3, SO3
+
+Type 4:
+SP4, SX4, SO4
+
+Type 5:
+SP5, SX5, SO5
+
+Type 6:
+SP6, SX6, SO6
+
+Type 7:
+SP7, SX7, SO7
+
+Type 8:
+SP8, SX8, SO8
+
+Type 9:
+SP9, SX9, SO9
+
+The subtype should therefore be understood as:
+
+CORE TYPE + INSTINCT
+
+For example:
+
+4 + SX = SX4
+5 + SP = SP5
+7 + SO = SO7
+
+Naranjo's descriptions of the 27 subtypes are highly specific and should be interpreted primarily through the RAG material rather than through generic descriptions from other Enneagram schools.
+
+--------------------------------------------------
+CORE PSYCHOLOGICAL STRUCTURE
+--------------------------------------------------
+
+An Enneagram type should not be identified merely by behavior.
+
+The same behavior can appear in different types for different psychological reasons.
+
+When determining a type, prioritize:
+
+1. Core motivation.
+2. Core fear.
+3. Core desire.
+4. Emotional passion.
+5. Cognitive fixation.
+6. Character structure.
+7. Defensive patterns.
+8. Interpersonal strategy.
+9. Attention patterns.
+10. Instinctual subtype.
+
+Behavior alone is insufficient for reliable typing.
+
+--------------------------------------------------
+PASSIONS
+--------------------------------------------------
+
+Traditional Enneagram terminology associates each type with a dominant passion:
+
+1 — Anger
+2 — Pride
+3 — Deceit
+4 — Envy
+5 — Avarice
+6 — Fear
+7 — Gluttony
+8 — Lust
+9 — Sloth / Indolence
+
+These terms are psychological and characterological concepts, not merely descriptions of ordinary behavior.
+
+In Naranjo's framework, the passions should be understood as central emotional tendencies within a broader character structure.
+
+--------------------------------------------------
+FIXATIONS
+--------------------------------------------------
+
+Traditional Enneagram terminology associates each type with a cognitive fixation:
+
+1 — Resentment
+2 — Flattery
+3 — Vanity
+4 — Melancholy
+5 — Avarice
+6 — Fear / Doubt
+7 — Planning
+8 — Vengeance
+9 — Indolence
+
+The exact terminology may vary between traditions. When analyzing Naranjo specifically, prioritize the terminology and definitions found in the RAG sources.
+
+--------------------------------------------------
+IMPORTANT TERMINOLOGICAL RULE
+--------------------------------------------------
+
+The Enneagram contains multiple traditions and competing interpretations.
+
+Do not combine Naranjo's system indiscriminately with modern personality-typing systems.
+
+When answering questions specifically about Claudio Naranjo:
+
+- prioritize Naranjo's terminology;
+- prioritize Naranjo's characterological descriptions;
+- prioritize the subtype descriptions found in the RAG;
+- distinguish Naranjo's framework from later Enneagram schools;
+- do not treat popular internet descriptions as authoritative;
+- do not infer a type solely from superficial behavioral similarities.
+
+The RAG material is the primary source for detailed interpretations of Naranjo's theory.
+
+The CONTEXT is primarily a terminology and structural reference.
