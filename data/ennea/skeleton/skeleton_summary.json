@@ -1,0 +1,1252 @@
+{
+  "meta": {
+    "description": "LLM-ready Enneagram subtype profile dataset based on user-defined schema.",
+    "fields": [
+      "enneagram",
+      "archetype",
+      "focus",
+      "traits",
+      "anti_traits",
+      "often_confused_with",
+      "neurosis",
+      "childhood"
+    ],
+    "total_profiles": 27
+  },
+  "profiles": [
+    {
+      "enneagram": "sp2",
+      "focus": "Heart-centered",
+      "archetype": "The Privilege",
+      "core_traits": {
+      "childlike_charm": "Exhibit a youthful, endearing demeanor that unconsciously invites others to care for them.",
+      "self_indulgence": "Seek pleasurable experiences and comforts to distract from inner feelings of deprivation.",
+      "ambivalence_in_relationships": "Display a mix of desire for connection and hesitation, often due to fear of rejection."
+    },
+    "emotional_landscape": {
+      "desire_for_care": "Long to be loved and prioritized without having to earn it, similar to a child's expectation.",
+      "self_protection": "Hesitant to commit deeply, aiming to avoid potential hurt or rejection.",
+      "inner_conflict": "Struggle between wanting independence and craving affection and support."
+    },
+    "behavioral_tendencies": {
+      "playful_dependence": "Use charm and perceived fragility to elicit support and attention from others.",
+      "avoidance_of_responsibility": "May resist long-term commitments, preferring to be cared for rather than care for others.",
+      "emotional_withdrawal": "Tend to retreat when sensing potential rejection or lack of appreciation."
+    },
+      "traits": [
+        "quietly helpful",
+        "physically attentive",
+        "seeks unconditional love",
+        "affectionate servant",
+        "naive",
+        "servicing and people-pleasing",
+        "extraverted",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "demanding",
+        "emotionally intrusive",
+        "publicly performative",
+        "pushy",
+        "vain"
+      ],
+      "often_confused_with": [
+        "sx2",
+        "sp6",
+        "sx7"
+      ],
+      "neurosis": "Fear of being unloved fuels covert caretaking, seeking validation through 'selfless' acts.",
+      "childhood": "Felt valued only when taking care of others, leading to neglect of personal needs."
+    },
+    {
+      "enneagram": "so2",
+      "focus": "Heart-centered",
+      "archetype": "The Conquest",
+      "core_traits": {
+      "social_influence": "Aim to be central figures in social settings, often taking on leadership or influential roles.",
+      "public_recognition": "Seek acknowledgment and validation from groups, equating social status with self-worth.",
+      "networking_expertise": "Excel at building connections and being indispensable within their communities."
+    },
+    "emotional_landscape": {
+      "need_for_approval": "Driven by a desire to be valued and loved by many, often through public roles.",
+      "identity_through_roles": "Define themselves by their social contributions and the recognition they receive.",
+      "fear_of_obscurity": "Anxious about being overlooked or deemed unimportant within their social circles."
+    },
+    "behavioral_tendencies": {
+      "community_engagement": "Actively participate in organizing events and fostering group cohesion.",
+      "mentorship": "Take on roles that allow them to guide and support others, reinforcing their value.",
+      "image_consciousness": "Maintain a persona that aligns with societal expectations to ensure continued approval."
+    },
+      "traits": [
+        "manipulative leader",
+        "calculating and secretly egoistic",
+        "seeks submissiveness as reward",
+        "benevolent and machiavellian",
+        "weaponizes people-knowledge",
+        "servicing and people-pleasing",
+        "extraverted"
+      ],
+      "anti_traits": [
+        "withdrawn",
+        "neglecting",
+        "self-denying",
+        "invisible",
+        "directionless"
+      ],
+      "often_confused_with": [
+        "so1",
+        "so3",
+        "sx5",
+        "so7"
+      ],
+      "neurosis": "Fear of irrelevance drives manipulative helpfulness, leveraging dependency to secure loyalty.",
+      "childhood": "Believed love was earned through being indispensable in group settings, often suppressing personal desires."
+    },
+    {
+      "enneagram": "sx2",
+      "focus": "Heart-centered",
+      "archetype": "The Intimacy",
+      "core_traits": {
+      "intense_connection": "Focus deeply on forming strong, intimate bonds with specific individuals.",
+      "emotional_expressiveness": "Openly share feelings and desires to foster closeness and mutual understanding.",
+      "passionate_support": "Demonstrate love through dedicated attention and unwavering support to chosen individuals."
+    },
+    "emotional_landscape": {
+      "fear_of_abandonment": "Highly sensitive to signs of disconnection, fearing loss of their intimate bonds.",
+      "jealousy": "May experience envy when their deep connections are threatened or divided.",
+      "validation_through_intimacy": "Seek affirmation of their worth through the depth and intensity of personal relationships."
+    },
+    "behavioral_tendencies": {
+      "focused_attention": "Prioritize the needs and well-being of their close connections, sometimes to their own detriment.",
+      "emotional_intensity": "Engage in relationships with fervor, often leading to dramatic expressions of love and concern.",
+      "boundary_blurring": "May struggle to maintain personal boundaries, becoming deeply enmeshed with others."
+    },
+      "traits": [
+        "seeks intimate love",
+        "emotionally intense",
+        "naive group member",
+        "flirtatious caregiver",
+        "clingy devotion",
+        "servicing and people-pleasing",
+        "extraverted",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "cold",
+        "uninterested in connection",
+        "casual",
+        "stoic",
+        "reserved"
+      ],
+      "often_confused_with": [
+        "sp2",
+        "sp7",
+        "sx8"
+      ],
+      "neurosis": "Fear of rejection demands intense emotional investment, conflating intimacy with control.",
+      "childhood": "Associated love with intense one-on-one connections, sometimes becoming overly dependent on close relationships."
+    },
+    {
+      "enneagram": "sp3",
+      "focus": "Heart-centered",
+      "archetype": "The Diligence",
+      "core_traits": {
+      "modesty": "Avoid overt displays of vanity, striving to be seen as virtuous and dependable.",
+      "work_ethic": "Highly industrious, seeking security through self-sufficiency and productivity.",
+      "countertype_behavior": "May not fit the typical image-conscious Type 3, focusing instead on being genuinely good."
+    },
+    "emotional_landscape": {
+      "self_deceit": "Pride themselves on not being vain, which can mask underlying desires for recognition.",
+      "anxiety": "Experience stress related to maintaining their image of virtue and competence.",
+      "inner_conflict": "Struggle between genuine humility and the hidden desire for acknowledgment."
+    },
+    "behavioral_tendencies": {
+      "reliability": "Consistently dependable, often taking on responsibilities to prove their worth.",
+      "avoidance_of_spotlight": "Prefer to be recognized for their hard work rather than seeking the limelight.",
+      "focus_on_security": "Prioritize creating a stable and secure environment through diligence."
+    },
+      "traits": [
+        "efficient and hard-working",
+        "seeks security in money",
+        "private achiever",
+        "humble",
+        "achievement-focused"
+      ],
+      "anti_traits": [
+        "lazy",
+        "boastful",
+        "messy",
+        "unambitious",
+        "scattered",
+        "ascetic"
+      ],
+      "often_confused_with": [
+        "sp1",
+        "sp4",
+        "so6"
+      ],
+      "neurosis": "Fear of inadequacy hides behind pragmatic achievement, equating security with self-worth.",
+      "childhood": "Learned that success and productivity were the paths to receiving attention and approval."
+    },
+    {
+      "enneagram": "so3",
+      "focus": "Heart-centered",
+      "archetype": "The Performance",
+      "core_traits": {
+      "image_consciousness": "Highly aware of their public image, striving to be seen as successful and influential.",
+      "competitiveness": "Driven to achieve and often compare themselves to others to gauge success.",
+      "social_navigation": "Skilled at reading social cues and adapting to meet group expectations."
+    },
+    "emotional_landscape": {
+      "self_deceit": "May lose touch with their authentic self by constantly adapting to external standards.",
+      "need_for_approval": "Seek validation through achievements and recognition from others.",
+      "fear_of_failure": "Anxiety stems from the possibility of not meeting societal expectations."
+    },
+    "behavioral_tendencies": {
+      "networking": "Actively build connections to enhance their status and opportunities.",
+      "presentation": "Invest time in curating a polished and successful image.",
+      "leadership": "Often take on leadership roles to assert their competence and gain admiration."
+    },
+      "traits": [
+        "neglecting morality",
+        "social chameleon for recognition",
+        "seeks acceptance, not power",
+        "ambitious and competitive, but directionless",
+        "envious, vain and deceptive",
+        "obsessed of image and success for the sake of it",
+        "narcissistic and emotionally detached",
+        "achievement-focused",
+        "extraverted"
+      ],
+      "anti_traits": [
+        "altruistic",
+        "transparent",
+        "honest",
+        "sincere",
+        "unimpressive",
+        "ascetic",
+        "idealistic",
+        "striving for power"
+      ],
+      "often_confused_with": [
+        "so1",
+        "so2",
+        "so7",
+        "sp7"
+      ],
+      "neurosis": "Fear of worthlessness compels social chameleonism, polishing image to mask inner emptiness.",
+      "childhood": "Felt compelled to embody the ideal image to gain acceptance within community or family structures."
+    },
+    {
+      "enneagram": "sx3",
+      "archetype": "The Beauty",
+      "core_traits": {
+      "charisma": "Exude charm and allure, focusing on being attractive and desirable.",
+      "emotional_intensity": "Experience deep emotions, channeling them into personal connections.",
+      "focus_on_relationships": "Seek validation through close, intimate relationships rather than broad social approval."
+    },
+    "emotional_landscape": {
+      "self_deceit": "May present an idealized version of themselves to maintain relational harmony.",
+      "sensitivity": "Highly attuned to the emotional states of others, sometimes at the expense of their own needs.",
+      "fear_of_rejection": "Anxiety arises from the potential loss of deep connections or not meeting partner expectations."
+    },
+    "behavioral_tendencies": {
+      "seductiveness": "Use charm to forge strong bonds and be seen as indispensable to significant others.",
+      "emotional_support": "Provide unwavering support to loved ones, often neglecting personal boundaries.",
+      "adaptability": "Change themselves to align with the desires and needs of close relationships."
+    },
+      "focus": "Heart-centered",
+      "traits": [
+        "seductive achiever",
+        "charismatic",
+        "driven by beautiful admiration",
+        "glamorous performer",
+        "achievement-focused",
+        "extraverted",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "emotionally dull",
+        "indifferent to attention",
+        "emotionally flat",
+        "forgettable",
+        "self-effacing"
+      ],
+      "often_confused_with": [
+        "sp2",
+        "sx2",
+        "sp6",
+        "sx9"
+      ],
+      "neurosis": "Fear of ordinariness manifests as seductive charm, seeking admiration to validate existence.",
+      "childhood": "Believed personal value was tied to being attractive or desirable to others, leading to performance in relationships."
+    },
+    {
+      "enneagram": "sp4",
+      "archetype": "The Tenacity",
+      "core_traits": {
+      "stoicism": "Appear emotionally resilient, often concealing inner turmoil behind a composed exterior.",
+      "self-reliance": "Prefer to handle challenges independently, minimizing reliance on others.",
+      "endurance": "Demonstrate a high tolerance for emotional pain and hardship."
+    },
+    "emotional_landscape": {
+      "internalized_suffering": "Process emotional distress privately, often without expressing it outwardly.",
+      "fear_of_burdening": "Avoid sharing feelings to prevent being a burden to others.",
+      "longing_for_authenticity": "Desire genuine connections but struggle to express vulnerability."
+    },
+    "behavioral_tendencies": {
+      "reserved_demeanor": "Maintain a calm and collected presence, even in emotional situations.",
+      "independent_problem_solving": "Tackle issues alone, rarely seeking external support.",
+      "creative_expression": "Channel complex emotions into artistic or creative outlets."
+    },
+      "focus": "Heart-centered",
+      "traits": [
+        "romanticizes own suffering",
+        "stoic and determined",
+        "seeks validation through defending others",
+        "fights first, asks never",
+        "counter-phobic and protective",
+        "authenticity-driven and idealistic",
+        "introverted",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "running from feelings",
+        "methodical",
+        "attention-seeking",
+        "chaotic",
+        "needy",
+        "existential"
+      ],
+      "often_confused_with": [
+        "sx6",
+        "sp1",
+        "so4",
+        "so8"
+      ],
+      "neurosis": "Fear of defenselessness withdraws into private melancholy, romanticizing suffering to avoid exposure.",
+      "childhood": "Grew up feeling emotionally neglected and powerless, leading to a focus on strength and internal suffering."
+    },
+    {
+      "enneagram": "so4",
+      "archetype": "The Shame",
+      "core_traits": {
+      "social_comparison": "Frequently compare themselves to others, often feeling inferior.",
+      "desire_for_belonging": "Seek acceptance and inclusion within social groups.",
+      "sensitivity_to_rejection": "Highly attuned to signs of exclusion or disapproval."
+    },
+    "emotional_landscape": {
+      "shame": "Experience deep feelings of inadequacy and self-consciousness.",
+      "envy": "Feel envious of others' perceived happiness or success.",
+      "emotional_transparency": "Openly express emotions, sometimes leading to vulnerability."
+    },
+    "behavioral_tendencies": {
+      "self-deprecation": "Downplay achievements and focus on perceived flaws.",
+      "seeking_validation": "Look to others for affirmation and recognition.",
+      "emotional_expressiveness": "Share feelings openly, often through storytelling or art."
+    },
+      "focus": "Heart-centered",
+      "traits": [
+        "expressive, but self-degrading outsider",
+        "ideals vs reality tension",
+        "symbolic and introspective martyr",
+        "philosophical and idealistic",
+        "seeks strength for coping and acceptance",
+        "anxious and counter-phobic",
+        "authenticity-driven",
+        "introverted",
+        "anti-sensory"
+      ],
+      "anti_traits": [
+        "running from feelings",
+        "socially confident",
+        "conventional",
+        "emotionally dull",
+        "grounded"
+      ],
+      "often_confused_with": [
+        "sp4",
+        "sx6",
+        "sx4",
+        "sx5",
+        "sp6"
+      ],
+      "neurosis": "Fear of being ordinary fuels envious comparison, clinging to outsider status to feel unique.",
+      "childhood": "Felt different or misunderstood within groups, fostering a sense of longing for belonging."
+    },
+    {
+      "enneagram": "sx4",
+      "archetype": "The Hate",
+      "core_traits": {
+      "intensity": "Experience emotions deeply, leading to passionate relationships.",
+      "desire_for_uniqueness": "Strive to be seen as special or different from others.",
+      "competitive_nature": "Engage in rivalry to assert individuality and worth."
+    },
+    "emotional_landscape": {
+      "emotional_highs_and_lows": "Oscillate between intense joy and profound despair.",
+      "fear_of_abandonment": "Worry about being left or unloved by close connections.",
+      "expressive_anger": "May display anger openly when feeling misunderstood or rejected."
+    },
+    "behavioral_tendencies": {
+      "dramatic_expression": "Use expressive gestures and language to convey emotions.",
+      "deep_connections": "Form intense bonds, often seeking soulful relationships.",
+      "boundary_testing": "Challenge norms and expectations to assert individuality."
+    },
+      "focus": "Heart-centered",
+      "traits": [
+        "hateful to self and others, but rationalizing",
+        "hysterical intensity",
+        "may repress emotions to be recognized",
+        "identity-obsessed",
+        "intimacy-possessed",
+        "fears betrayal",
+        "authenticity-driven"
+      ],
+      "anti_traits": [
+        "running from feelings",
+        "neutral",
+        "emotionally distant",
+        "bland",
+        "superficial",
+        "emotionally even"
+      ],
+      "often_confused_with": [
+        "sx1",
+        "sx6",
+        "sx8"
+      ],
+      "neurosis": "Fear of being unlovable exaggerates emotional extremes, conflating intensity with authenticity.",
+      "childhood": "Experienced intense emotional highs and lows in close relationships, seeking depth to fill inner voids."
+    },
+    {
+      "enneagram": "sp5",
+      "archetype": "The Observance",
+      "core_traits": {
+      "self_sufficiency": "Prioritize autonomy and independence, often minimizing needs to avoid reliance on others.",
+      "privacy": "Highly value personal space and boundaries, creating a 'castle' to retreat into.",
+      "emotional_detachment": "Tend to suppress emotions, focusing on intellectual pursuits over emotional expression."
+    },
+    "emotional_landscape": {
+      "fear_of_intrusion": "Experience anxiety about others encroaching on their personal space or resources.",
+      "aversion_to_dependency": "Discomfort with relying on others, leading to isolation.",
+      "need_for_control": "Desire to manage their environment to prevent unexpected demands or intrusions."
+    },
+    "behavioral_tendencies": {
+      "minimalism": "Adopt a minimalist lifestyle to reduce external dependencies.",
+      "withdrawal": "Pull away from social interactions to conserve energy.",
+      "information_hoarding": "Accumulate knowledge as a means of feeling secure and prepared."
+    },
+      "focus": "Head-centered",
+      "traits": [
+        "cynical, but humble",
+        "self-contained",
+        "knowledge-focused",
+        "truth-seeking over identity-seeking",
+        "withdrawn",
+        "minimalist thinker",
+        "detached",
+        "introverted"
+      ],
+      "anti_traits": [
+        "loud",
+        "needy",
+        "exposing",
+        "emotionally expressive",
+        "team-dependent",
+        "engaged"
+      ],
+      "often_confused_with": [
+        "so6",
+        "sp7",
+        "sp9"
+      ],
+      "neurosis": "Fear of incompetence isolates behind knowledge-hoarding, withdrawing to avoid demands.",
+      "childhood": "Felt overwhelmed by demands, retreating into solitude and valuing self-sufficiency."
+    },
+    {
+      "enneagram": "so5",
+      "focus": "Head-centered",
+      "archetype": "The Intellectualism",
+      "core_traits": {
+      "intellectual_engagement": "Seek to understand complex systems and ideas, often becoming experts in specific fields.",
+      "abstract_thinking": "Focus on theoretical concepts and overarching principles.",
+      "community_observation": "Observe social structures and dynamics, often from a detached standpoint."
+    },
+    "emotional_landscape": {
+      "fear_of_incompetence": "Concerned about not knowing enough or being seen as uninformed.",
+      "desire_for_recognition": "Seek acknowledgment for their knowledge and insights.",
+      "emotional_distance": "Maintain a level of detachment to preserve objectivity."
+    },
+    "behavioral_tendencies": {
+      "knowledge_sharing": "Engage in teaching or mentoring roles to disseminate information.",
+      "network_building": "Form connections based on shared intellectual interests.",
+      "idealism": "Pursue high ideals and abstract goals, sometimes at the expense of practical considerations."
+    },
+      "traits": [
+        "hyper-intellectual",
+        "observer",
+        "coldly analytical",
+        "disconnected from emotions",
+        "elitist",
+        "detached",
+        "introverted",
+        "anti-sensory"
+      ],
+      "anti_traits": [
+        "emotionally reactive",
+        "tribal",
+        "assertive",
+        "warm",
+        "tribally expressive"
+      ],
+      "often_confused_with": [
+        "so1",
+        "sp5",
+        "so6",
+        "so7"
+      ],
+      "neurosis": "Fear of helplessness detaches into cold analysis, rejecting emotion to feel in control.",
+      "childhood": "Believed that knowledge and expertise were necessary to gain social standing and avoid feelings of inadequacy."
+    },
+    {
+      "enneagram": "sx5",
+      "focus": "Head-centered",
+      "archetype": "The Exclusivity",
+      "core_traits": {
+      "intensity": "Experience emotions deeply, leading to passionate interests and relationships.",
+      "romanticism": "Hold idealized views of love and connection.",
+      "emotional_expressiveness": "More openly display emotions compared to other Type 5 subtypes."
+    },
+    "emotional_landscape": {
+      "fear_of_rejection": "Anxiety about being misunderstood or emotionally exposed.",
+      "desire_for_connection": "Seek deep, meaningful relationships while fearing vulnerability.",
+      "inner_conflict": "Struggle between the need for intimacy and the desire for independence."
+    },
+    "behavioral_tendencies": {
+      "creative_expression": "Channel intense emotions into artistic or creative pursuits.",
+      "selective_sharing": "Open up emotionally to a chosen few, seeking profound connections.",
+      "idealization": "Place partners or close connections on a pedestal, leading to potential disappointment."
+    },
+      "traits": [
+        "mystical",
+        "focused on deep connections",
+        "conceptual intensity",
+        "prone to weaponize psychology",
+        "romantic",
+        "detached",
+        "introverted",
+        "anti-sensory"
+      ],
+      "anti_traits": [
+        "loud and chaotic",
+        "open-hearted",
+        "practical",
+        "surface-level",
+        "grounded",
+        "emotionally clear"
+      ],
+      "often_confused_with": [
+        "so2",
+        "so4",
+        "sx4",
+        "sp5"
+      ],
+      "neurosis": "Fear of intrusion obsesses over mystical depth, using concepts to guard against vulnerability.",
+      "childhood": "Sought deep connections but feared intrusion, leading to a push-pull dynamic in relationships."
+    },
+    {
+      "enneagram": "sp6",
+      "focus": "Head-centered",
+      "archetype": "The Warmth",
+      "core_traits": {
+      "warmth": "Exhibit a friendly and affable demeanor to foster alliances and ensure personal safety.",
+      "phobic_tendencies": "Highly aware of fear, often seeking protection through relationships.",
+      "dependency": "Rely on trusted individuals for guidance and reassurance."
+    },
+    "emotional_landscape": {
+      "anxiety": "Experience persistent worry about potential threats and uncertainties.",
+      "self-doubt": "Frequently question their decisions and seek external validation.",
+      "conflict_avoidance": "Suppress anger to maintain harmony and avoid confrontation."
+    },
+    "behavioral_tendencies": {
+      "relationship_building": "Invest in forming close bonds to create a sense of security.",
+      "hesitation": "Display indecisiveness due to fear of making wrong choices.",
+      "support_seeking": "Look to others for protection and affirmation."
+    },
+      "traits": [
+        "prepared and anticipating",
+        "responsible and realistic",
+        "warm and soft, but logical",
+        "emotionally fragile",
+        "avoidance of violence and power",
+        "seeks security, but not validation",
+        "anxiety-driven",
+        "introverted"
+      ],
+      "anti_traits": [
+        "impulsive",
+        "naive",
+        "chaotic",
+        "carefree",
+        "unstructured",
+        "deceptive"
+      ],
+      "often_confused_with": [
+        "sp2",
+        "sx5",
+        "sx9"
+      ],
+      "neurosis": "Fear of uncertainty fixates on preparedness, masking anxiety with skeptical warmth.",
+      "childhood": "Grew up in unpredictable environments, leading to heightened anxiety and reliance on close people."
+    },
+    {
+      "enneagram": "so6",
+      "focus": "Head-centered",
+      "archetype": "The Duty",
+      "core_traits": {
+      "duty_oriented": "Adhere strictly to rules and authority to find security within structures.",
+      "loyalty": "Demonstrate unwavering commitment to groups or ideologies they trust.",
+      "responsibility": "Take on roles that emphasize accountability and service."
+    },
+    "emotional_landscape": {
+      "fear_of_disapproval": "Anxious about being judged or rejected by their community or authority figures.",
+      "ideological_rigidity": "Struggle with ambiguity, preferring clear guidelines and beliefs.",
+      "internal_conflict": "Experience tension between personal doubts and the need to appear certain."
+    },
+    "behavioral_tendencies": {
+      "rule_following": "Strictly observe societal norms and expectations.",
+      "group_alignment": "Align with organizations or movements that provide a clear sense of purpose.",
+      "skepticism": "Question new ideas until they align with established beliefs."
+    },
+      "traits": [
+        "structured and self-critical",
+        "skeptical loyalist",
+        "rigid and hyperrational",
+        "deeply lawful and dutiful",
+        "responsible and commited",
+        "anxiety-driven",
+        "introverted"
+      ],
+      "anti_traits": [
+        "rebellious",
+        "independent",
+        "apathetic",
+        "chaotic",
+        "emotionally unstable",
+        "deceptive"
+      ],
+      "often_confused_with": [
+        "sp1",
+        "so5",
+        "so7"
+      ],
+      "neurosis": "Fear of disloyalty enforces rigid rationality, projecting stability to protect the group.",
+      "childhood": "Felt the need to adhere strictly to group norms to find security and avoid rejection."
+    },
+    {
+      "enneagram": "sx6",
+      "focus": "Head-centered",
+      "archetype": "The Strength",
+      "core_traits": {
+      "counterphobic_behavior": "Confront fears head-on, often displaying assertiveness or aggression.",
+      "intensity": "Engage deeply in relationships, seeking strong emotional connections.",
+      "rebelliousness": "Challenge authority and norms as a means of asserting independence."
+    },
+    "emotional_landscape": {
+      "inner_turmoil": "Experience a mix of fear and defiance, leading to emotional volatility.",
+      "trust_issues": "Struggle with trusting others, leading to testing behaviors in relationships.",
+      "vulnerability": "Mask insecurities with boldness, fearing exposure of true feelings."
+    },
+    "behavioral_tendencies": {
+      "risk-taking": "Engage in daring activities to prove courage and suppress fear.",
+      "protectiveness": "Defend loved ones fiercely, sometimes to the point of overbearing behavior.",
+      "emotional_testing": "Assess the loyalty and reliability of close connections through challenges."
+    },
+      "traits": [
+        "the lone wolf",
+        "no-nonsense and hyperrational",
+        "fight over flight",
+        "violent and aggressive",
+        "denies emotions to stay vigilant",
+        "anxiety-driven",
+        "introverted",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "puppetmaster",
+        "emotional",
+        "introspective",
+        "idealistic",
+        "deceptive",
+        "treacherous",
+        "chill and stoic"
+      ],
+      "often_confused_with": [
+        "sp4",
+        "sx4",
+        "sp8"
+      ],
+      "neurosis": "Fear of danger forms through tension, oscillating between loyalty and aggression.",
+      "childhood": "Experienced trust issues in close relationships, oscillating between dependence and skepticism."
+    },
+    {
+      "enneagram": "sp7",
+      "focus": "Head-centered",
+      "archetype": "The Family",
+      "core_traits": {
+      "pragmatic_hedonism": "Pursue pleasure through tangible, material means, focusing on comfort and security.",
+      "opportunistic": "Identify and exploit opportunities to fulfill desires, often with a persuasive charm.",
+      "selective_generosity": "Extend warmth and kindness to chosen individuals who align with their interests."
+    },
+    "emotional_landscape": {
+      "avoidance_of_pain": "Distract from discomfort through indulgence in pleasurable activities.",
+      "fear_of_deprivation": "Anxiety about lacking resources or experiences drives their pursuit of abundance.",
+      "self-justification": "Rationalize actions to maintain a positive self-image despite possible manipulative behaviors."
+    },
+    "behavioral_tendencies": {
+      "network_cultivation": "Build and maintain 'families' that provide mutual access to desired experiences or resources.",
+      "persuasive_communication": "Utilize charm and wit to influence others for personal gain.",
+      "risk_of_addiction": "Prone to overindulgence in substances or activities that offer immediate gratification."
+    },
+      "traits": [
+        "future planner and strategist",
+        "charlatanic trickster",
+        "deceitful and libertarian",
+        "tends to build alliances/families",
+        "may be cynical or charismatic",
+        "escapes through stimulation",
+        "curiously avoids boredom",
+        "intellectual narcissist"
+      ],
+      "anti_traits": [
+        "systematically ascetic",
+        "boring",
+        "rigid",
+        "consistent",
+        "apathetic"
+      ],
+      "often_confused_with": [
+        "so3",
+        "so7",
+        "sp8",
+        "sp9"
+      ],
+      "neurosis": "Fear of deprivation escapes into stimulation, planning futures to avoid present pain.",
+      "childhood": "Learned to seek pleasure and avoid pain by focusing on material comforts and planning for security."
+    },
+    {
+      "enneagram": "so7",
+      "focus": "Head-centered",
+      "archetype": "The Pharisaism",
+      "core_traits": {
+      "idealistic_altruism": "Strive to be seen as selfless and morally upright, often suppressing personal desires to serve others.",
+      "false_altruism": "Engage in acts of service not solely out of genuine concern, but to reinforce a self-image of goodness and gain recognition.",
+      "saintness": "Adopt a persona of moral purity and self-sacrifice, sometimes masking underlying self-interest."
+    },
+    "emotional_landscape": {
+      "image_consciousness": "Desire to be perceived as altruistic and virtuous, leading to internal conflict when personal needs arise.",
+      "repressed_gluttony": "Suppress personal desires, leading to hidden cravings that may manifest in indirect ways.",
+      "self-deception": "Convince themselves of their selflessness, while unconsciously seeking validation and admiration."
+    },
+    "behavioral_tendencies": {
+      "sacrificial_service": "Take on responsibilities and help others, sometimes beyond their capacity, to maintain their altruistic image.",
+      "avoidance_of_selfishness": "Deny personal needs and desires to avoid appearing self-centered.",
+      "seeking_validation": "Look for acknowledgment and appreciation for their sacrifices, reinforcing their self-image."
+    },
+      "traits": [
+        "hyper-intellectual",
+        "egoistic altruist",
+        "self-sacrificing charlatan",
+        "self-ordering visionary",
+        "abstract narcissist",
+        "ascetic and idealistic",
+        "curiously avoids boredom",
+        "rebellious and willful",
+        "divine machinery"
+      ],
+      "anti_traits": [
+        "emotional",
+        "grounded",
+        "pointless",
+        "aloof"
+      ],
+      "often_confused_with": [
+        "sp1",
+        "so1",
+        "so2",
+        "so5"
+      ],
+      "neurosis": "Fear of suffering masks as saintly optimism, avoiding gloom through performative altruism.",
+      "childhood": "Felt the need to be entertaining and 'saint' to gain social acceptance and distract from inner anxieties."
+    },
+    {
+      "enneagram": "sx7",
+      "focus": "Head-centered",
+      "archetype": "The Imagination",
+      "core_traits": {
+      "romanticism": "View the world through an idealized lens, often envisioning perfect scenarios.",
+      "intensity": "Experience emotions deeply, leading to passionate pursuits and relationships.",
+      "suggestibility": "Easily influenced by captivating ideas or individuals, sometimes leading to naivety."
+    },
+    "emotional_landscape": {
+      "escapism": "Use imagination and fantasy to avoid confronting unpleasant realities.",
+      "fear_of_boredom": "Anxiety about monotony drives the constant search for new and exciting experiences.",
+      "emotional_volatility": "Rapid shifts in mood based on the intensity of experiences or relationships."
+    },
+    "behavioral_tendencies": {
+      "novelty_seeking": "Pursue new adventures, ideas, or relationships to maintain a sense of excitement.",
+      "idealization": "Place people or experiences on a pedestal, potentially leading to disappointment.",
+      "boundary_challenging": "Test limits in pursuit of deeper connections or heightened experiences."
+    },
+      "traits": [
+        "idealistic, but humble",
+        "curious and scattered",
+        "romantic escapist",
+        "playfully seductive",
+        "spontaneous connector",
+        "charlatanic trickster",
+        "curiously avoids boredom",
+        "extraverted",
+        "anti-sensory"
+      ],
+      "anti_traits": [
+        "cautious",
+        "emotionally closed",
+        "predictable",
+        "self-controlled",
+        "introspective"
+      ],
+      "often_confused_with": [
+        "sp2",
+        "so4",
+        "sx4",
+        "sx8"
+      ],
+      "neurosis": "Fear of boredom seeks endless, often pointless novelty, using spontaneity to evade emotional depth.",
+      "childhood": "Pursued intense experiences and relationships to escape feelings of emptiness or limitation."
+    },
+    {
+      "enneagram": "sp8",
+      "focus": "Gut-centered",
+      "archetype": "The Survival",
+      "core_traits": {
+      "self_reliance": "Prioritize autonomy and independence, focusing on securing personal resources and survival.",
+      "pragmatism": "Approach situations with a practical mindset, emphasizing tangible results over emotional considerations.",
+      "protectiveness": "Guard personal boundaries fiercely, often acting as a protector for themselves and close ones."
+    },
+    "emotional_landscape": {
+      "emotional_repression": "Tend to suppress emotions to maintain control and avoid vulnerability.",
+      "fear_of_dependency": "Avoid relying on others, viewing dependence as a potential weakness.",
+      "intolerance_for_weakness": "May struggle to empathize with perceived weakness in themselves or others."
+    },
+    "behavioral_tendencies": {
+      "assertiveness": "Take decisive actions to secure needs and protect interests.",
+      "resource_accumulation": "Focus on gathering resources to ensure stability and self-sufficiency.",
+      "boundary_enforcement": "Set and enforce strict personal boundaries to maintain autonomy."
+    },
+      "traits": [
+        "territorial solitude",
+        "amoral",
+        "reckless and non-strategic",
+        "pragmatic power-seeker",
+        "stoically dominant",
+        "seeking adrenaline",
+        "anti-social",
+        "anti-intellectual",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "manipulative",
+        "introspective",
+        "sly",
+        "calculating",
+        "intellectual",
+        "plotting",
+        "idealistic",
+        "strategic"
+      ],
+      "often_confused_with": [
+        "sx6",
+        "sp7",
+        "sx8"
+      ],
+      "neurosis": "Fear of vulnerability drives compulsive control over their environment, rejecting emotions to avoid perceived weakness.",
+      "childhood": "Grew up in environments where vulnerability was unsafe, leading to a focus on control and self-protection."
+    },
+    {
+      "enneagram": "so8",
+      "focus": "Gut-centered",
+      "archetype": "The Complicity",
+      "core_traits": {
+      "group_loyalty": "Demonstrate strong allegiance to groups or communities they identify with.",
+      "protective_leadership": "Assume leadership roles to safeguard and advocate for their group.",
+      "social_rebellion": "Challenge societal norms and injustices, especially those affecting their community."
+    },
+    "emotional_landscape": {
+      "empathy_for_underdogs": "Feel a deep responsibility to defend and uplift marginalized individuals.",
+      "fear_of_betrayal": "Remain vigilant against potential disloyalty within their social circles.",
+      "controlled_expression": "Manage emotional displays to maintain authority and group cohesion."
+    },
+    "behavioral_tendencies": {
+      "community_advocacy": "Actively work to improve conditions for their group or community.",
+      "network_building": "Cultivate connections to strengthen their group's influence and security.",
+      "norm_challenging": "Question and confront societal structures that they perceive as unjust."
+    },
+      "traits": [
+        "tribe leader",
+        "publicly assertive",
+        "justice-driven",
+        "mobilizing",
+        "anti-social",
+        "extraverted",
+        "anti-intuitive",
+        "seeking adrenaline",
+        "anti-intellectual"
+      ],
+      "anti_traits": [
+        "intellectual",
+        "apathetic",
+        "submissive",
+        "sly and plotting",
+        "manipulative",
+        "indecisive",
+        "self-doubting",
+        "strategic",
+        "puppetmaster"
+      ],
+      "often_confused_with": [
+        "sx1",
+        "so2",
+        "so7",
+        "sx8"
+      ],
+      "neurosis": "Fear of social powerlessness manifests as hyper-assertiveness and tribal dominance, masking insecurity through public justice enforcement.",
+      "childhood": "Felt responsible for protecting others, developing a strong sense of justice and leadership."
+    },
+    {
+      "enneagram": "sx8",
+      "focus": "Gut-centered",
+      "archetype": "The Possessiveness",
+      "core_traits": {
+      "intensity": "Engage with the world in a passionate and forceful manner, seeking deep connections.",
+      "dominance": "Desire to assert control in relationships, often testing boundaries.",
+      "magnetism": "Exude a charismatic presence that draws others in."
+    },
+    "emotional_landscape": {
+      "emotional_volatility": "Experience strong emotions that can lead to impulsive actions.",
+      "fear_of_vulnerability": "Guard against emotional exposure, fearing loss of control.",
+      "possessiveness": "Develop intense attachments, sometimes leading to controlling behaviors."
+    },
+    "behavioral_tendencies": {
+      "relationship_testing": "Challenge partners to prove loyalty and strength.",
+      "confrontational_approach": "Address conflicts directly, often with intensity.",
+      "passion_pursuit": "Seek out experiences and relationships that offer emotional and physical intensity."
+    },
+      "traits": [
+        "explosive temper",
+        "seeking adrenaline",
+        "intense primal-like bonds",
+        "unhinged and hyperemotional",
+        "magnetically dangerous",
+        "anti-social",
+        "extraverted, but bad at smooth talking",
+        "anti-intellectual",
+        "anti-intuitive",
+        "anti-manipulative"
+      ],
+      "anti_traits": [
+        "intelligent",
+        "intellectual",
+        "puppetmaster",
+        "cold",
+        "avoidant",
+        "team-switching",
+        "diplomatic",
+        "restrained"
+      ],
+      "often_confused_with": [
+        "sx2",
+        "sx4",
+        "sp8"
+      ],
+      "neurosis": "Fear of betrayal fuels possessive loyalty, conflating intensity with safety in relationships.",
+      "childhood": "Experienced betrayal or loss in close relationships, leading to intense and sometimes confrontational bonds, while recklessly seeking adrenaline."
+    },
+    {
+      "enneagram": "sp9",
+      "focus": "Gut-centered",
+      "archetype": "The Appetite",
+      "core_traits": {
+      "comfort_seeking": "Prioritize routines and physical comforts, often engaging in activities like eating, reading, or watching television to maintain a sense of peace.",
+      "practicality": "Grounded and concrete in their approach, focusing on tangible experiences over abstract ideas.",
+      "stubbornness": "Exhibit resistance to change, especially when their comfort is threatened."
+    },
+    "emotional_landscape": {
+      "anger_repression": "Suppress anger to avoid conflict, which may manifest as passive-aggressive behavior or irritability.",
+      "emotional_detachment": "Tend to 'go to sleep' to their own emotions, avoiding awareness of internal discomfort.",
+      "self-neglect": "Overlook personal needs and desires in favor of maintaining external peace."
+    },
+    "behavioral_tendencies": {
+      "routine_adherence": "Stick to familiar habits and routines to create a sense of stability.",
+      "solitude_preference": "Enjoy spending time alone, finding it more relaxing and grounding.",
+      "resistance_to_pressure": "React to external demands with passive resistance, often digging in their heels when feeling pressured."
+    },
+      "traits": [
+        "anti-intuitive",
+        "resistant to disruption",
+        "quietly stubborn",
+        "routine-bound",
+        "grounded and overly physical",
+        "dissociated",
+        "comfort-seeking"
+      ],
+      "anti_traits": [
+        "confrontational",
+        "attention-seeking",
+        "emotionally volatile",
+        "impulsive",
+        "showy",
+        "romantic",
+        "existential"
+      ],
+      "often_confused_with": [
+        "sp1",
+        "sp5",
+        "sp7"
+      ],
+      "neurosis": "Fear of disruption leads to passive stubbornness, prioritizing comfort over authentic engagement.",
+      "childhood": "Felt overlooked or unimportant, leading to a focus on comfort and routine to maintain peace."
+    },
+    {
+      "enneagram": "so9",
+      "focus": "Gut-centered",
+      "archetype": "The Harmony",
+      "core_traits": {
+      "group_oriented": "Focus on being part of a group, often working hard to meet the group's needs.",
+      "outgoing": "Display sociable and congenial behavior, appearing fun-loving and friendly.",
+      "self-forgetting": "Neglect personal needs by prioritizing the needs of the group."
+    },
+    "emotional_landscape": {
+      "fear_of_disconnection": "Experience anxiety about not belonging, leading to overcompensation through group participation.",
+      "emotional_flatness": "Maintain a cheerful exterior while feeling a persistent sense of not belonging.",
+      "self-doubt": "Question their own existence and sense of self due to constant focus on others."
+    },
+    "behavioral_tendencies": {
+      "workaholism": "Engage in excessive work to support the group, often at the expense of personal well-being.",
+      "conflict_avoidance": "Strive to maintain harmony within the group, avoiding personal conflicts.",
+      "overcommitment": "Take on numerous responsibilities to ensure inclusion and acceptance."
+    },
+      "traits": [
+        "chill peacemaker",
+        "group-oriented and dutiful",
+        "optimistically detached",
+        "conflict-easing charisma",
+        "dissociated",
+        "comfort-seeking",
+        "extraverted",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "aggressive",
+        "isolated",
+        "rigid",
+        "aloof",
+        "contrarian"
+      ],
+      "often_confused_with": [
+        "sp2",
+        "sx3",
+        "sp4",
+        "so7"
+      ],
+      "neurosis": "Fear of conflict creates over-identification with group harmony, detaching from personal needs.",
+      "childhood": "Believed that merging with group expectations was necessary to avoid conflict and gain acceptance."
+    },
+    {
+      "enneagram": "sx9",
+      "focus": "Gut-centered",
+      "archetype": "The Symbiosis",
+      "core_traits": {
+      "merging": "Blend with significant others, adopting their attitudes, opinions, and feelings.",
+      "gentleness": "Exhibit kind, gentle, and shy characteristics, often avoiding assertiveness.",
+      "identity_through_others": "Seek a sense of self by connecting deeply with another person."
+    },
+    "emotional_landscape": {
+      "boundary_dissolution": "Experience a lack of personal boundaries, leading to difficulty distinguishing their own feelings from others'.",
+      "emotional_suppression": "Avoid expressing true thoughts and feelings to maintain harmony in relationships.",
+      "dependency": "Rely on close relationships to provide a sense of purpose and identity."
+    },
+    "behavioral_tendencies": {
+      "agreement_seeking": "Tend to agree with others to avoid conflict, often suppressing personal opinions.",
+      "relationship_fusion": "Become deeply involved in relationships, sometimes losing their own identity.",
+      "passivity": "Display a lack of initiative, waiting for others to take the lead."
+    },
+      "traits": [
+        "grounded and submissive",
+        "relationship-focused",
+        "soul-merging",
+        "dissociated",
+        "emotionally diffused",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "emotionally intense",
+        "dominant",
+        "assertively independent",
+        "calculative",
+        "individualistic"
+      ],
+      "often_confused_with": [
+        "sp2",
+        "sx3",
+        "sp4",
+        "so4",
+        "sx5"
+      ],
+      "neurosis": "Fear of losing identity in relationships results in emotional diffusion, idealizing connection to avoid confrontation.",
+      "childhood": "Prioritized harmony in close relationships, often suppressing personal desires to maintain connection."
+    },
+    {
+      "enneagram": "sp1",
+      "focus": "Gut-centered",
+      "archetype": "The Conscience",
+      "core_traits": {
+      "anxiety_and_vigilance": "Driven by a need to foresee and manage problems, SP1s are highly vigilant and strive to maintain control.",
+      "perfectionism": "They pursue flawlessness and are often harsh self-critics when mistakes occur.",
+      "responsibility": "Often take on serious responsibilities early in life, becoming dependable and self-reliant.",
+      "control_and_structure": "Feel compelled to maintain order and structure, making it hard to relax."
+    },
+    "emotional_landscape": {
+      "inner_critic": "Possess a strong internal judge that causes guilt or a sense of inadequacy.",
+      "suppressed_anger": "Anger is present but usually turned inward, feeding perfectionist tendencies.",
+      "fear_of_relaxation": "Struggle to let go of control, even in situations they cannot influence."
+    },
+    "behavioral_tendencies": {
+      "moral_rigor": "Adhere strictly to personal ethics and expect others to do the same.",
+      "self_sacrifice": "Neglect their own needs in favor of duty, which can lead to resentment and tension.",
+      "efficiency": "Organized, practical, and excel in detail-oriented tasks."
+    },
+      "traits": [
+        "simple and disciplined",
+        "private conscience",
+        "compliant and non-rebellious",
+        "submissive and shy",
+        "stubborn and self-restraining",
+        "overly practical and grounded",
+        "efficiency-driven",
+        "morally rigid",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "complex or impulsive",
+        "loudly moralizing",
+        "hedonistic",
+        "reckless",
+        "attention-hungry",
+        "rebellious",
+        "calculating or plotting",
+        "charismatic or manipulative"
+      ],
+      "often_confused_with": [
+        "sp4",
+        "so6",
+        "sp3",
+        "so7"
+      ],
+      "neurosis": "Fear of imperfection enforces rigid self-discipline, suppressing impulses to maintain moral purity.",
+      "childhood": "Felt love was conditional upon being 'good' or perfect, leading to internalized anger and self-criticism."
+    },
+    {
+      "enneagram": "so1",
+      "focus": "Gut-centered",
+      "archetype": "The Righteousness",
+      "core_traits": {
+      "social_consciousness": "Focused on improving communities and social structures, often taking on leadership roles.",
+      "role_modeling": "Strive to exemplify moral behavior, setting standards for others to follow.",
+      "systematic_thinking": "Approach problems with a structured mindset, aiming for societal betterment."
+    },
+    "emotional_landscape": {
+      "externalized_anger": "Express frustration when societal norms don't align with their ideals.",
+      "sense_of_duty": "Feel a strong obligation to guide others towards moral correctness.",
+      "identity_tied_to_roles": "Self-worth is often linked to their perceived effectiveness in social roles."
+    },
+    "behavioral_tendencies": {
+      "community_involvement": "Actively participate in social causes and community development.",
+      "educational_drive": "Passionate about teaching and mentoring others in ethical practices.",
+      "perfectionism_in_others": "Hold high standards not just for themselves but also for those around them."
+    },
+      "traits": [
+        "principled narcissist",
+        "punishing and authoritarian",
+        "serious moral imposer",
+        "corrective of society",
+        "boldly defies ethics with no trickstery",
+        "brutally honest and virtue-signaling",
+        "self-righteous and machiavellian",
+        "efficiency-driven"
+      ],
+      "anti_traits": [
+        "doubtful",
+        "socially passive",
+        "reckless",
+        "trickster",
+        "ambivalent",
+        "socially slippery"
+      ],
+      "often_confused_with": [
+        "so3",
+        "so7",
+        "so6"
+      ],
+      "neurosis": "Fear of moral failure compels public correction of others, conflating criticism with righteousness.",
+      "childhood": "Grew up feeling responsible for upholding moral standards, suppressing personal emotions to meet societal expectations."
+    },
+    {
+      "enneagram": "sx1",
+      "focus": "Gut-centered",
+      "archetype": "The Zeal",
+      "core_traits": {
+      "intensity_in_relationships": "Seek deep, transformative connections, often idealizing partners.",
+      "passionate_reformer": "Driven to improve others, channeling energy into close relationships.",
+      "emotional_expressiveness": "More openly display emotions compared to other subtypes."
+    },
+    "emotional_landscape": {
+      "outward_anger": "Less repressed anger, which can manifest in passionate advocacy or criticism.",
+      "desire_for_perfection_in_others": "Focus on refining and perfecting those they are close to.",
+      "emotional_highs_and_lows": "Experience intense emotional fluctuations, especially in personal relationships."
+    },
+    "behavioral_tendencies": {
+      "assertiveness": "Bold in pursuing what they believe is right, especially in close relationships.",
+      "transformational_focus": "Aim to bring about significant change in others, sometimes at the expense of self-care.",
+      "boundary_challenges": "May struggle with setting and respecting personal boundaries due to intense involvement."
+    },
+      "traits": [
+        "extraverted",
+        "law-enforcing",
+        "no-nonsense",
+        "zealously attached",
+        "critical to self and others",
+        "anger about corruption",
+        "efficiency-driven",
+        "morally rigid",
+        "anti-intuitive"
+      ],
+      "anti_traits": [
+        "funny",
+        "careless",
+        "emotionally distant",
+        "neutral in values",
+        "hedonistic",
+        "ambivalent",
+        "manipulative"
+      ],
+      "often_confused_with": [
+        "sx4",
+        "sx6",
+        "sx8"
+      ],
+      "neurosis": "Fear of moral compromise creates black-and-white loyalty, idealizing relationships to avoid ambiguity.",
+      "childhood": "Experienced inconsistency in close relationships, prompting a desire to correct or perfect others to ensure safety."
+    }
+  ]
+}

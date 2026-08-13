@@ -1,0 +1,53 @@
+{
+  "SP8": {
+    "core_traits": {
+      "self_reliance": "Prioritize autonomy and independence, focusing on securing personal resources and survival.",
+      "pragmatism": "Approach situations with a practical mindset, emphasizing tangible results over emotional considerations.",
+      "protectiveness": "Guard personal boundaries fiercely, often acting as a protector for themselves and close ones."
+    },
+    "emotional_landscape": {
+      "emotional_repression": "Tend to suppress emotions to maintain control and avoid vulnerability.",
+      "fear_of_dependency": "Avoid relying on others, viewing dependence as a potential weakness.",
+      "intolerance_for_weakness": "May struggle to empathize with perceived weakness in themselves or others."
+    },
+    "behavioral_tendencies": {
+      "assertiveness": "Take decisive actions to secure needs and protect interests.",
+      "resource_accumulation": "Focus on gathering resources to ensure stability and self-sufficiency.",
+      "boundary_enforcement": "Set and enforce strict personal boundaries to maintain autonomy."
+    }
+  },
+  "SO8": {
+    "core_traits": {
+      "group_loyalty": "Demonstrate strong allegiance to groups or communities they identify with.",
+      "protective_leadership": "Assume leadership roles to safeguard and advocate for their group.",
+      "social_rebellion": "Challenge societal norms and injustices, especially those affecting their community."
+    },
+    "emotional_landscape": {
+      "empathy_for_underdogs": "Feel a deep responsibility to defend and uplift marginalized individuals.",
+      "fear_of_betrayal": "Remain vigilant against potential disloyalty within their social circles.",
+      "controlled_expression": "Manage emotional displays to maintain authority and group cohesion."
+    },
+    "behavioral_tendencies": {
+      "community_advocacy": "Actively work to improve conditions for their group or community.",
+      "network_building": "Cultivate connections to strengthen their group's influence and security.",
+      "norm_challenging": "Question and confront societal structures that they perceive as unjust."
+    }
+  },
+  "SX8": {
+    "core_traits": {
+      "intensity": "Engage with the world in a passionate and forceful manner, seeking deep connections.",
+      "dominance": "Desire to assert control in relationships, often testing boundaries.",
+      "magnetism": "Exude a charismatic presence that draws others in."
+    },
+    "emotional_landscape": {
+      "emotional_volatility": "Experience strong emotions that can lead to impulsive actions.",
+      "fear_of_vulnerability": "Guard against emotional exposure, fearing loss of control.",
+      "possessiveness": "Develop intense attachments, sometimes leading to controlling behaviors."
+    },
+    "behavioral_tendencies": {
+      "relationship_testing": "Challenge partners to prove loyalty and strength.",
+      "confrontational_approach": "Address conflicts directly, often with intensity.",
+      "passion_pursuit": "Seek out experiences and relationships that offer emotional and physical intensity."
+    }
+  }
+}

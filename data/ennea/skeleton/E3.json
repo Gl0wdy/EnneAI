@@ -1,0 +1,53 @@
+{
+  "SP3": {
+    "core_traits": {
+      "modesty": "Avoid overt displays of vanity, striving to be seen as virtuous and dependable.",
+      "work_ethic": "Highly industrious, seeking security through self-sufficiency and productivity.",
+      "countertype_behavior": "May not fit the typical image-conscious Type 3, focusing instead on being genuinely good."
+    },
+    "emotional_landscape": {
+      "self_deceit": "Pride themselves on not being vain, which can mask underlying desires for recognition.",
+      "anxiety": "Experience stress related to maintaining their image of virtue and competence.",
+      "inner_conflict": "Struggle between genuine humility and the hidden desire for acknowledgment."
+    },
+    "behavioral_tendencies": {
+      "reliability": "Consistently dependable, often taking on responsibilities to prove their worth.",
+      "avoidance_of_spotlight": "Prefer to be recognized for their hard work rather than seeking the limelight.",
+      "focus_on_security": "Prioritize creating a stable and secure environment through diligence."
+    }
+  },
+  "SO3": {
+    "core_traits": {
+      "image_consciousness": "Highly aware of their public image, striving to be seen as successful and influential.",
+      "competitiveness": "Driven to achieve and often compare themselves to others to gauge success.",
+      "social_navigation": "Skilled at reading social cues and adapting to meet group expectations."
+    },
+    "emotional_landscape": {
+      "self_deceit": "May lose touch with their authentic self by constantly adapting to external standards.",
+      "need_for_approval": "Seek validation through achievements and recognition from others.",
+      "fear_of_failure": "Anxiety stems from the possibility of not meeting societal expectations."
+    },
+    "behavioral_tendencies": {
+      "networking": "Actively build connections to enhance their status and opportunities.",
+      "presentation": "Invest time in curating a polished and successful image.",
+      "leadership": "Often take on leadership roles to assert their competence and gain admiration."
+    }
+  },
+  "SX3": {
+    "core_traits": {
+      "charisma": "Exude charm and allure, focusing on being attractive and desirable.",
+      "emotional_intensity": "Experience deep emotions, channeling them into personal connections.",
+      "focus_on_relationships": "Seek validation through close, intimate relationships rather than broad social approval."
+    },
+    "emotional_landscape": {
+      "self_deceit": "May present an idealized version of themselves to maintain relational harmony.",
+      "sensitivity": "Highly attuned to the emotional states of others, sometimes at the expense of their own needs.",
+      "fear_of_rejection": "Anxiety arises from the potential loss of deep connections or not meeting partner expectations."
+    },
+    "behavioral_tendencies": {
+      "seductiveness": "Use charm to forge strong bonds and be seen as indispensable to significant others.",
+      "emotional_support": "Provide unwavering support to loved ones, often neglecting personal boundaries.",
+      "adaptability": "Change themselves to align with the desires and needs of close relationships."
+    }
+  }
+}

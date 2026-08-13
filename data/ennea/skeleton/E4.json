@@ -1,0 +1,53 @@
+{
+  "SP4": {
+    "core_traits": {
+      "stoicism": "Appear emotionally resilient, often concealing inner turmoil behind a composed exterior.",
+      "self-reliance": "Prefer to handle challenges independently, minimizing reliance on others.",
+      "endurance": "Demonstrate a high tolerance for emotional pain and hardship."
+    },
+    "emotional_landscape": {
+      "internalized_suffering": "Process emotional distress privately, often without expressing it outwardly.",
+      "fear_of_burdening": "Avoid sharing feelings to prevent being a burden to others.",
+      "longing_for_authenticity": "Desire genuine connections but struggle to express vulnerability."
+    },
+    "behavioral_tendencies": {
+      "reserved_demeanor": "Maintain a calm and collected presence, even in emotional situations.",
+      "independent_problem_solving": "Tackle issues alone, rarely seeking external support.",
+      "creative_expression": "Channel complex emotions into artistic or creative outlets."
+    }
+  },
+  "SO4": {
+    "core_traits": {
+      "social_comparison": "Frequently compare themselves to others, often feeling inferior.",
+      "desire_for_belonging": "Seek acceptance and inclusion within social groups.",
+      "sensitivity_to_rejection": "Highly attuned to signs of exclusion or disapproval."
+    },
+    "emotional_landscape": {
+      "shame": "Experience deep feelings of inadequacy and self-consciousness.",
+      "envy": "Feel envious of others' perceived happiness or success.",
+      "emotional_transparency": "Openly express emotions, sometimes leading to vulnerability."
+    },
+    "behavioral_tendencies": {
+      "self-deprecation": "Downplay achievements and focus on perceived flaws.",
+      "seeking_validation": "Look to others for affirmation and recognition.",
+      "emotional_expressiveness": "Share feelings openly, often through storytelling or art."
+    }
+  },
+  "SX4": {
+    "core_traits": {
+      "intensity": "Experience emotions deeply, leading to passionate relationships.",
+      "desire_for_uniqueness": "Strive to be seen as special or different from others.",
+      "competitive_nature": "Engage in rivalry to assert individuality and worth."
+    },
+    "emotional_landscape": {
+      "emotional_highs_and_lows": "Oscillate between intense joy and profound despair.",
+      "fear_of_abandonment": "Worry about being left or unloved by close connections.",
+      "expressive_anger": "May display anger openly when feeling misunderstood or rejected."
+    },
+    "behavioral_tendencies": {
+      "dramatic_expression": "Use expressive gestures and language to convey emotions.",
+      "deep_connections": "Form intense bonds, often seeking soulful relationships.",
+      "boundary_testing": "Challenge norms and expectations to assert individuality."
+    }
+  }
+}
