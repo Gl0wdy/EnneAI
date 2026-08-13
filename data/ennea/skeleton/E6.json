@@ -1,0 +1,53 @@
+{
+  "SP6": {
+    "core_traits": {
+      "warmth": "Exhibit a friendly and affable demeanor to foster alliances and ensure personal safety.",
+      "phobic_tendencies": "Highly aware of fear, often seeking protection through relationships.",
+      "dependency": "Rely on trusted individuals for guidance and reassurance."
+    },
+    "emotional_landscape": {
+      "anxiety": "Experience persistent worry about potential threats and uncertainties.",
+      "self-doubt": "Frequently question their decisions and seek external validation.",
+      "conflict_avoidance": "Suppress anger to maintain harmony and avoid confrontation."
+    },
+    "behavioral_tendencies": {
+      "relationship_building": "Invest in forming close bonds to create a sense of security.",
+      "hesitation": "Display indecisiveness due to fear of making wrong choices.",
+      "support_seeking": "Look to others for protection and affirmation."
+    }
+  },
+  "SO6": {
+    "core_traits": {
+      "duty_oriented": "Adhere strictly to rules and authority to find security within structures.",
+      "loyalty": "Demonstrate unwavering commitment to groups or ideologies they trust.",
+      "responsibility": "Take on roles that emphasize accountability and service."
+    },
+    "emotional_landscape": {
+      "fear_of_disapproval": "Anxious about being judged or rejected by their community or authority figures.",
+      "ideological_rigidity": "Struggle with ambiguity, preferring clear guidelines and beliefs.",
+      "internal_conflict": "Experience tension between personal doubts and the need to appear certain."
+    },
+    "behavioral_tendencies": {
+      "rule_following": "Strictly observe societal norms and expectations.",
+      "group_alignment": "Align with organizations or movements that provide a clear sense of purpose.",
+      "skepticism": "Question new ideas until they align with established beliefs."
+    }
+  },
+  "SX6": {
+    "core_traits": {
+      "counterphobic_behavior": "Confront fears head-on, often displaying assertiveness or aggression.",
+      "intensity": "Engage deeply in relationships, seeking strong emotional connections.",
+      "rebelliousness": "Challenge authority and norms as a means of asserting independence."
+    },
+    "emotional_landscape": {
+      "inner_turmoil": "Experience a mix of fear and defiance, leading to emotional volatility.",
+      "trust_issues": "Struggle with trusting others, leading to testing behaviors in relationships.",
+      "vulnerability": "Mask insecurities with boldness, fearing exposure of true feelings."
+    },
+    "behavioral_tendencies": {
+      "risk-taking": "Engage in daring activities to prove courage and suppress fear.",
+      "protectiveness": "Defend loved ones fiercely, sometimes to the point of overbearing behavior.",
+      "emotional_testing": "Assess the loyalty and reliability of close connections through challenges."
+    }
+  }
+}

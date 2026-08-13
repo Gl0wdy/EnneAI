@@ -1,7 +1,7 @@
 from enneai.ai.modules.chat import ChatClient
 
 
-class Naranjo(ChatClient):
+class Jung(ChatClient):
     def __init__(
         self,
         model: str,
@@ -9,6 +9,7 @@ class Naranjo(ChatClient):
     ):
         super().__init__(
             prompt="data/naranjo/prompt.txt",
+            corr = "data/corr/jung_correlations.json",
             model=model,
             api_key=api_key,
         )

@@ -1,0 +1,54 @@
+{
+  "SP1": {
+    "core_traits": {
+      "anxiety_and_vigilance": "Driven by a need to foresee and manage problems, SP1s are highly vigilant and strive to maintain control.",
+      "perfectionism": "They pursue flawlessness and are often harsh self-critics when mistakes occur.",
+      "responsibility": "Often take on serious responsibilities early in life, becoming dependable and self-reliant.",
+      "control_and_structure": "Feel compelled to maintain order and structure, making it hard to relax."
+    },
+    "emotional_landscape": {
+      "inner_critic": "Possess a strong internal judge that causes guilt or a sense of inadequacy.",
+      "suppressed_anger": "Anger is present but usually turned inward, feeding perfectionist tendencies.",
+      "fear_of_relaxation": "Struggle to let go of control, even in situations they cannot influence."
+    },
+    "behavioral_tendencies": {
+      "moral_rigor": "Adhere strictly to personal ethics and expect others to do the same.",
+      "self_sacrifice": "Neglect their own needs in favor of duty, which can lead to resentment and tension.",
+      "efficiency": "Organized, practical, and excel in detail-oriented tasks."
+    }
+  },
+  "SO1": {
+    "core_traits": {
+      "social_consciousness": "Focused on improving communities and social structures, often taking on leadership roles.",
+      "role_modeling": "Strive to exemplify moral behavior, setting standards for others to follow.",
+      "systematic_thinking": "Approach problems with a structured mindset, aiming for societal betterment."
+    },
+    "emotional_landscape": {
+      "externalized_anger": "Express frustration when societal norms don't align with their ideals.",
+      "sense_of_duty": "Feel a strong obligation to guide others towards moral correctness.",
+      "identity_tied_to_roles": "Self-worth is often linked to their perceived effectiveness in social roles."
+    },
+    "behavioral_tendencies": {
+      "community_involvement": "Actively participate in social causes and community development.",
+      "educational_drive": "Passionate about teaching and mentoring others in ethical practices.",
+      "perfectionism_in_others": "Hold high standards not just for themselves but also for those around them."
+    }
+  },
+  "SX1": {
+    "core_traits": {
+      "intensity_in_relationships": "Seek deep, transformative connections, often idealizing partners.",
+      "passionate_reformer": "Driven to improve others, channeling energy into close relationships.",
+      "emotional_expressiveness": "More openly display emotions compared to other subtypes."
+    },
+    "emotional_landscape": {
+      "outward_anger": "Less repressed anger, which can manifest in passionate advocacy or criticism.",
+      "desire_for_perfection_in_others": "Focus on refining and perfecting those they are close to.",
+      "emotional_highs_and_lows": "Experience intense emotional fluctuations, especially in personal relationships."
+    },
+    "behavioral_tendencies": {
+      "assertiveness": "Bold in pursuing what they believe is right, especially in close relationships.",
+      "transformational_focus": "Aim to bring about significant change in others, sometimes at the expense of self-care.",
+      "boundary_challenges": "May struggle with setting and respecting personal boundaries due to intense involvement."
+    }
+  }
+}
