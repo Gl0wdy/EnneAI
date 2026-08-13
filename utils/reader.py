@@ -16,26 +16,27 @@ PROJECT_ROOT = find_project_root()
 
 
 def load_file(path: str | Path) -> str:
-    path = Path(path)
+    if path: sys_path = Path(path)
+    else: return 'None'
 
-    if not path.is_absolute():
-        path = PROJECT_ROOT / path
+    if not sys_path.is_absolute():
+        sys_path = PROJECT_ROOT / path
 
-    path = path.resolve()
+    sys_path = sys_path.resolve()
 
-    if not path.exists():
+    if not sys_path.exists():
         raise FileNotFoundError(f"File not found: {path}")
 
-    if not path.is_file():
+    if not sys_path.is_file():
         raise ValueError(f"Not a file: {path}")
 
-    if path.suffix.lower() == ".txt":
-        return path.read_text(encoding="utf-8")
+    if sys_path.suffix.lower() == ".txt":
+        return sys_path.read_text(encoding="utf-8")
 
-    if path.suffix.lower() == ".json":
-        data = json.loads(path.read_text(encoding="utf-8"))
+    if sys_path.suffix.lower() == ".json":
+        data = json.loads(sys_path.read_text(encoding="utf-8"))
         return json.dumps(data, ensure_ascii=False, indent=2)
 
     raise ValueError(
-        f"Unsupported file format: {path.suffix}"
+        f"Unsupported file format: {sys_path.suffix}"
     )
