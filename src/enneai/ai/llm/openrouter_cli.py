@@ -9,21 +9,19 @@ class OpenRouterClient:
         self.client = OpenRouter(api_key=api_key)
         self.model = model
 
-    async def async_response(self, messages: list[dict], model: str | None = None, stream: bool = False) -> AsyncGenerator[dict, None] | str:
+    async def stream_response(self, messages: list[dict], model: str | None = None) -> AsyncGenerator[dict, None]:
         response = await self.client.chat.send_async(
             model=model or self.model,
             messages=messages,
-            stream=stream,
+            stream=True,
         )
-        if stream:
-            async for chunk in response:
-                yield chunk.choices[0].delta.content
-        else:
-            return response.choices[0].message.content
+        async for chunk in response:
+            yield chunk.choices[0].delta.content
 
-    def response(self, messages: list[dict], model: str | None = None) -> str:
-        response = self.client.chat.send(
+    async def discrete_response(self, messages: list[dict], model: str | None = None) -> str:
+        response = await self.client.chat.send_async(
             model=model or self.model,
             messages=messages,
+            stream=False,
         )
         return response.choices[0].message.content

@@ -8,7 +8,7 @@ class Naranjo(ChatClient):
         api_key: str | None = None,
     ):
         super().__init__(
-            prompt="data/naranjo/prompt.txt",
+            prompt="src/enneai/ai/modules/naranjo/prompt.txt",
             model=model,
             api_key=api_key,
         )
