@@ -8,8 +8,8 @@ class Jung(ChatClient):
         api_key: str | None = None,
     ):
         super().__init__(
-            prompt="data/naranjo/prompt.txt",
-            corr = "data/corr/jung_correlations.json",
+            prompt="src/enneai/ai/modules/jung/prompt.txt",
+            corr="data/corr/jung_correlations.json",
             model=model,
             api_key=api_key,
         )
