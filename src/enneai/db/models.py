@@ -1,42 +1,35 @@
-from datetime import datetime, timezone
-from typing import Annotated, Literal
+from datetime import datetime
+from typing import  Literal
 
-from beanie import Document, Indexed, Link
+from beanie import Document, Link
 from pydantic import BaseModel
 
 
-class TypologySystem(Document):
-    id: int
-    name: str
-    description: str
-    author: str
-
-    class Settings:
-        name = "typology_systems"
-
+SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian"]
 
 class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
     reasoning: Literal['low', 'medium', 'high'] = "medium"
-    system: Link[TypologySystem] = None
+    system: SYSTEMS
     prompt: str = ""
     rag: bool = True
 
 
 class UserMessage(Document):
-    id: int
+    created_at: datetime
     user_id: int
-    request: str
+    user_query: str
     response: str
     rag_context: str
-    system: Link[TypologySystem]
+    system: SYSTEMS
 
     class Settings:
         name = "user_messages"
 
 
 class User(Document):
-    id: int
+    id: int     # telegram id actually
+    username: str
     settings: UserSettings = UserSettings()
     typologies: str
     request_limit: int = 15

@@ -1,3 +1,5 @@
+// Это тестовая дата я потом поменяю её если чё
+
 ENNEAGRAM — CORE REFERENCE
 
 The Enneagram is a personality typology consisting of nine core personality types, traditionally numbered from One to Nine. Each type describes a characteristic pattern of attention, motivation, emotional reactions, defensive strategies, interpersonal behavior, and underlying psychological fixation.

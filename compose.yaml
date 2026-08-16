@@ -12,9 +12,12 @@ services:
 
     environment:
       QDRANT_URL: http://qdrant:6333
+      MONGO_URI: mongodb://mongo:27017
 
     depends_on:
       qdrant:
+        condition: service_started
+      mongo:
         condition: service_started
 
     volumes:
@@ -32,5 +35,14 @@ services:
     volumes:
       - qdrant_storage:/qdrant/storage
 
+  mongo:
+    image: mongo:8
+    container_name: enneai-mongo
+    restart: unless-stopped
+
+    volumes:
+      - mongo_storage:/data/db
+
 volumes:
   qdrant_storage:
+  mongo_storage:
