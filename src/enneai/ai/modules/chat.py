@@ -1,11 +1,13 @@
-import abc
 from enneai.ai.llm import OpenRouterClient
-from enneai.ai.rag import retrieve
+from enneai.ai.rag import retrieve, RagContext
+
 from utils.reader import load_file
+import abc
+
 
 class ChatClient(abc.ABC): 
     def __init__(self, prompt: str, model: str, corr: str | None = None, api_key: str | None = None):
-        self.CLIENT = OpenRouterClient(model=model, api_key=api_key)
+        self._client = OpenRouterClient(model=model, api_key=api_key)
         self.PROMPT = load_file(prompt)
         self.CORR = load_file(corr)
         self.CONTEXT = {
