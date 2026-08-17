@@ -58,7 +58,7 @@ LII (Ti Ne) - "Maximilien Robespierre" - Logical Intuitive Introvert
 
 LOGICAL SENSING TYPES:
 
-LSE (Te Si) - "Sherlock Holmes" - Logical Sensing Extrovert
+LSE (Te Si) - "Stierlitz" - Logical Sensing Extrovert
 	Primary functions: Extraverted Logic (Te), Introverted Sensing (Si)
 	Profile: Sensitive to productivity, quality, and effectiveness. Freely comments on pointless or poorly done things. Drawn to efficient technology and devices. Practical and realistic approach to life. Factual, non-emotional perspective. Remembers agreements and doesn't take promises lightly. Judges others by conscientiousness and reliability. Proponents of orderly, stable, rational society. Take recreation seriously and plan it regularly. Strong caretaking streak.
 
@@ -82,7 +82,7 @@ SLE (Se Ti) - "Georgy Zhukov" - Sensing Logical Extrovert
 	Primary functions: Extraverted Sensing (Se), Introverted Logic (Ti)
 	Profile: Strong-willed, independently-minded. Ready for action and organizing others effectively. Adept at getting job done even stepping on toes. Improvise successfully. Instability energizes them. Active thinkers who think clearly on move. Spot power dynamics and hierarchy easily. Strive for secure position. Comfortable with hierarchies. Natural leaders who readily assume role. Direct administrative style. Quick to take full responsibility. Highly observant. Well aware of objects possessed and desired. Possess things. Also generous with gifts.
 
-SLI (Si Te) - "Jean Gabin" - Sensing Logical Introvert
+SLI (Si Te) - "Jean Gaben" - Sensing Logical Introvert
 	Primary functions: Introverted Sensing (Si), Extraverted Logic (Te)
 	Profile: Naturally good at knowing what activities/stimuli produce which sensations/physical states in self and others. Highly sensitive to internal discomfort and dissonance. Usually take quick action to remove discomfort. Attracted to material objects producing right sensations. Dislike being denied pleasurable material objects. Possess and territorial. Skilled at recognizing and remembering internal physical/emotional states. Prefer simple lifestyle, avoid excessive possessions. Dry, matter-of-fact speaking style. Focus on accuracy of information. Enjoy process of analyzing/comparing goods and services. Masters at getting greatest return from fewest actions.
 
