@@ -10,7 +10,7 @@ SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian"]
 class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
     reasoning: Literal['low', 'medium', 'high'] = "medium"
-    system: SYSTEMS
+    system: SYSTEMS = "ennea"
     prompt: str = ""
     rag: bool = True
 
@@ -31,7 +31,7 @@ class User(Document):
     id: int     # telegram id actually
     username: str
     settings: UserSettings = UserSettings()
-    typologies: str
+    typologies: str = ''
     request_limit: int = 15
     request_remain: int = 15
     encrypted_key: str = ""

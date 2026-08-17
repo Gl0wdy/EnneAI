@@ -9,9 +9,8 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY pyproject.toml uv.lock ./
+COPY src ./src
 
 RUN uv sync --frozen --no-dev
 
-COPY src ./src
-
-CMD ["uv", "run", "--no-sync", "python", "-m", "enneai.main"]
+CMD ["uv", "run", "python", "-m", "enneai.main"]
