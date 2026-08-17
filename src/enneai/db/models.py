@@ -11,7 +11,7 @@ class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
     reasoning: Literal['low', 'medium', 'high'] = "medium"
     system: SYSTEMS = "ennea"
-    prompt: str = ""
+    prompt: str = "" #?????? custom instructions?
     rag: bool = True
 
 

@@ -6,7 +6,7 @@ from beanie import Document
 
 T = TypeVar("T", bound=Document)    
 
-# тут очень крутая бурмалда для динамической подстановки модели в классах-наследователях
+# тут очень крутая бурмалда для динамической подстановки модели в классах-наследователях # ничесе
 class RepositoryABC(ABC, Generic[T]):
     model: type[T]
 

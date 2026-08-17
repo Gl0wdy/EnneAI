@@ -24,7 +24,7 @@ def load_metadata(path: Path) -> dict[str, dict[str, Any]]:
 
     if not isinstance(data, dict):
         raise ValueError(
-            f"{path}: metadata.json should containt JSON object"
+            f"{path}: metadata.json should contain JSON object"
         )
 
     return data
