@@ -14,7 +14,7 @@ class RepositoryABC(ABC, Generic[T]):
         instance = self.model(**kwargs)
         return instance
 
-    async def get_by_id(self, entity_id: int) -> T:
+    async def get_by_id(self, entity_id: int) -> T | None:
         return await self.model.get(entity_id)
 
     async def delete(self, entity: T) -> None:

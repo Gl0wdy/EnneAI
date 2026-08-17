@@ -1,10 +1,28 @@
 from pymongo import AsyncMongoClient
+from beanie import init_beanie
+
+from enneai.db.models import User, UserMessage
 
 
 class MongoDB:
-    def __init__(self, uri: str, database: str):
+    def __init__(
+        self,
+        uri: str,
+        database: str,
+    ):
         self.client = AsyncMongoClient(uri)
         self.db = self.client[database]
+
+
+    async def init(self):
+        await init_beanie(
+            database=self.db,
+            document_models=[
+                User,
+                UserMessage,
+            ],
+        )
+
 
     async def close(self):
         await self.client.close()
