@@ -1,0 +1,116 @@
+SOCIONICS: THE 16 SOCIOTYPES AND THEIR SEMANTIC ARCHETYPES
+
+DICHOTOMIES AND ORGANIZING PRINCIPLES:
+
+1. INTUITION vs SENSING  
+	Intuitive types: Focus on patterns, possibilities, meanings, time flow, connections
+	Sensing Types: Focus on present moment, concrete objects, physical sensations, material reality
+
+2. LOGIC vs ETHICS (Thinking vs Feeling)
+	Logical types: Base function on impersonal analysis, systems, facts and logical hierarchies
+	Ethical types: Base function on personal or communal values, relationships, feelings and connections
+
+3. EXTROVERTED vs INTROVERTED PRIMARY FUNCTION
+	Extroverted primary function: Driven to external action and expression
+	Introverted primary function: Driven to internal reflection and understanding
+
+THE 16 TYPES:
+
+ETHICAL INTUITIVE TYPES:
+
+EIE (Fe Ni) - "Hamlet" - Ethical Intuitive Extrovert
+	Primary functions: Extroverted Ethics (Fe), Introverted Intuition (Ni)
+	Profile: Natural at generating excitement and involving people emotionally. Passionate about governance and social custom. Sees significance in moments and flow of events over time. Prone to dramatizing risks and dangers. Dislikes routine work and administrative tasks. Admires those with clear, determined views who can't be swayed. Often acts as exalted prophet or motivational speaker.
+
+EII (Fi Ne) - "Dostoevsky" - Ethical Intuitive Introvert
+	Primary functions: Introverted Ethics (Fi), Extroverted Intuition (Ne)
+	Profile: Attuned to psychological atmosphere and feelings. Treasures deep emotional bonds. Understands inner makeup of people and sees what can be done to bring them toward ideals. Gives good advice. Often frustrated by "wasted potential." Somewhat negligent of surroundings. Passive and self-absorbed. Excellent at sizing people up through instinct.
+
+ETHICAL SENSING TYPES:
+
+ESE (Fe Si) - "Victor Hugo" - Ethical Sensing Extrovert
+	Primary functions: Extraverted Ethics (Fe), Introverted Sensing (Si)
+	Profile: Quick to recognize and respond to passion and emotion. Well aware of own and others' passions and tastes. Likes to see people become lively and animated. Good at organizing recreation and getting people to enjoy themselves. Creates comfortable, clean settings. Master of sensual arts. Makes inquiries into people's states based on emotional cues. Engaging communicator with naive excitement.
+
+ESI (Fi Se) - "Theodore Dreiser" - Ethical Sensing Introvert
+	Primary functions: Introverted Ethics (Fi), Extraverted Sensing (Se)
+	Profile: Sees reality through static personal ethics and stable interpersonal bonds. Confident in evaluating ethical/moral qualities. High regard for personal loyalty and integrity. Takes direct action to accomplish goals. Tends to evaluate people's ethical behavior as-is, not in context. Can be perceived as unrelentingly harsh or vindictive. Strong sense of physical attractiveness.
+
+INTUITIVE LOGICAL TYPES:
+
+ILE (Ne Ti) - "Don Quixote" - Intuitive Logical Extrovert
+	Primary functions: Extraverted Intuition (Ne), Introverted Logic (Ti)
+	Profile: "Big picture" person who speaks in generalizations. Always searching for novelty and interesting things. Constantly has multiple projects in development. Creative thinker with unusual perspectives. Obsessed with how things work and fit together. Will break rules that don't make logical sense to him. Debates freely and not afraid of arguing views. Only sustains short periods of strenuous activity.
+
+ILI (Ni Te) - "Honoré de Balzac" - Intuitive Logical Introvert
+	Primary functions: Introverted Intuition (Ni), Extraverted Logic (Te)
+	Profile: Well-developed imaginative and mental abilities. Spends much time thinking and pondering. Naturally attuned to hidden connections and patterns. Can predict inevitable disasters. Disliking emotional expression, appears detached and eccentric. Skeptical about others' ideas. Often stereotyped as reclusive scholar or philosopher. Inertia in physical activity. May seem perceptive but reserved. Detached from day-to-day affairs.
+
+LOGICAL INTUITIVE TYPES:
+
+LIE (Te Ni) - "Jack London" - Logical Intuitive Extrovert
+	Primary functions: Extraverted Logic (Te), Introverted Intuition (Ni)
+	Profile: Naturally accumulates factual knowledge from books and second-hand sources. Needs to understand how external environment works to control it. Inclined to correct errors and increase efficiency. Described as "know-it-all" for voicing knowledge and correcting others. Focused on factual accuracy, makes sense of things, efficiency. Thinks ahead about long-term implications. Prefers active, proactive modes of action. Difficulty with sustained emotional participation.
+
+LII (Ti Ne) - "Maximilien Robespierre" - Logical Intuitive Introvert
+	Primary functions: Introverted Logic (Ti), Extraverted Intuition (Ne)
+	Profile: Naturally assesses statements in terms of conformance to principles. Engaged in communication when critically analyzing decisions and actions. Strives to reduce things to essential aspects. Applies Ti in academic fields like mathematics. Explores many thought avenues but shares only refined conclusions. Often too concise for own good. Does not care for implementation or hands-on work. Prefers independence from material demands. Considers multiple viewpoints. Living in own world of abstract ideas.
+
+LOGICAL SENSING TYPES:
+
+LSE (Te Si) - "Sherlock Holmes" - Logical Sensing Extrovert
+	Primary functions: Extraverted Logic (Te), Introverted Sensing (Si)
+	Profile: Sensitive to productivity, quality, and effectiveness. Freely comments on pointless or poorly done things. Drawn to efficient technology and devices. Practical and realistic approach to life. Factual, non-emotional perspective. Remembers agreements and doesn't take promises lightly. Judges others by conscientiousness and reliability. Proponents of orderly, stable, rational society. Take recreation seriously and plan it regularly. Strong caretaking streak.
+
+LSI (Ti Se) - "Maxim Gorky" - Logical Sensing Introvert
+	Primary functions: Introverted Logic (Ti), Extraverted Sensing (Se)
+	Profile: Strong command of how systems, structures, and hierarchies work. Logically analyzes everything, including relationships. Prefers applying clear logical thinking to forcibly affect real world organization. Handles high-pressure situations well. Cannot be intimidated easily. Follows balance of power closely. Difficulty differentiating strong from weak relationships. Acts as guardian/watchdog of systems. Prefers work with "real" things: material assets, organizations, production. May focus on worst-case scenarios.
+
+SENSING ETHICAL TYPES:
+
+SEE (Se Fi) - "Napoleon" - Sensing Ethical Extrovert
+	Primary functions: Extraverted Sensing (Se), Introverted Ethics (Fi)
+	Profile: High awareness of social surroundings and social influence/weight of different people. Naturals at concentrating social attention on themselves or others. Sharp understanding of people's attitudes toward suggestions and their moods. Primary implementation method: changing people's attitudes. Always in the here and now. Knows exactly which relations have influence over and how much. Finds it hard to be content. Quickly notices confrontational behavior. Motivated toward exclusivity and high position of respect and demand. Views material objects and people as means to goals.
+
+SEI (Si Fe) - "Alexandre Dumas" - Sensing Ethical Introvert
+	Primary functions: Introverted Sensing (Si), Extraverted Ethics (Fe)
+	Profile: Strong connection to and recognition of internal physical states in self and others. Skilled at recreation, enjoyment, and positive aesthetic experience. Innately drawn to situations satisfying inner physical needs. Often feels in rush both mentally and physically. Sensitive to emotional atmosphere around them. Positive atmosphere essential to sense of well-being. Either creates that atmosphere or removes themselves. Can play role of "clown" ensuring people are emotionally light. Displays emotions vividly.
+
+SENSING LOGICAL TYPES:
+
+SLE (Se Ti) - "Georgy Zhukov" - Sensing Logical Extrovert
+	Primary functions: Extraverted Sensing (Se), Introverted Logic (Ti)
+	Profile: Strong-willed, independently-minded. Ready for action and organizing others effectively. Adept at getting job done even stepping on toes. Improvise successfully. Instability energizes them. Active thinkers who think clearly on move. Spot power dynamics and hierarchy easily. Strive for secure position. Comfortable with hierarchies. Natural leaders who readily assume role. Direct administrative style. Quick to take full responsibility. Highly observant. Well aware of objects possessed and desired. Possess things. Also generous with gifts.
+
+SLI (Si Te) - "Jean Gabin" - Sensing Logical Introvert
+	Primary functions: Introverted Sensing (Si), Extraverted Logic (Te)
+	Profile: Naturally good at knowing what activities/stimuli produce which sensations/physical states in self and others. Highly sensitive to internal discomfort and dissonance. Usually take quick action to remove discomfort. Attracted to material objects producing right sensations. Dislike being denied pleasurable material objects. Possess and territorial. Skilled at recognizing and remembering internal physical/emotional states. Prefer simple lifestyle, avoid excessive possessions. Dry, matter-of-fact speaking style. Focus on accuracy of information. Enjoy process of analyzing/comparing goods and services. Masters at getting greatest return from fewest actions.
+
+DUALS AND QUADRAS:
+
+Socionics groups types into "Quadras" based on psychological compatibility:
+- Alpha: SEI, ESE, LII, ILE
+- Beta: IEI, EIE, LSI, SLE
+- Gamma: ESI, SEE, ILI, LIE
+- Delta: EII, IEE, SLI, LSE
+
+Each type has a "dual" - the type with inverse function order within quadra, who serves as a positive counterpart and appreciated companion:
+- EIE ↔ LSI
+- ESI ↔ LIE
+- ESE ↔ LII
+- EII ↔ LSE
+- IEE ↔ SLI
+- IEI ↔ SLE
+- ILE ↔ SEI
+- ILI ↔ SEE
+
+FUNCTIONS:
+
+1. Lead Function: Explains the person's most comfortable thinking patterns, perspective on life, state of mind, and behavioral style
+2. Creative Function: Explains the primary vector of application of the lead function, serving as main strategy to connect in society
+3. Role Function: Explains the substitute and opposite to lead function approach to life and information metabolism
+4. PoLR (Point of Least Resistance): Explains a mental domain, primarily causing feelings of frustration and inadequacy due to lack of personal understanding
+5. Suggestive Function: Explains a mental domain, complimentary to lead function, serving as a to-go source of day-to-day soothing/entertainment
+6. Activating Function: Explains the 'hidden agenda' will, lacking balance and temperance, but necessary in daily life
+7. Ignoring Function: Explains a mental domain of neglected 'rival image' to lead function, serving as a insignificant or inefficient compared to lead one
+8. Demonstrative Function: Explains the unconventional use of said function almost in a 'ridiculing' way to support more integrious creative function

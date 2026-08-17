@@ -9,7 +9,7 @@ class Jung(ChatClient):
     ):
         super().__init__(
             prompt="src/enneai/ai/modules/jung/prompt.txt",
-            corr="data/corr/jung_correlations.json",
+            corr="data/corr/correlations.txt",
             model=model,
             api_key=api_key,
         )
