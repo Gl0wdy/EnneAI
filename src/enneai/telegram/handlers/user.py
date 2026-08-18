@@ -22,13 +22,16 @@ from enneai.config import OPENROUTER_API_KEY, TELEGRAM_ADMIN_ID
 from enneai.ai.llm.keys_rotation import KeyRotator
 from datetime import datetime as dt
 
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY is not set in the environment variables.")
 
-naranjo = Naranjo(model='nvidia/nemotron-3-super-120b-a12b:free', api_key=OPENROUTER_API_KEY)
+keychain = KeyRotator(map(str, OPENROUTER_API_KEY.split(',')))
+naranjo = Naranjo()
 router = Router(name='user')
 message_rep = UserMessageRepository()
 
-# naranjo = Naranjo(model='poolside/laguna-s-2.1:free', api_key=OPENROUTER_API_KEY)
-# jung = Jung(model='nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free', api_key=OPENROUTER_API_KEY)
+# naranjo = Naranjo(model='poolside/laguna-s-2.1:free')
+# jung = Jung(model='nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free')
 
 
 # Ты собираешься эту бурмалду переписывать так что я пока что один ключ из env буду юзать
@@ -187,9 +190,12 @@ async def request_handler(message: Message, user: User, state: FSMContext):
         return
 
     chat_history = await get_chat_history(user.id)
-    rag_data, chunks = await naranjo.response(
-        query=message.text, history=chat_history,
-        typology=user.settings.system, stream=True
+    rag_data, chunks = await keychain.rotate(
+        naranjo.response,
+        query=message.text,
+        history=chat_history,
+        typology=user.settings.system,
+        stream=True
     )
 
     telegram_stream = TelegramStream(

@@ -10,12 +10,12 @@ class KeyRotator:
         self.index = (self.index + 1) % len(self.keys)
         return key
 
-    def rotate(self, fn, *args, **kwargs): # в этот метод передается функция использующая ключи
+    async def rotate(self, fn, *args, **kwargs): # в этот метод передается функция использующая ключи
         last_error = None
         for _ in range(len(self.keys)):
             key = self._next()
             try:
-                return fn(*args, api_key=key, **kwargs)
+                return await fn(*args, api_key=key, **kwargs)
             except Exception as exc:
                 last_error = exc
         if last_error:
