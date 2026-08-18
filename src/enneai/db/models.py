@@ -11,7 +11,7 @@ class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
     reasoning: Literal['low', 'medium', 'high'] = "medium"
     system: SYSTEMS = "ennea"
-    prompt: str = "" #?????? custom instructions?
+    instructions: str = "" #?????? custom instructions?
     rag: bool = True
 
 
@@ -29,6 +29,7 @@ class UserMessage(Document):
 
 class User(Document):
     id: int     # telegram id actually
+    new: bool = True  
     username: str
     settings: UserSettings = UserSettings()
     typologies: str = ''

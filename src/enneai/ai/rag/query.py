@@ -51,7 +51,7 @@ async def retrieve(
         return RagContext(text="", sources=[])
 
     reranker = Reranker.get()
-    ranked = await reranker.rerank(query, candidates, top_n=rerank_top_n)
+    ranked = await reranker.rerank(query, candidates, top_n=rerank_top_n, score_threshold=-4)
 
     return build_context(ranked, max_chars=max_context_chars)
 

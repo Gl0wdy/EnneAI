@@ -13,7 +13,7 @@ from enneai.ai.rag.ingest import BookMetadata, ingest_one
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = "data"
 
 SUPPORTED_EXTENSIONS = {".pdf", ".docx"}
 
