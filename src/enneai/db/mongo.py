@@ -14,8 +14,8 @@ class MongoDB:
         self.db = self.client[database]
 
 
-    async def init(self): # интересный нейминг
-        await init_beanie(
+    async def init(self):   # интересный нейминг
+        await init_beanie(  # и что тебе не нравится.
             database=self.db,
             document_models=[
                 User,

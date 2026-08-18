@@ -2,15 +2,20 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.fsm.storage.memory import MemoryStorage
 
 from enneai.telegram import router, UserMiddleware
 from enneai.config import (
     TELEGRAM_DEBUG_TOKEN,
     TELEGRAM_ADMIN_ID,
-    MONGO_URI,
+    MONGO_URI
 )
-
 from enneai.db import MongoDB
+
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 bot = Bot(
@@ -20,8 +25,7 @@ bot = Bot(
         link_preview_is_disabled=True,
     ),
 )
-
-dp = Dispatcher()
+dp = Dispatcher(storage=MemoryStorage())
 
 mongo = MongoDB(
     uri=MONGO_URI,
@@ -62,7 +66,7 @@ async def main():
 
     await dp.start_polling(
         bot,
-        skip_updates=True,
+        skip_updates=True
     )
 
 

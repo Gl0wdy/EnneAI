@@ -25,5 +25,9 @@ class UserMiddleware(BaseMiddleware):
 
         data['user'] = user
 
+        # try:
         result = await handler(event, data)
+        # except:
+        #     result = None
+        #     await event.answer('Что бы это ни было, сейчас ты сделал что-то, что не должен был. Попробуй ещё раз. Только нормально.')
         return result

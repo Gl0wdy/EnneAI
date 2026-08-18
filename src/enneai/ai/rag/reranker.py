@@ -62,6 +62,7 @@ class Reranker:
         chunks: list[ScoredChunk],
         *,
         top_n: int = 6,
+        score_threshold: float | None = None,
     ) -> list[RankedChunk]:
         if not chunks:
             return []
@@ -70,6 +71,9 @@ class Reranker:
         scores = await asyncio.to_thread(self._predict_sync, query, passages)
 
         ranked = sorted(zip(chunks, scores), key=lambda pair: pair[1], reverse=True)
+        if score_threshold is not None:
+            ranked = [(c, s) for c, s in ranked if s >= score_threshold]
+
         return [
             RankedChunk(
                 chunk_id=c.chunk_id,

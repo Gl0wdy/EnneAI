@@ -66,12 +66,14 @@ class ChatClient(abc.ABC):
     async def prepare_messages(
         self,
         query: str,
+        history: list[dict],
         typology: str | None = "null",
         **rag_kwargs,
     ) -> list[dict[str, str]]:
 
         rag_data: RagContext = await retrieve(
             query,
+            rerank_top_n=15,
             **rag_kwargs,
         )
 
@@ -80,38 +82,41 @@ class ChatClient(abc.ABC):
             context=self.get_context(typology),
         )
 
-        return [
+        return rag_data, [
             {
                 "role": "system",
-                "content": prompt,
-            },
+                "content": prompt
+            }
+        ] + history + [
             {
                 "role": "user",
-                "content": query,
-            },
+                "content": query
+            }
         ]
 
     async def response(
         self,
         query: str,
+        history: list[dict],
         model: str | None = None,
         typology: str | None = "null",
         stream: bool = False,
         **kwargs,
     ):
-        messages = await self.prepare_messages(
+        rag_data, messages = await self.prepare_messages(
             query=query,
+            history=history,
             typology=typology,
             **kwargs,
         )
 
         if stream:
-            return self.client.stream_response(
+            return rag_data, self.client.stream_response(
                 messages=messages,
                 model=model,
             )
 
-        return await self.client.discrete_response(
+        return rag_data, await self.client.discrete_response(
             messages=messages,
             model=model,
         )

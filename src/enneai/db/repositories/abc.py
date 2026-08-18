@@ -12,6 +12,7 @@ class RepositoryABC(ABC, Generic[T]):
 
     async def create(self, **kwargs) -> T:
         instance = self.model(**kwargs)
+        await instance.save()
         return instance
 
     async def get_by_id(self, entity_id: int) -> T | None:
