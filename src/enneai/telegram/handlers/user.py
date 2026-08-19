@@ -30,17 +30,6 @@ naranjo = Naranjo()
 router = Router(name='user')
 message_rep = UserMessageRepository()
 
-# naranjo = Naranjo(model='poolside/laguna-s-2.1:free')
-# jung = Jung(model='nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free')
-
-
-# Ты собираешься эту бурмалду переписывать так что я пока что один ключ из env буду юзать
-
-# async def processor(msg: Message, user: User, api_key: str): # начинка для хэндлера чтобы крутить ключи на вертолете
-#     '''вот тут всю логику пиши иначе кирдык'''
-#      # каждый раз реинициализация клиента по приказу вертолета
-#     naranjo = Naranjo(model='nvidia/nemotron-3-super-120b-a12b:free', api_key=OPENROUTER_API_KEY)
-#     
 
 @router.message(CommandStart())
 async def start_handler(message: Message):    
@@ -67,6 +56,7 @@ async def start_handler(message: Message):
 
 
 # =========== ХЭНДЛЕРЫ КОМАНД ================
+
 @router.message(Command('clear'))
 async def command_clear_handler(message: Message, state: FSMContext):
     content = Text(
@@ -124,6 +114,11 @@ async def show_profile_handler(message: Message, user: User):
 
 @router.message(fsm.ProfileStates.waiting_for_confirmation)
 async def custom_username_handler(message: Message, state: FSMContext):
+    if message.text != 'Да':
+        await state.clear()
+        await message.answer('Хорошо. Повторите свой запрос.', reply_markup=ReplyKeyboardRemove())
+        return
+
     await message.answer(
         '1. Как к вам обращаться? Введите никнейм.',
         reply_markup=user_kb.build_username_keyboard(message.from_user.full_name)
@@ -175,23 +170,40 @@ async def request_handler(message: Message, user: User, state: FSMContext):
     if user.new:
         await message.answer(
             'Желаете ли вы персонализировать бота под себя? Это займет пару секунд.',
-            reply_markup=user_kb.confirmation_keyboard
+            reply_markup=user_kb.build_reply_keyboard('Да', 'Нет')
         )
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
-    if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
-        text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
-        if not user.encrypted_key:
-            text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys)'
-            await message.answer(text, reply_markup=user_kb.register_key_keyboard)
-        else:
-            await message.answer(text)
-        return
+    # if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
+    #     text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
+    #     if not user.encrypted_key:
+    #         text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys)'
+    #         await message.answer(text, reply_markup=user_kb.register_key_keyboard)
+    #     else:
+    #         await message.answer(text)
+    #     return
 
     chat_history = await get_chat_history(user.id)
+
+    if user.settings.requery:
+        content = Text(CustomEmojis.rika_thinking, " Переделываю ваш запрос...")
+        msg = await message.answer(
+            **content.as_kwargs()
+        )
+        user.request_remain -= 1
+        rag_query = await keychain.rotate(
+            naranjo.requery,
+            query=message.text,
+            history=chat_history
+        )
+        await msg.delete()
+    else:
+        rag_query = message.text
+    
     rag_data, chunks = await keychain.rotate(
         naranjo.response,
+        rag_query=rag_query,
         query=message.text,
         history=chat_history,
         typology=user.settings.system,

@@ -68,11 +68,22 @@ class ChatClient(abc.ABC):
             "Content-Type": "application/json"
         }
 
-    def _build_payload(self, messages: list[dict], stream: bool = False) -> dict:
+    def _build_payload(
+        self,
+        messages: list[dict],
+        model: str | None = None,
+        stream: bool = False,
+        reasoning: bool = True,
+        max_tokens: int | None = None
+    ) -> dict:
         payload = {
-            "model": self.model,
+            "model": model or self.model,
             "messages": messages,
-            "stream": stream
+            "stream": stream,
+            "reasoning": {
+                "enabled": reasoning
+            },
+            "max_tokens": max_tokens
         }
         return payload
 
@@ -80,12 +91,12 @@ class ChatClient(abc.ABC):
         self,
         query: str,
         history: list[dict],
+        rag_query: str | None = None,
         typology: str | None = "null",
         **rag_kwargs,
     ):
-
         rag_data: RagContext = await retrieve(
-            query,
+            rag_query or query,
             rerank_top_n=15,
             **rag_kwargs,
         )
@@ -107,9 +118,15 @@ class ChatClient(abc.ABC):
             }
         ]
 
-    async def get_stream(self, messages: list[dict], api_key: str | None = None) -> AsyncIterator[str]:
+    async def get_stream(
+        self, 
+        messages: list[dict], 
+        api_key: str | None = None,
+        model: str | None = OPENROUTER_PRIMARY_MODEL,
+        reasoning: bool = True
+    ) -> AsyncIterator[str]:
         headers = self._build_headers(api_key)
-        payload = self._build_payload(messages, stream=True)
+        payload = self._build_payload(messages, stream=True, model=model, reasoning=reasoning)
 
         async with aiohttp.ClientSession() as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
@@ -145,29 +162,47 @@ class ChatClient(abc.ABC):
                             except Exception:
                                 break
 
-    async def get_discrete(self, messages: list[dict], api_key: str | None = None) -> str:
+    async def get_discrete(
+        self,
+        messages: list[dict],
+        api_key: str | None = None,
+        model: str | None = None,
+        reasoning: bool = True,
+        max_tokens: int | None = None
+    ) -> str:
         headers = self._build_headers(api_key)
-        payload = self._build_payload(messages, stream=False)
+        payload = self._build_payload(
+            messages, 
+            model=model,
+            stream=False,
+            reasoning=reasoning,
+            max_tokens=max_tokens
+        )
 
         async with aiohttp.ClientSession() as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
-                if response.status != 200:
-                    raise Exception(f"Request failed with status code {response.status}")
-
                 result = await response.json()
+
+                if response.status != 200:
+                    raise Exception(
+                        f"OpenRouter error {response.status}: {result}"
+                )
                 return result
 
     async def response(
         self,
         query: str,
         history: list[dict],
+        rag_query: str,
         typology: str | None = "null",
         stream: bool = False,
         api_key: str | None = None, # - наранхо откуда ключи? - вертолет дает
+        model: str | None = None,
         **kwargs,
     ):
         rag_data, messages = await self.prepare_messages(
             query=query,
+            rag_query=rag_query,
             history=history,
             typology=typology,
             **kwargs,
@@ -176,10 +211,12 @@ class ChatClient(abc.ABC):
         if stream:
             return rag_data, self.get_stream(
                 messages=messages,
-                api_key=api_key
+                api_key=api_key,
+                model=model
             )
 
         return rag_data, await self.get_discrete(
             messages=messages,
-            api_key=api_key
+            api_key=api_key,
+            model=model
         )
