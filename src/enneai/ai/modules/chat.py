@@ -5,23 +5,23 @@ import json
 import abc
 from collections.abc import AsyncIterator
 
-from enneai.ai.rag import retrieve, RagContext
 from enneai.utils.reader import load_file
 
-from enneai.config import OPENROUTER_ENDPOINT, OPENROUTER_PRIMARY_MODEL
+from enneai.config import OPENROUTER_ENDPOINT, OPENROUTER_PRIMARY_MODEL, OPENROUTER_SECONDARY_MODEL
 
 
 class ChatClient(abc.ABC):
     def __init__(
         self,
         prompt: str,
+        requery_prompt: str | None = None,
         model: str | None = OPENROUTER_PRIMARY_MODEL,
         corr: str | None = None
     ):
 
         self.model = model
         self.prompt = load_file(prompt)
-
+        self.requery_prompt = load_file(requery_prompt) if requery_prompt else ""
         self.corr = (
             load_file(corr)
             if corr
@@ -86,37 +86,6 @@ class ChatClient(abc.ABC):
             "max_tokens": max_tokens
         }
         return payload
-
-    async def prepare_messages(
-        self,
-        query: str,
-        history: list[dict],
-        rag_query: str | None = None,
-        typology: str | None = "null",
-        **rag_kwargs,
-    ):
-        rag_data: RagContext = await retrieve(
-            rag_query or query,
-            rerank_top_n=15,
-            **rag_kwargs,
-        )
-
-        prompt = self._build_prompt(
-            rag_context=str(rag_data),
-            context=self.get_context(typology),
-        )
-
-        return rag_data, [
-            {
-                "role": "system",
-                "content": prompt
-            }
-        ] + history + [
-            {
-                "role": "user",
-                "content": query
-            }
-        ]
 
     async def get_stream(
         self, 
@@ -189,34 +158,28 @@ class ChatClient(abc.ABC):
                 )
                 return result
 
-    async def response(
+    async def requery(
         self,
         query: str,
         history: list[dict],
-        rag_query: str,
-        typology: str | None = "null",
-        stream: bool = False,
-        api_key: str | None = None, # - наранхо откуда ключи? - вертолет дает
-        model: str | None = None,
-        **kwargs,
-    ):
-        rag_data, messages = await self.prepare_messages(
-            query=query,
-            rag_query=rag_query,
-            history=history,
-            typology=typology,
-            **kwargs,
+        api_key: str | None = None
+    ) -> str:
+        if not self.requery_prompt:
+            return query
+        prompt = self.requery_prompt.replace(
+            '<CONTEXT>', self.contexts['ennea']
         )
+        history = [
+            {'role': 'system', 'content': prompt}
+        ] + history + [{'role': 'user', 'content': query}]
 
-        if stream:
-            return rag_data, self.get_stream(
-                messages=messages,
-                api_key=api_key,
-                model=model
-            )
-
-        return rag_data, await self.get_discrete(
-            messages=messages,
+        response = await self.get_discrete(
+            history,
             api_key=api_key,
-            model=model
+            model=OPENROUTER_SECONDARY_MODEL,
+            reasoning=False,
+            max_tokens=50
         )
+        # print(response['choices'][0]['message']['content'])
+        
+        return response['choices'][0]['message']['content']

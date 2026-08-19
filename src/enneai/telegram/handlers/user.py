@@ -9,7 +9,7 @@ from aiogram.utils.formatting import (
 )
 
 from enneai.db import User
-from enneai.db.repositories import UserMessageRepository
+from enneai.db.repositories import UserMessageRepository, UserRepository
 from enneai.ai.modules.naranjo.response import Naranjo
 from enneai.ai.modules.jung.response import Jung
 
@@ -27,12 +27,14 @@ if not OPENROUTER_API_KEY:
 
 keychain = KeyRotator(map(str, OPENROUTER_API_KEY.split(',')))
 naranjo = Naranjo()
+jung = Jung()
 router = Router(name='user')
 message_rep = UserMessageRepository()
+user_rep = UserRepository()
 
 
 @router.message(CommandStart())
-async def start_handler(message: Message):    
+async def start_handler(message: Message, state: FSMContext):    
     text = (
         "Привет! Я - типологический AI-бот **Клаудио Наранхо**"
         " [с полностью открытым исходным кодом](https://github.com/Gl0wdy/EnneAI).\n"
@@ -54,8 +56,39 @@ async def start_handler(message: Message):
         InputRichMessage(markdown=text)
     )
 
-
 # =========== ХЭНДЛЕРЫ КОМАНД ================
+@router.message(Command('mode'))
+async def command_mode_handler(message: Message, state: FSMContext):
+    content = Text(
+        CustomEmojis.info,
+        ' Какого бота вы хотите использовать сейчас?'
+    )
+    
+    await message.answer(
+        **content.as_kwargs(),
+        reply_markup=user_kb.build_reply_keyboard('Наранхо', 'Юнг')
+    )
+    await state.set_state(fsm.CommandStates.waiting_for_mode)
+
+@router.message(fsm.CommandStates.waiting_for_mode)
+async def mode_selection_handler(message: Message, user: User, state: FSMContext):
+    match message.text:
+        case 'Наранхо':
+            await user_rep.change_field(user.id, 'settings.mode', 'naranjo')
+            await message.answer(
+                'Вы выбрали модуль Наранхо. Продолжайте.',
+                reply_markup=ReplyKeyboardRemove()
+            )
+            await state.clear()
+        case 'Юнг':
+            await user_rep.change_field(user.id, "settings.mode", "jung")
+            await message.answer(
+                'Вы выбрали модуль Юнга. Продолжайте.',
+                reply_markup=ReplyKeyboardRemove()
+            )
+            await state.clear()
+        case _:
+            await message.answer('Просто нажми на кнопку. Не нужно ничего писать.')
 
 @router.message(Command('clear'))
 async def command_clear_handler(message: Message, state: FSMContext):
@@ -120,32 +153,37 @@ async def custom_username_handler(message: Message, state: FSMContext):
         return
 
     await message.answer(
-        '1. Как к вам обращаться? Введите никнейм.',
+        '1. Как к вам обращаться? Введите никнейм (или "бурмалда" для отмены).',
         reply_markup=user_kb.build_username_keyboard(message.from_user.full_name)
     )
     await state.set_state(fsm.ProfileStates.waiting_for_username)
 
 @router.message(fsm.ProfileStates.waiting_for_username)
 async def custom_username_handler(message: Message, user: User, state: FSMContext):
-    if message.text != 'Скип':
+    if message.text != 'бурмалда':
         user.username = message.text
+        await user.save()
+    else:
+        user.username = message.from_user.full_name
         await user.save()
 
     await message.answer(
-        f'2. Славно, *{user.username}*.\nНапиши свои типологии. Если не знаешь точно, можешь написать предположительные.',
+        f'2. Славно, *{user.username}*.\nНапиши свои типологии. Если не знаешь точно, можешь написать предположительные (или "бурмалда" для отмены).',
         reply_markup=user_kb.build_reply_keyboard('Скип')
     )
     await state.set_state(fsm.ProfileStates.waiting_for_typologies)
 
 @router.message(fsm.ProfileStates.waiting_for_typologies)
 async def custom_typologies_handler(message: Message, user: User, state: FSMContext):
-    if message != 'Скип':
+    if message.text != 'бурмалда':
         user.typologies = message.text
+    else:
+        user.typologies = 'Не указаны'
     user.new = False
     await user.save()
 
     await message.answer(
-        'Админу было лень писать валидатор, так что если вы ввели какой-то бред... Ну, дело ваше.\nПосмотреть ваши текущие данные можно с помощью /profile. Хорошего пользования!'
+        'Ваши предыдущие ответы повлияют на работу бота.\nПосмотреть ваши текущие данные можно с помощью /profile. Хорошего пользования!'
     )
     await state.clear()
 
@@ -186,30 +224,58 @@ async def request_handler(message: Message, user: User, state: FSMContext):
 
     chat_history = await get_chat_history(user.id)
 
-    if user.settings.requery:
-        content = Text(CustomEmojis.rika_thinking, " Переделываю ваш запрос...")
-        msg = await message.answer(
-            **content.as_kwargs()
-        )
-        user.request_remain -= 1
-        rag_query = await keychain.rotate(
-            naranjo.requery,
-            query=message.text,
-            history=chat_history
-        )
-        await msg.delete()
-    else:
-        rag_query = message.text
-    
-    rag_data, chunks = await keychain.rotate(
-        naranjo.response,
-        rag_query=rag_query,
-        query=message.text,
-        history=chat_history,
-        typology=user.settings.system,
-        stream=True
-    )
-
+    match user.settings.mode:
+        case 'naranjo':
+            if user.settings.requery:
+                content = Text(CustomEmojis.rika_thinking, " Переделываю ваш запрос...")
+                msg = await message.answer(
+                    **content.as_kwargs()
+                )
+                user.request_remain -= 1
+                rag_query = await keychain.rotate(
+                    naranjo.requery,
+                    query=message.text,
+                    history=chat_history
+                )
+                await msg.delete()
+            else:
+                rag_query = message.text
+            
+            rag_data, chunks = await keychain.rotate(
+                naranjo.response,
+                rag_query=rag_query,
+                query=message.text,
+                history=chat_history,
+                typology=user.settings.system,
+                stream=True
+            )
+        case 'jung':
+            if user.settings.requery:
+                content = Text(CustomEmojis.rika_thinking, " Переделываю ваш запрос...")
+                msg = await message.answer(
+                    **content.as_kwargs()
+                )
+                user.request_remain -= 1
+                rag_query = await keychain.rotate(
+                    jung.requery,
+                    query=message.text,
+                    history=chat_history
+                )
+                await msg.delete()
+            else:
+                rag_query = message.text
+            
+            rag_data, chunks = await keychain.rotate(
+                jung.response,
+                rag_query=rag_query,
+                query=message.text,
+                history=chat_history,
+                typology=user.settings.system,
+                stream=True
+            )
+        case _:
+            await message.answer('Выберите режим работы бота с помощью /mode.')
+            return
     telegram_stream = TelegramStream(
         message.bot, message.chat.id
     )
