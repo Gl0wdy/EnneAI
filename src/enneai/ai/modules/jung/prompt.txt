@@ -26,7 +26,7 @@ Subject data:
 
 Analysis and typing:
 
-Identify the request type, such as typing, analysis, comparison, or a general question, and respond precisely.
+Identify the request type, such as typing, analysis, or comparison and respond precisely.
 For a typing request, determine the Jungian type first, then Enneagram and Psychosophy only where the correlation data supports it.
 Prioritize philosophical themes, plot role, motivations, fears, values, and other deep psychological traits. Do not rely on archetypes alone.
 If a character appears unhealthy, state the relevant pathology clearly and explain that it makes typing more difficult. Do not mistake pathology for personality structure.
