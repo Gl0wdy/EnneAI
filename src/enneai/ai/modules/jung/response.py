@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
+from html import unescape
+import re
 from typing import Any
 
 import aiohttp
@@ -35,19 +37,27 @@ class Jung(ChatClient):
         limit: int = 5,
         timeout: float = 10.0,
         max_chars: int = 12000,
+        max_page_bytes: int = 2_000_000,
     ) -> str:
         results = await asyncio.to_thread(
             lambda: list(DDGS().text(query, max_results=limit))
         )
         client_timeout = aiohttp.ClientTimeout(total=timeout)
-        headers = {"User-Agent": "EnneAI/0.1"} # ))))))) cloudflare will EXTERMINATE me
+        headers = {"User-Agent": "EnneAI/0.1, +https://github.com/Gl0wdy/EnneAI"}
 
         async with aiohttp.ClientSession(
             timeout=client_timeout,
             headers=headers,
         ) as session:
             pages = await asyncio.gather(
-                *(self._fetch_page(session, result) for result in results),
+                *(
+                    self._fetch_page(
+                        session,
+                        result,
+                        max_page_bytes=max_page_bytes,
+                    )
+                    for result in results
+                ),
                 return_exceptions=True,
             )
 
@@ -57,12 +67,14 @@ class Jung(ChatClient):
             if not isinstance(page, str) or not page.strip():
                 continue
 
-            block = page.strip()
+            block = self._normalize_text(page)
+            if not block:
+                continue
             remaining_chars = max_chars - used_chars
             if remaining_chars <= 0:
                 break
             if len(block) > remaining_chars:
-                block = block[:remaining_chars].rsplit(" ", 1)[0]
+                block = block[:remaining_chars].rsplit(None, 1)[0]
             context_parts.append(block)
             used_chars += len(block)
 
@@ -72,6 +84,7 @@ class Jung(ChatClient):
     async def _fetch_page(
         session: aiohttp.ClientSession,
         result: dict[str, Any],
+        max_page_bytes: int = 2_000_000,
     ) -> str | None:
         url = result.get("href") or result.get("url")
         if not url:
@@ -79,13 +92,39 @@ class Jung(ChatClient):
 
         try:
             async with session.get(url, allow_redirects=True) as response:
-                if response.status >= 400:
+                if response.status >= 400 or response.content_type not in {
+                    "text/html",
+                    "application/xhtml+xml",
+                }:
                     return None
-                html = await response.text(errors="replace")
+                body = await response.content.read(max_page_bytes + 1)
+                if len(body) > max_page_bytes:
+                    body = body[:max_page_bytes]
+                html = body.decode(response.charset or "utf-8", errors="replace")
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return None
 
-        return extract(html) or ""
+        parsed = extract(
+            html,
+            include_comments=False,
+            include_tables=True,
+            include_links=False,
+            favor_precision=True,
+            deduplicate=True,
+        )
+        if parsed:
+            return parsed
+
+        title = Jung._normalize_text(str(result.get("title") or ""))
+        snippet = Jung._normalize_text(str(result.get("body") or ""))
+        fallback = "\n".join(part for part in (title, snippet) if part)
+        return fallback or None
+
+    @staticmethod
+    def _normalize_text(text: str) -> str:
+        text = unescape(text).replace("\xa0", " ")
+        lines = [re.sub(r"[ \t]+", " ", line).strip() for line in text.splitlines()]
+        return re.sub(r"\n{3,}", "\n\n", "\n".join(line for line in lines if line))
 
     async def prepare_messages(
         self,

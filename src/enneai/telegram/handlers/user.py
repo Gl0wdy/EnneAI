@@ -56,6 +56,14 @@ async def start_handler(message: Message, state: FSMContext):
         InputRichMessage(markdown=text)
     )
 
+
+# ========== ХЭНДЛЕР ОЧЕРЕДИ (!!!) ================
+@router.message(fsm.ProfileStates.in_progress)
+async def in_progress_handler(message: Message):
+    content = Text(CustomEmojis.pepe_thinking, " Ваш запрос обрабатывается. Пожалуйста, подождите...")
+    await message.answer(
+        **content.as_kwargs())
+
 # =========== ХЭНДЛЕРЫ КОМАНД ================
 @router.message(Command('mode'))
 async def command_mode_handler(message: Message, state: FSMContext):
@@ -223,6 +231,9 @@ async def request_handler(message: Message, user: User, state: FSMContext):
     #     return
 
     chat_history = await get_chat_history(user.id)
+    await state.set_state(fsm.ProfileStates.in_progress)
+    
+    # TODO: возвращать вычтенные запросы юзеру при ошибке
 
     match user.settings.mode:
         case 'naranjo':
@@ -292,3 +303,4 @@ async def request_handler(message: Message, user: User, state: FSMContext):
         rag_context=rag_data.text,
         system=user.settings.system
     )
+    await state.clear()

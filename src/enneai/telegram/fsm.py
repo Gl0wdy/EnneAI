@@ -8,3 +8,4 @@ class ProfileStates(StatesGroup):
     waiting_for_confirmation = State()
     waiting_for_username = State()
     waiting_for_typologies = State()
+    in_progress = State()
