@@ -232,75 +232,88 @@ async def request_handler(message: Message, user: User, state: FSMContext):
 
     chat_history = await get_chat_history(user.id)
     await state.set_state(fsm.ProfileStates.in_progress)
-    
-    # TODO: возвращать вычтенные запросы юзеру при ошибке
+    api_calls = 0
 
-    match user.settings.mode:
-        case 'naranjo':
-            if user.settings.requery:
-                content = Text(CustomEmojis.rika_thinking, " Переделываю ваш запрос...")
-                msg = await message.answer(
-                    **content.as_kwargs()
-                )
-                user.request_remain -= 1
-                rag_query = await keychain.rotate(
-                    naranjo.requery,
+    try:
+        match user.settings.mode:
+            case 'naranjo':
+                if user.settings.requery:
+                    content = Text(CustomEmojis.rika_thinking, " Наранхо переделывает ваш запрос...")
+                    msg = await message.answer(
+                        **content.as_kwargs()
+                    )
+                    rag_query = await keychain.rotate(
+                        naranjo.requery,
+                        query=message.text,
+                        history=chat_history
+                    )
+                    api_calls += 1
+                    await msg.delete()
+                else:
+                    rag_query = message.text
+                
+                rag_data, chunks = await keychain.rotate(
+                    naranjo.response,
+                    rag_query=rag_query,
                     query=message.text,
-                    history=chat_history
+                    history=chat_history,
+                    typology=user.settings.system,
+                    stream=True
                 )
-                await msg.delete()
-            else:
-                rag_query = message.text
-            
-            rag_data, chunks = await keychain.rotate(
-                naranjo.response,
-                rag_query=rag_query,
-                query=message.text,
-                history=chat_history,
-                typology=user.settings.system,
-                stream=True
-            )
-        case 'jung':
-            if user.settings.requery:
-                content = Text(CustomEmojis.rika_thinking, " Переделываю ваш запрос...")
-                msg = await message.answer(
-                    **content.as_kwargs()
-                )
-                user.request_remain -= 1
-                rag_query = await keychain.rotate(
-                    jung.requery,
+                api_calls += 1
+            case 'jung':
+                if user.settings.requery:
+                    content = Text(CustomEmojis.rika_thinking, " Юнг переделывает ваш запрос...")
+                    msg = await message.answer(
+                        **content.as_kwargs()
+                    )
+                    rag_query = await keychain.rotate(
+                        jung.requery,
+                        query=message.text,
+                        history=chat_history
+                    )
+                    api_calls += 1
+                    await msg.delete()
+                else:
+                    rag_query = message.text
+                
+                rag_data, chunks = await keychain.rotate(
+                    jung.response,
+                    rag_query=rag_query,
                     query=message.text,
-                    history=chat_history
+                    history=chat_history,
+                    typology=user.settings.system,
+                    stream=True
                 )
-                await msg.delete()
-            else:
-                rag_query = message.text
-            
-            rag_data, chunks = await keychain.rotate(
-                jung.response,
-                rag_query=rag_query,
-                query=message.text,
-                history=chat_history,
-                typology=user.settings.system,
-                stream=True
+                api_calls += 1
+            case _:
+                await message.answer('Выберите режим работы бота с помощью /mode.')
+                return
+        
+        telegram_stream = TelegramStream(
+            message.bot, message.chat.id
+        )
+        response = await telegram_stream.stream(chunks)
+
+        await message_rep.create(
+            created_at=dt.now(),
+            user_id=user.id,
+            user_query=message.text,
+            response=response,
+            rag_context=rag_data.text,
+            system=user.settings.system
+        )
+
+        user.request_remain -= api_calls
+        await user.save()
+
+    except Exception as exc:
+        try:
+            await message.answer(
+                f'Произошла ошибка при обработке запроса: {exc}.\n'
+                f'Осталось запросов на сегодня: {user.request_remain}.'
             )
-        case _:
-            await message.answer('Выберите режим работы бота с помощью /mode.')
-            return
-    telegram_stream = TelegramStream(
-        message.bot, message.chat.id
-    )
-    response = await telegram_stream.stream(chunks)
-
-    user.request_remain -= 1
-    await user.save()
-
-    await message_rep.create(
-        created_at=dt.now(),
-        user_id=user.id,
-        user_query=message.text,
-        response=response,
-        rag_context=rag_data.text,
-        system=user.settings.system
-    )
-    await state.clear()
+        except Exception:
+            pass
+    finally:
+        await state.clear()
