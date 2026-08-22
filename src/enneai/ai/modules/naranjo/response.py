@@ -9,8 +9,8 @@ class Naranjo(ChatClient):
         model: str | None = OPENROUTER_PRIMARY_MODEL
     ):
         super().__init__(
-            prompt="src/enneai/ai/modules/naranjo/prompt.txt",
-            requery_prompt="src/enneai/ai/modules/naranjo/requery_prompt.txt",
+            prompt="data/prompts/naranjo.txt",
+            requery_prompt="data/prompts/naranjo_requery.txt",
             model=model
         )
 
@@ -24,7 +24,8 @@ class Naranjo(ChatClient):
     ) -> tuple[RagContext, list[dict]]:
         rag_data: RagContext = await retrieve(
             rag_query or query,
-            rerank_top_n=15,
+            metadata={'category': typology},
+            rerank_top_n=25,
             **rag_kwargs,
         )
 

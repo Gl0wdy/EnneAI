@@ -25,9 +25,9 @@ class Jung(ChatClient):
         model: str | None = OPENROUTER_PRIMARY_MODEL,
     ):
         super().__init__(
-            prompt="src/enneai/ai/modules/jung/prompt.txt",
-            requery_prompt="src/enneai/ai/modules/jung/requery_prompt.txt",
-            corr="data/corr/correlations.txt",
+            prompt="data/prompts/jung.txt",
+            requery_prompt="data/prompts/jung_requery.txt",
+            corr="data/prompts/correlations.txt",
             model=model
         )
 
