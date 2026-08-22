@@ -34,7 +34,7 @@ user_rep = UserRepository()
 
 
 @router.message(CommandStart())
-async def start_handler(message: Message, state: FSMContext):    
+async def start_handler(message: Message):    
     text = (
         "Привет! Я - типологический AI-бот **Клаудио Наранхо**"
         " [с полностью открытым исходным кодом](https://github.com/Gl0wdy/EnneAI).\n"
@@ -53,50 +53,21 @@ async def start_handler(message: Message, state: FSMContext):
     )
 
     await message.answer_rich(
-        InputRichMessage(markdown=text)
+        InputRichMessage(markdown=text),
+        reply_markup=user_kb.main_menu_keyboard
     )
 
 
 # ========== ХЭНДЛЕР ОЧЕРЕДИ (!!!) ================
+
 @router.message(fsm.ProfileStates.in_progress)
 async def in_progress_handler(message: Message):
     content = Text(CustomEmojis.pepe_thinking, " Ваш запрос обрабатывается. Пожалуйста, подождите...")
     await message.answer(
         **content.as_kwargs())
 
-# =========== ХЭНДЛЕРЫ КОМАНД ================
-@router.message(Command('mode'))
-async def command_mode_handler(message: Message, state: FSMContext):
-    content = Text(
-        CustomEmojis.info,
-        ' Какого бота вы хотите использовать сейчас?'
-    )
-    
-    await message.answer(
-        **content.as_kwargs(),
-        reply_markup=user_kb.build_reply_keyboard('Наранхо', 'Юнг')
-    )
-    await state.set_state(fsm.CommandStates.waiting_for_mode)
 
-@router.message(fsm.CommandStates.waiting_for_mode)
-async def mode_selection_handler(message: Message, user: User, state: FSMContext):
-    match message.text:
-        case 'Наранхо':
-            await user_rep.change_field(user.id, 'settings.mode', 'naranjo')
-            await message.answer(
-                'Вы выбрали модуль Наранхо. Продолжайте.',
-                reply_markup=ReplyKeyboardRemove()
-            )
-            await state.clear()
-        case 'Юнг':
-            await user_rep.change_field(user.id, "settings.mode", "jung")
-            await message.answer(
-                'Вы выбрали модуль Юнга. Продолжайте.',
-                reply_markup=ReplyKeyboardRemove()
-            )
-            await state.clear()
-        case _:
-            await message.answer('Просто нажми на кнопку. Не нужно ничего писать.')
+# =========== ХЭНДЛЕРЫ КОМАНД ================
 
 @router.message(Command('clear'))
 async def command_clear_handler(message: Message, state: FSMContext):
@@ -118,13 +89,13 @@ async def clear_confirmation_handler(message: Message, state: FSMContext):
             await message_rep.clear_history(message.from_user.id)
             await message.answer(
                 'Теперь вы начинаете с чистого листа...',
-                reply_markup=ReplyKeyboardRemove()
+                reply_markup=user_kb.main_menu_keyboard
             )
             await state.clear()
         case 'Отмена':
             await message.answer(
                 'Очистка истории отменена. Продолжайте.',
-                reply_markup=ReplyKeyboardRemove()
+                reply_markup=user_kb.main_menu_keyboard
             )
             await state.clear()
         case _:
@@ -151,9 +122,61 @@ async def show_profile_handler(message: Message, user: User):
 
     await message.answer(**content.as_kwargs())
 
+def build_settings_message(user: User):
+    text = Text(
+        CustomEmojis.settings,
+        Bold(' Настройки:\n'),
+        f'$ Режим > {user.settings.mode}\n',
+        f'- Уровень рассуждения > {user.settings.reasoning}\n',
+        f'- База знаний > {user.settings.system}\n',
+        f'$ Re-query > {["❌ OFF", "✅ ON"][user.settings.requery]}'
+    )
+    return text.as_kwargs()
+
+@router.message(
+    or_f(
+        Command('settings'),
+        F.text == 'Настройки'
+    )
+)
+async def show_settings_handler(message: Message, user: User):
+    text = build_settings_message(user)
+    await message.answer(
+        **text, 
+        reply_markup=user_kb.build_settings_keyboard(user)
+    )
+
+@router.callback_query(F.data.startswith('settings'))
+async def switch_settings(callback: CallbackQuery, user: User):
+    _, field, value = callback.data.split(':')
+    match field:
+        case 'mode':
+            user.settings.mode = value
+        case 'reasoning':
+            user.settings.reasoning = value
+        case 'system':
+            user.settings.system = value
+        case 'requery':
+            user.settings.requery = value == 'on'
+
+    await user.save()
+    text = build_settings_message(user)
+    await callback.message.edit_text(
+        **text,
+        reply_markup=user_kb.build_settings_keyboard(user)
+    )
+
+    await callback.answer(f'Вы успешно сменили {field}!')
+
+
 # =========== ХЭНДЛЕРЫ ПЕРСОНАЛИЗАЦИИ ================
 
-@router.message(fsm.ProfileStates.waiting_for_confirmation)
+@router.message(
+    or_f(
+        Command('persona'),
+        fsm.ProfileStates.waiting_for_confirmation
+    )
+)
 async def custom_username_handler(message: Message, state: FSMContext):
     if message.text != 'Да':
         await state.clear()
@@ -191,7 +214,7 @@ async def custom_typologies_handler(message: Message, user: User, state: FSMCont
     await user.save()
 
     await message.answer(
-        'Ваши предыдущие ответы повлияют на работу бота.\nПосмотреть ваши текущие данные можно с помощью /profile. Хорошего пользования!'
+        'Ваши предыдущие ответы повлияют на работу бота.\nПосмотреть ваши текущие данные можно с помощью /profile. Хорошего пользования!\n_Заполнить заново - /persona_'
     )
     await state.clear()
 
@@ -221,6 +244,7 @@ async def request_handler(message: Message, user: User, state: FSMContext):
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
+    # НА ПРОДЕ РАСКОММЕНТИРОВАТЬ!!
     # if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
     #     text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
     #     if not user.encrypted_key:
@@ -287,7 +311,7 @@ async def request_handler(message: Message, user: User, state: FSMContext):
                 )
                 api_calls += 1
             case _:
-                await message.answer('Выберите режим работы бота с помощью /mode.')
+                await message.answer('Выберите режим работы бота с помощью /settings.')
                 return
         
         telegram_stream = TelegramStream(

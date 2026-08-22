@@ -20,7 +20,7 @@ dependencies = [
     "qdrant-client>=1.19.0",
     "sentence-transformers>=5.7.0",
     "trafilatura>=2.0.0",
-    "torch"
+    "torch",
 ]
 
 [tool.uv.sources]
