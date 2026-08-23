@@ -9,7 +9,7 @@ from aiogram.utils.formatting import (
 )
 
 from enneai.db import User
-from enneai.db.repositories import UserMessageRepository
+from enneai.db.repositories import UserMessageRepository, UserRepository
 from enneai.ai.modules.naranjo.response import Naranjo
 from enneai.ai.modules.jung.response import Jung
 
@@ -27,20 +27,11 @@ if not OPENROUTER_API_KEY:
 
 keychain = KeyRotator(map(str, OPENROUTER_API_KEY.split(',')))
 naranjo = Naranjo()
+jung = Jung()
 router = Router(name='user')
 message_rep = UserMessageRepository()
+user_rep = UserRepository()
 
-# naranjo = Naranjo(model='poolside/laguna-s-2.1:free')
-# jung = Jung(model='nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free')
-
-
-# Ты собираешься эту бурмалду переписывать так что я пока что один ключ из env буду юзать
-
-# async def processor(msg: Message, user: User, api_key: str): # начинка для хэндлера чтобы крутить ключи на вертолете
-#     '''вот тут всю логику пиши иначе кирдык'''
-#      # каждый раз реинициализация клиента по приказу вертолета
-#     naranjo = Naranjo(model='nvidia/nemotron-3-super-120b-a12b:free', api_key=OPENROUTER_API_KEY)
-#     
 
 @router.message(CommandStart())
 async def start_handler(message: Message):    
@@ -62,11 +53,22 @@ async def start_handler(message: Message):
     )
 
     await message.answer_rich(
-        InputRichMessage(markdown=text)
+        InputRichMessage(markdown=text),
+        reply_markup=user_kb.main_menu_keyboard
     )
 
 
+# ========== ХЭНДЛЕР ОЧЕРЕДИ (!!!) ================
+
+@router.message(fsm.ProfileStates.in_progress)
+async def in_progress_handler(message: Message):
+    content = Text(CustomEmojis.pepe_thinking, " Ваш запрос обрабатывается. Пожалуйста, подождите...")
+    await message.answer(
+        **content.as_kwargs())
+
+
 # =========== ХЭНДЛЕРЫ КОМАНД ================
+
 @router.message(Command('clear'))
 async def command_clear_handler(message: Message, state: FSMContext):
     content = Text(
@@ -87,13 +89,13 @@ async def clear_confirmation_handler(message: Message, state: FSMContext):
             await message_rep.clear_history(message.from_user.id)
             await message.answer(
                 'Теперь вы начинаете с чистого листа...',
-                reply_markup=ReplyKeyboardRemove()
+                reply_markup=user_kb.main_menu_keyboard
             )
             await state.clear()
         case 'Отмена':
             await message.answer(
                 'Очистка истории отменена. Продолжайте.',
-                reply_markup=ReplyKeyboardRemove()
+                reply_markup=user_kb.main_menu_keyboard
             )
             await state.clear()
         case _:
@@ -120,37 +122,99 @@ async def show_profile_handler(message: Message, user: User):
 
     await message.answer(**content.as_kwargs())
 
+def build_settings_message(user: User):
+    text = Text(
+        CustomEmojis.settings,
+        Bold(' Настройки:\n'),
+        f'$ Режим > {user.settings.mode}\n',
+        f'- Уровень рассуждения > {user.settings.reasoning}\n',
+        f'- База знаний > {user.settings.system}\n',
+        f'$ Re-query > {["❌ OFF", "✅ ON"][user.settings.requery]}'
+    )
+    return text.as_kwargs()
+
+@router.message(
+    or_f(
+        Command('settings'),
+        F.text == 'Настройки'
+    )
+)
+async def show_settings_handler(message: Message, user: User):
+    text = build_settings_message(user)
+    await message.answer(
+        **text, 
+        reply_markup=user_kb.build_settings_keyboard(user)
+    )
+
+@router.callback_query(F.data.startswith('settings'))
+async def switch_settings(callback: CallbackQuery, user: User):
+    _, field, value = callback.data.split(':')
+    match field:
+        case 'mode':
+            user.settings.mode = value
+        case 'reasoning':
+            user.settings.reasoning = value
+        case 'system':
+            user.settings.system = value
+        case 'requery':
+            user.settings.requery = value == 'on'
+
+    await user.save()
+    text = build_settings_message(user)
+    await callback.message.edit_text(
+        **text,
+        reply_markup=user_kb.build_settings_keyboard(user)
+    )
+
+    await callback.answer(f'Вы успешно сменили {field}!')
+
+
 # =========== ХЭНДЛЕРЫ ПЕРСОНАЛИЗАЦИИ ================
 
-@router.message(fsm.ProfileStates.waiting_for_confirmation)
+@router.message(
+    or_f(
+        Command('persona'),
+        fsm.ProfileStates.waiting_for_confirmation
+    )
+)
 async def custom_username_handler(message: Message, state: FSMContext):
+    if message.text != 'Да':
+        await state.clear()
+        await message.answer('Хорошо. Повторите свой запрос.', reply_markup=ReplyKeyboardRemove())
+        return
+
     await message.answer(
-        '1. Как к вам обращаться? Введите никнейм.',
+        '1. Как к вам обращаться? Введите никнейм (или "бурмалда" для отмены).',
         reply_markup=user_kb.build_username_keyboard(message.from_user.full_name)
     )
     await state.set_state(fsm.ProfileStates.waiting_for_username)
 
 @router.message(fsm.ProfileStates.waiting_for_username)
 async def custom_username_handler(message: Message, user: User, state: FSMContext):
-    if message.text != 'Скип':
+    if message.text != 'бурмалда':
         user.username = message.text
+        await user.save()
+    else:
+        user.username = message.from_user.full_name
         await user.save()
 
     await message.answer(
-        f'2. Славно, *{user.username}*.\nНапиши свои типологии. Если не знаешь точно, можешь написать предположительные.',
+        f'2. Славно, *{user.username}*.\nНапиши свои типологии. Если не знаешь точно, можешь написать предположительные (или "бурмалда" для отмены).',
         reply_markup=user_kb.build_reply_keyboard('Скип')
     )
     await state.set_state(fsm.ProfileStates.waiting_for_typologies)
 
 @router.message(fsm.ProfileStates.waiting_for_typologies)
 async def custom_typologies_handler(message: Message, user: User, state: FSMContext):
-    if message != 'Скип':
+    if message.text != 'бурмалда':
         user.typologies = message.text
+    else:
+        user.typologies = 'Не указаны'
     user.new = False
     await user.save()
 
     await message.answer(
-        'Админу было лень писать валидатор, так что если вы ввели какой-то бред... Ну, дело ваше.\nПосмотреть ваши текущие данные можно с помощью /profile. Хорошего пользования!'
+        'Ваши предыдущие ответы повлияют на работу бота.\nПосмотреть ваши текущие данные можно с помощью /profile. Хорошего пользования!\n_Заполнить заново - /persona_'
     )
     await state.clear()
 
@@ -175,42 +239,105 @@ async def request_handler(message: Message, user: User, state: FSMContext):
     if user.new:
         await message.answer(
             'Желаете ли вы персонализировать бота под себя? Это займет пару секунд.',
-            reply_markup=user_kb.confirmation_keyboard
+            reply_markup=user_kb.build_reply_keyboard('Да', 'Нет')
         )
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
-    if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
-        text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
-        if not user.encrypted_key:
-            text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys)'
-            await message.answer(text, reply_markup=user_kb.register_key_keyboard)
-        else:
-            await message.answer(text)
-        return
+    # НА ПРОДЕ РАСКОММЕНТИРОВАТЬ!!
+    # if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
+    #     text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
+    #     if not user.encrypted_key:
+    #         text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys)'
+    #         await message.answer(text, reply_markup=user_kb.register_key_keyboard)
+    #     else:
+    #         await message.answer(text)
+    #     return
 
     chat_history = await get_chat_history(user.id)
-    rag_data, chunks = await keychain.rotate(
-        naranjo.response,
-        query=message.text,
-        history=chat_history,
-        typology=user.settings.system,
-        stream=True
-    )
+    await state.set_state(fsm.ProfileStates.in_progress)
+    api_calls = 0
 
-    telegram_stream = TelegramStream(
-        message.bot, message.chat.id
-    )
-    response = await telegram_stream.stream(chunks)
+    try:
+        match user.settings.mode:
+            case 'naranjo':
+                if user.settings.requery:
+                    content = Text(CustomEmojis.rika_thinking, " Наранхо переделывает ваш запрос...")
+                    msg = await message.answer(
+                        **content.as_kwargs()
+                    )
+                    rag_query = await keychain.rotate(
+                        naranjo.requery,
+                        query=message.text,
+                        history=chat_history
+                    )
+                    api_calls += 1
+                    await msg.delete()
+                else:
+                    rag_query = message.text
+                
+                rag_data, chunks = await keychain.rotate(
+                    naranjo.response,
+                    rag_query=rag_query,
+                    query=message.text,
+                    history=chat_history,
+                    typology=user.settings.system,
+                    stream=True
+                )
+                api_calls += 1
+            case 'jung':
+                if user.settings.requery:
+                    content = Text(CustomEmojis.rika_thinking, " Юнг переделывает ваш запрос...")
+                    msg = await message.answer(
+                        **content.as_kwargs()
+                    )
+                    rag_query = await keychain.rotate(
+                        jung.requery,
+                        query=message.text,
+                        history=chat_history
+                    )
+                    api_calls += 1
+                    await msg.delete()
+                else:
+                    rag_query = message.text
+                
+                rag_data, chunks = await keychain.rotate(
+                    jung.response,
+                    rag_query=rag_query,
+                    query=message.text,
+                    history=chat_history,
+                    typology=user.settings.system,
+                    stream=True
+                )
+                api_calls += 1
+            case _:
+                await message.answer('Выберите режим работы бота с помощью /settings.')
+                return
+        
+        telegram_stream = TelegramStream(
+            message.bot, message.chat.id
+        )
+        response = await telegram_stream.stream(chunks)
 
-    user.request_remain -= 1
-    await user.save()
+        await message_rep.create(
+            created_at=dt.now(),
+            user_id=user.id,
+            user_query=message.text,
+            response=response,
+            rag_context=rag_data.text,
+            system=user.settings.system
+        )
 
-    await message_rep.create(
-        created_at=dt.now(),
-        user_id=user.id,
-        user_query=message.text,
-        response=response,
-        rag_context=rag_data.text,
-        system=user.settings.system
-    )
+        user.request_remain -= api_calls
+        await user.save()
+
+    except Exception as exc:
+        try:
+            await message.answer(
+                f'Произошла ошибка при обработке запроса: {exc}.\n'
+                f'Осталось запросов на сегодня: {user.request_remain}.'
+            )
+        except Exception:
+            pass
+    finally:
+        await state.clear()

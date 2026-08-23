@@ -11,6 +11,7 @@ from enneai.config import (
     MONGO_URI
 )
 from enneai.db import MongoDB
+from enneai.ai.rag.query import warmup
 
 import logging
 
@@ -36,6 +37,7 @@ mongo = MongoDB(
 @dp.startup()
 async def startup():
     await mongo.init()
+    await warmup()
 
     await bot.delete_webhook(
         drop_pending_updates=True,
@@ -61,6 +63,9 @@ async def main():
     dp.include_router(router)
 
     dp.message.middleware(
+        UserMiddleware()
+    )
+    dp.callback_query.middleware(
         UserMiddleware()
     )
 

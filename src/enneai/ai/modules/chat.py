@@ -5,23 +5,23 @@ import json
 import abc
 from collections.abc import AsyncIterator
 
-from enneai.ai.rag import retrieve, RagContext
 from enneai.utils.reader import load_file
 
-from enneai.config import OPENROUTER_ENDPOINT, OPENROUTER_PRIMARY_MODEL
+from enneai.config import OPENROUTER_ENDPOINT, OPENROUTER_PRIMARY_MODEL, OPENROUTER_SECONDARY_MODEL
 
 
 class ChatClient(abc.ABC):
     def __init__(
         self,
         prompt: str,
+        requery_prompt: str | None = None,
         model: str | None = OPENROUTER_PRIMARY_MODEL,
         corr: str | None = None
     ):
 
         self.model = model
         self.prompt = load_file(prompt)
-
+        self.requery_prompt = load_file(requery_prompt) if requery_prompt else ""
         self.corr = (
             load_file(corr)
             if corr
@@ -68,48 +68,34 @@ class ChatClient(abc.ABC):
             "Content-Type": "application/json"
         }
 
-    def _build_payload(self, messages: list[dict], stream: bool = False) -> dict:
+    def _build_payload(
+        self,
+        messages: list[dict],
+        model: str | None = None,
+        stream: bool = False,
+        reasoning: bool = True,
+        max_tokens: int | None = None
+    ) -> dict:
         payload = {
-            "model": self.model,
+            "model": model or self.model,
             "messages": messages,
-            "stream": stream
+            "stream": stream,
+            "reasoning": {
+                "enabled": reasoning
+            },
+            "max_tokens": max_tokens
         }
         return payload
 
-    async def prepare_messages(
-        self,
-        query: str,
-        history: list[dict],
-        typology: str | None = "null",
-        **rag_kwargs,
-    ):
-
-        rag_data: RagContext = await retrieve(
-            query,
-            rerank_top_n=15,
-            **rag_kwargs,
-        )
-
-        prompt = self._build_prompt(
-            rag_context=str(rag_data),
-            context=self.get_context(typology),
-        )
-
-        return rag_data, [
-            {
-                "role": "system",
-                "content": prompt
-            }
-        ] + history + [
-            {
-                "role": "user",
-                "content": query
-            }
-        ]
-
-    async def get_stream(self, messages: list[dict], api_key: str | None = None) -> AsyncIterator[str]:
+    async def get_stream(
+        self, 
+        messages: list[dict], 
+        api_key: str | None = None,
+        model: str | None = OPENROUTER_PRIMARY_MODEL,
+        reasoning: bool = True
+    ) -> AsyncIterator[str]:
         headers = self._build_headers(api_key)
-        payload = self._build_payload(messages, stream=True)
+        payload = self._build_payload(messages, stream=True, model=model, reasoning=reasoning)
 
         async with aiohttp.ClientSession() as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
@@ -145,41 +131,55 @@ class ChatClient(abc.ABC):
                             except Exception:
                                 break
 
-    async def get_discrete(self, messages: list[dict], api_key: str | None = None) -> str:
+    async def get_discrete(
+        self,
+        messages: list[dict],
+        api_key: str | None = None,
+        model: str | None = None,
+        reasoning: bool = True,
+        max_tokens: int | None = None
+    ) -> str:
         headers = self._build_headers(api_key)
-        payload = self._build_payload(messages, stream=False)
+        payload = self._build_payload(
+            messages, 
+            model=model,
+            stream=False,
+            reasoning=reasoning,
+            max_tokens=max_tokens
+        )
 
         async with aiohttp.ClientSession() as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
-                if response.status != 200:
-                    raise Exception(f"Request failed with status code {response.status}")
-
                 result = await response.json()
+
+                if response.status != 200:
+                    raise Exception(
+                        f"OpenRouter error {response.status}: {result}"
+                )
                 return result
 
-    async def response(
+    async def requery(
         self,
         query: str,
         history: list[dict],
-        typology: str | None = "null",
-        stream: bool = False,
-        api_key: str | None = None, # - наранхо откуда ключи? - вертолет дает
-        **kwargs,
-    ):
-        rag_data, messages = await self.prepare_messages(
-            query=query,
-            history=history,
-            typology=typology,
-            **kwargs,
+        api_key: str | None = None
+    ) -> str:
+        if not self.requery_prompt:
+            return query
+        prompt = self.requery_prompt.replace(
+            '<CONTEXT>', self.contexts['ennea']
         )
+        history = [
+            {'role': 'system', 'content': prompt}
+        ] + history + [{'role': 'user', 'content': query}]
 
-        if stream:
-            return rag_data, self.get_stream(
-                messages=messages,
-                api_key=api_key
-            )
-
-        return rag_data, await self.get_discrete(
-            messages=messages,
-            api_key=api_key
+        response = await self.get_discrete(
+            history,
+            api_key=api_key,
+            model=OPENROUTER_SECONDARY_MODEL,
+            reasoning=False,
+            max_tokens=50
         )
+        # print(response['choices'][0]['message']['content'])
+        
+        return response['choices'][0]['message']['content']

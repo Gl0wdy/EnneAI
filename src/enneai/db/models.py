@@ -5,14 +5,14 @@ from beanie import Document, Link
 from pydantic import BaseModel
 
 
-SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian"]
+SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian", "auto"]
 
 class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
     reasoning: Literal['low', 'medium', 'high'] = "medium"
-    system: SYSTEMS = "ennea"
-    instructions: str = "" #?????? custom instructions?
-    rag: bool = True
+    system: SYSTEMS = "auto"
+    instructions: str = ""
+    requery: bool = True
 
 
 class UserMessage(Document):
