@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from enneai.telegram import router, UserMiddleware
+from enneai.telegram import admin_router, router, UserMiddleware
 from enneai.config import (
     TELEGRAM_DEBUG_TOKEN,
     TELEGRAM_ADMIN_ID,
@@ -60,6 +60,7 @@ async def shutdown():
 
 
 async def main():
+    dp.include_router(admin_router)
     dp.include_router(router)
 
     dp.message.middleware(
