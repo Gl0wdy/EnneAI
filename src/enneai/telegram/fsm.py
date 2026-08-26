@@ -2,6 +2,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 class CommandStates(StatesGroup):
     waiting_for_clear = State()
+    waiting_for_newsletter = State()
 
 class ProfileStates(StatesGroup):
     waiting_for_confirmation = State()

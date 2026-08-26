@@ -1,10 +1,13 @@
+import asyncio
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message
+from aiogram.fsm.context import FSMContext
 
 from enneai.config import TELEGRAM_ADMIN_ID
 from enneai.db.repositories import UserMessageRepository, UserRepository
 from enneai.telegram.keyboards import admin as admin_kb
+from enneai.telegram.fsm import CommandStates
 
 
 admin_router = Router(name='admin')
@@ -57,12 +60,23 @@ async def admin_handler(message: Message):
 
 	await message.answer(
 		await build_admin_overview(),
-		reply_markup=admin_kb.build_admin_keyboard(),
+		reply_markup=admin_kb.main_keyboard,
 	)
 
 
+@admin_router.message(CommandStates.waiting_for_newsletter)
+async def send_newsletter(message: Message, state: FSMContext):
+	users = await user_rep.get_all()
+	tasks = (message.copy_to(u.id) for u in users)
+	result = await asyncio.gather(*tasks, return_exceptions=True)
+
+	succesful_count = len((r for r in result if not isinstance(r, Exception)))
+	await message.answer(f'Успешно разослано {succesful_count} пользователям.')
+	await state.clear()
+
+
 @admin_router.callback_query(F.data.startswith('admin:'))
-async def admin_callback_handler(callback: CallbackQuery):
+async def admin_callback_handler(callback: CallbackQuery, state: FSMContext):
 	if callback.from_user is None or not is_admin(callback.from_user.id):
 		await callback.answer('Доступ запрещён', show_alert=True)
 		return
@@ -75,12 +89,18 @@ async def admin_callback_handler(callback: CallbackQuery):
 	if action in ('back', 'refresh', 'stats'):
 		await callback.message.edit_text(
 			await build_admin_overview(),
-			reply_markup=admin_kb.build_admin_keyboard(),
+			reply_markup=admin_kb.main_keyboard,
 		)
 	elif action == 'users':
 		await callback.message.edit_text(
 			await build_users_report(),
-			reply_markup=admin_kb.build_admin_back_keyboard(),
+			reply_markup=admin_kb.back_keyboard,
 		)
+	elif action == 'newsletter':
+		await callback.message.edit_text(
+			'Пришлите сообщение, которое хотите разослать всем пользователям:',
+			reply_markup=admin_kb.back_keyboard
+		)
+		await state.set_state(CommandStates.waiting_for_newsletter)
 
 	await callback.answer()
