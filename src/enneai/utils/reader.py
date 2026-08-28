@@ -15,6 +15,25 @@ def find_project_root() -> Path:
 PROJECT_ROOT = find_project_root()
 
 
+def _load_docx(path: Path) -> str:
+    from docx import Document
+
+    doc = Document(str(path))
+    parts = [p.text for p in doc.paragraphs if p.text.strip()]
+    return "\n\n".join(parts)
+
+
+def _load_pdf(path: Path) -> str:
+    import pymupdf 
+
+    doc = pymupdf.open(str(path))
+    try:
+        parts = [page.get_text() for page in doc]
+    finally:
+        doc.close()
+    return "\n\n".join(p for p in parts if p.strip())
+
+
 def load_file(path: str | Path) -> str:
     path = Path(path)
 
@@ -29,12 +48,20 @@ def load_file(path: str | Path) -> str:
     if not path.is_file():
         raise ValueError(f"Not a file: {path}")
 
-    if path.suffix.lower() == ".txt":
+    suffix = path.suffix.lower()
+
+    if suffix == ".txt":
         return path.read_text(encoding="utf-8")
 
-    if path.suffix.lower() == ".json":
+    if suffix == ".json":
         data = json.loads(path.read_text(encoding="utf-8"))
         return json.dumps(data, ensure_ascii=False, indent=2)
+
+    if suffix == ".docx":
+        return _load_docx(path)
+
+    if suffix == ".pdf":
+        return _load_pdf(path)
 
     raise ValueError(
         f"Unsupported file format: {path.suffix}"
