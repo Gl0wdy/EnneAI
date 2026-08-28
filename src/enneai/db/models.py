@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import  Literal
 
 from beanie import Document, Link
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian", "auto"]
@@ -25,6 +25,17 @@ class UserMessage(Document):
 
     class Settings:
         name = "user_messages"
+
+
+class AdminStatsSnapshot(Document):
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    users_count: int
+    active_users: int
+    messages_count: int
+    requests_left: int
+
+    class Settings:
+        name = "admin_stats_snapshots"
 
 
 class User(Document):

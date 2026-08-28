@@ -3,6 +3,11 @@ from aiogram.fsm.state import State, StatesGroup
 class CommandStates(StatesGroup):
     waiting_for_clear = State()
 
+
+class AdminStates(StatesGroup):
+    waiting_for_broadcast = State()
+
+
 class ProfileStates(StatesGroup):
     waiting_for_confirmation = State()
     waiting_for_username = State()
