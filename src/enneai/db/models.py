@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, date, timezone
 from typing import  Literal
 
 from beanie import Document, Link
@@ -27,6 +27,21 @@ class UserMessage(Document):
         name = "user_messages"
 
 
+class User(Document):
+    id: int     # telegram id actually
+    new: bool = True  
+    username: str
+    settings: UserSettings = Field(default_factory=UserSettings)
+    typologies: str = ''
+    request_limit: int = 15
+    request_remain: int = 15
+    burmaldate: date = datetime.now().date()
+    encrypted_key: str = ""
+
+    class Settings:
+        name = "users"
+
+
 class AdminStatsSnapshot(Document):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     users_count: int
@@ -36,17 +51,3 @@ class AdminStatsSnapshot(Document):
 
     class Settings:
         name = "admin_stats_snapshots"
-
-
-class User(Document):
-    id: int     # telegram id actually
-    new: bool = True  
-    username: str
-    settings: UserSettings = UserSettings()
-    typologies: str = ''
-    request_limit: int = 15
-    request_remain: int = 15
-    encrypted_key: str = ""
-
-    class Settings:
-        name = "users"

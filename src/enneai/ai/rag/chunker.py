@@ -23,13 +23,20 @@ class ChunkerClient(ChatClient):
         payload["response_format"] = {"type": "json_object"}
         return payload
 
-    async def chunk_window(self, window, book_title, typology, api_key=None, max_retries=3):
+    async def chunk_window(self, window, book_title, typology, prev_context="", next_context="", api_key=None, max_retries=3):
+        user_content = (
+            f"Книга: {book_title}\n"
+            f"Типология по умолчанию: {typology}\n\n"
+            f"=== КОНЕЦ ПРЕДЫДУЩЕГО ФРАГМЕНТА (только контекст, НЕ разбивать) ===\n"
+            f"{prev_context or '(это начало книги)'}\n\n"
+            f"=== ТЕКУЩЕЕ ОКНО (разбить на чанки только этот текст) ===\n"
+            f"{window}\n\n"
+            f"=== НАЧАЛО СЛЕДУЮЩЕГО ФРАГМЕНТА (только контекст, НЕ разбивать) ===\n"
+            f"{next_context or '(это конец книги)'}"
+        )
         messages = [
             {"role": "system", "content": self.prompt},
-            {
-                "role": "user",
-                "content": f"Книга: {book_title}\nТипология по умолчанию: {typology}\n\nТекст:\n\n{window}",
-            },
+            {"role": "user", "content": user_content},
         ]
 
         last_error = None
@@ -58,6 +65,7 @@ class ChunkerClient(ChatClient):
 class BookChunker:
     WINDOW_SIZE = 6000
     MAX_CONCURRENT_REQUESTS = 5
+    NEIGHBOR_CONTEXT_CHARS = 1500
 
     def __init__(self, typology, filename, model=None, api_key=None, max_concurrent=None):
         if typology not in TYPOLOGIES:
@@ -77,14 +85,20 @@ class BookChunker:
         semaphore = asyncio.Semaphore(self.max_concurrent)
         total = len(windows)
 
-        results = await asyncio.gather(
-            *(self._process_window(window, semaphore, i, total) for i, window in enumerate(windows))
-        )
+        tasks = [
+            self._process_window(window, self._prev_context(windows, i), self._next_context(windows, i), semaphore, i, total)
+            for i, window in enumerate(windows)
+        ]
+        results = await asyncio.gather(*tasks)
 
         for i, result in enumerate(results):
             raw_chunks = result.get("chunks", [])
 
             for raw_chunk in raw_chunks:
+                if not isinstance(raw_chunk, dict):
+                    print(f"[{self.book_title}] окно {i + 1}: чанк пришёл не объектом ({type(raw_chunk).__name__}), пропускаю")
+                    continue
+
                 self.chunks.append(self._build_record(raw_chunk, i))
 
         if save:
@@ -92,9 +106,26 @@ class BookChunker:
 
         return self.chunks
 
-    async def _process_window(self, window, semaphore, index, total):
+    def _prev_context(self, windows, index):
+        if index == 0:
+            return ""
+        return windows[index - 1][-self.NEIGHBOR_CONTEXT_CHARS :]
+
+    def _next_context(self, windows, index):
+        if index == len(windows) - 1:
+            return ""
+        return windows[index + 1][: self.NEIGHBOR_CONTEXT_CHARS]
+
+    async def _process_window(self, window, prev_context, next_context, semaphore, index, total):
         async with semaphore:
-            result = await self.client.chunk_window(window, self.book_title, self.typology, api_key=self.api_key)
+            result = await self.client.chunk_window(
+                window,
+                self.book_title,
+                self.typology,
+                prev_context=prev_context,
+                next_context=next_context,
+                api_key=self.api_key,
+            )
             raw_chunks = result.get("chunks", [])
             print(f"[{self.book_title}] окно {index + 1}/{total} -> {len(raw_chunks)} чанков")
             return result

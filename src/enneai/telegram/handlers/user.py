@@ -244,6 +244,8 @@ async def request_handler(message: Message, user: User, state: FSMContext):
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
+    if user.burmaldate != dt.now().date():
+        user.request_remain = user.request_remain
     # НА ПРОДЕ РАСКОММЕНТИРОВАТЬ!!
     # if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
     #     text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
@@ -329,7 +331,6 @@ async def request_handler(message: Message, user: User, state: FSMContext):
         )
 
         user.request_remain -= api_calls
-        await user.save()
 
     except Exception as exc:
         try:
@@ -341,3 +342,5 @@ async def request_handler(message: Message, user: User, state: FSMContext):
             pass
     finally:
         await state.clear()
+        user.burmaldate = dt.now().date()
+        await user.save()

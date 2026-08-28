@@ -78,7 +78,7 @@ async def admin_handler(message: Message):
 	)
 
 
-@admin_router.message(CommandStates.waiting_for_newsletter)
+@admin_router.message(fsm.CommandStates.waiting_for_newsletter)
 async def send_newsletter(message: Message, state: FSMContext):
 	users = await user_rep.get_all()
 	tasks = (message.copy_to(u.id) for u in users)
