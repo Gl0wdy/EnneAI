@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import asyncio
 import logging
 import os
@@ -10,10 +8,7 @@ from typing import Any, Iterable
 from qdrant_client import AsyncQdrantClient
 from qdrant_client import models as qm
 
-try: 
-    from .embeddings import DENSE_VECTOR_SIZE, get_embedding_service
-except ImportError:
-    from enneai.ai.rag.embeddings import DENSE_VECTOR_SIZE, get_embedding_service
+from enneai.ai.rag.embeddings import DENSE_VECTOR_SIZE, get_embedding_service
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +22,23 @@ SPARSE_VECTOR_NAME = "sparse"
 HNSW_M = int(os.getenv("RAG_HNSW_M", "16"))
 HNSW_EF_CONSTRUCT = int(os.getenv("RAG_HNSW_EF_CONSTRUCT", "128"))
 ON_DISK_PAYLOAD = os.getenv("RAG_ON_DISK_PAYLOAD", "false").lower() == "true"
-
 INGEST_BATCH_SIZE = int(os.getenv("RAG_INGEST_BATCH_SIZE", "32"))
+MIN_CHUNK_CHARS = int(os.getenv("RAG_MIN_CHUNK_CHARS", "150"))
 
 _NAMESPACE = uuid.UUID("6f2f1d0a-9d2b-4c9b-8b6b-9a2f9e2c9d10")
 
 _client: AsyncQdrantClient | None = None
 _client_lock = asyncio.Lock()
+
+
+@dataclass(slots=True)
+class BookMetadata:
+    book_id: str | None = None
+    title: str | None = None
+    author: str | None = None
+    language: str | None = None
+    category: str | None = None
+    about: str | None = None
 
 
 @dataclass(slots=True)
@@ -49,6 +54,9 @@ class ScoredChunk:
     score: float = 0.0
     source_path: str | None = None
     language: str | None = None
+    book_author: str | None = None
+    category: str | None = None
+    about: str | None = None
 
 
 async def get_client() -> AsyncQdrantClient:
@@ -86,6 +94,7 @@ async def ensure_collection() -> None:
     for field_name, schema in (
         ("book_id", qm.PayloadSchemaType.KEYWORD),
         ("language", qm.PayloadSchemaType.KEYWORD),
+        ("category", qm.PayloadSchemaType.KEYWORD),
         ("node_type", qm.PayloadSchemaType.KEYWORD),
         ("headings_text", qm.PayloadSchemaType.TEXT),
     ):
@@ -96,7 +105,7 @@ async def ensure_collection() -> None:
                 field_schema=schema,
             )
         except Exception:
-            logger.debug("Payload index on %r already present", field_name)
+            pass
 
 
 def _chunk_point_id(book_id: str, chunk_index: int) -> str:
@@ -114,8 +123,6 @@ def _build_embedded_text(headings: list[str], text: str) -> str:
     if not headings:
         return text
     return " > ".join(headings) + "\n\n" + text
-
-MIN_CHUNK_CHARS = int(os.getenv("RAG_MIN_CHUNK_CHARS", "150"))
 
 
 def _merge_small_chunks(prepared: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -137,13 +144,7 @@ def _merge_small_chunks(prepared: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 merged[-1]["text"] = merged[-1]["text"].strip() + "\n" + current["text"].strip()
                 i += 1
                 continue
-            logger.warning(
-                "Orphan short chunk (%d chars, no matching neighbor, headings=%r) "
-                "kept as-is: %r",
-                len(current["text"]),
-                current["headings"],
-                current["text"][:80],
-            )
+            logger.warning("Orphan short chunk kept as-is: %r", current["text"][:80])
         merged.append(current)
         i += 1
     return merged
@@ -151,31 +152,29 @@ def _merge_small_chunks(prepared: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 async def upsert_document_chunks(
     *,
-    metadata: dict[str, Any],
+    metadata: BookMetadata,
     source_path: str | None,
     raw_chunks: Iterable[Any],
     batch_size: int = INGEST_BATCH_SIZE,
 ) -> int:
-    await ensure_collection()
+    if not metadata.book_id:
+        raise ValueError("metadata.book_id is required")
 
+    await ensure_collection()
     client = await get_client()
     embedder = get_embedding_service()
 
     prepared: list[dict[str, Any]] = []
-
     for raw in raw_chunks:
         text = getattr(raw, "text", "") or ""
-
         if not text.strip():
             continue
-
-        chunk_metadata = getattr(raw, "metadata", None) or {}
-
+        raw_metadata = getattr(raw, "metadata", None) or {}
         prepared.append(
             {
                 "text": text,
-                "headings": _extract_headings(chunk_metadata),
-                "node_type": chunk_metadata.get("node_type"),
+                "headings": _extract_headings(raw_metadata),
+                "node_type": raw_metadata.get("node_type"),
             }
         )
 
@@ -183,55 +182,23 @@ async def upsert_document_chunks(
 
     for idx, p in enumerate(prepared):
         p["chunk_index"] = idx
-        p["embedded_text"] = _build_embedded_text(
-            p["headings"],
-            p["text"],
-        )
+        p["embedded_text"] = _build_embedded_text(p["headings"], p["text"])
 
     total = 0
-
     for start in range(0, len(prepared), batch_size):
         batch = prepared[start : start + batch_size]
-
         if not batch:
             continue
 
-        texts = [
-            p["embedded_text"]
-            for p in batch
-        ]
-
+        texts = [p["embedded_text"] for p in batch]
         dense_vectors, sparse_vectors = await asyncio.gather(
             embedder.embed_passages(texts),
             embedder.embed_passages_sparse(texts),
         )
 
         points = []
-
-        for p, dense_vec, sparse_vec in zip(
-            batch,
-            dense_vectors,
-            sparse_vectors,
-        ):
-            point_id = _chunk_point_id(
-                metadata["book_id"],
-                p["chunk_index"],
-            )
-
-            payload = {
-                **metadata,
-
-                "chunk_id": point_id,
-                "source_path": source_path,
-                "chunk_index": p["chunk_index"],
-                "text": p["text"],
-                "embedded_text": p["embedded_text"],
-                "headings": p["headings"],
-                "headings_text": " > ".join(p["headings"]),
-                "node_type": p["node_type"],
-                "char_count": len(p["text"]),
-            }
-
+        for p, dense_vec, sparse_vec in zip(batch, dense_vectors, sparse_vectors):
+            point_id = _chunk_point_id(metadata.book_id, p["chunk_index"])
             points.append(
                 qm.PointStruct(
                     id=point_id,
@@ -239,25 +206,29 @@ async def upsert_document_chunks(
                         DENSE_VECTOR_NAME: dense_vec,
                         SPARSE_VECTOR_NAME: sparse_vec.as_qdrant(),
                     },
-                    payload=payload,
+                    payload={
+                        "chunk_id": point_id,
+                        "book_id": metadata.book_id,
+                        "book_title": metadata.title,
+                        "book_author": metadata.author,
+                        "category": metadata.category,
+                        "about": metadata.about,
+                        "source_path": source_path,
+                        "chunk_index": p["chunk_index"],
+                        "text": p["text"],
+                        "embedded_text": p["embedded_text"],
+                        "headings": p["headings"],
+                        "headings_text": " > ".join(p["headings"]),
+                        "node_type": p["node_type"],
+                        "language": metadata.language,
+                        "char_count": len(p["text"]),
+                    },
                 )
             )
 
-        await client.upsert(
-            collection_name=COLLECTION_NAME,
-            points=points,
-            wait=True,
-        )
-
+        await client.upsert(collection_name=COLLECTION_NAME, points=points, wait=True)
         total += len(points)
-
-        logger.info(
-            "Upserted %d chunks for book_id=%r "
-            "(running total %d)",
-            len(points),
-            metadata["book_id"],
-            total,
-        )
+        logger.info("Upserted %d chunks for book_id=%r", len(points), metadata.book_id)
 
     return total
 

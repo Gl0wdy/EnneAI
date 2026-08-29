@@ -23,7 +23,7 @@ class ChunkerClient(ChatClient):
         payload["response_format"] = {"type": "json_object"}
         return payload
 
-    async def chunk_window(self, window, book_title, typology, prev_context="", next_context="", api_key=None, max_retries=3):
+    async def chunk_window(self, window, book_title, typology, prev_context="", next_context="", api_key=None, max_retries=100):
         user_content = (
             f"Книга: {book_title}\n"
             f"Типология по умолчанию: {typology}\n\n"

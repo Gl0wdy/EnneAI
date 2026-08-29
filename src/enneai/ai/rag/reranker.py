@@ -1,17 +1,12 @@
-from __future__ import annotations
-
 import asyncio
 import logging
 import os
 import threading
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 from sentence_transformers import CrossEncoder
 
-try: 
-    from .storage import ScoredChunk
-except ImportError: 
-    from enneai.ai.rag.storage import ScoredChunk
+from enneai.ai.rag.storage import ScoredChunk
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +26,7 @@ class RankedChunk(ScoredChunk):
 class Reranker:
     _instance: "Reranker | None" = None
 
-    def __init__(self) -> None:
+    def __init__(self):
         logger.info("Loading reranker %r on %r", RERANKER_MODEL_NAME, DEVICE)
         self._model = CrossEncoder(RERANKER_MODEL_NAME, max_length=RERANK_MAX_LENGTH, device=DEVICE)
 
@@ -49,11 +44,7 @@ class Reranker:
 
     def _predict_sync(self, query: str, passages: list[str]) -> list[float]:
         pairs = [(query, p) for p in passages]
-        scores = self._model.predict(
-            pairs,
-            batch_size=RERANK_BATCH_SIZE,
-            show_progress_bar=False,
-        )
+        scores = self._model.predict(pairs, batch_size=RERANK_BATCH_SIZE, show_progress_bar=False)
         return scores.tolist()
 
     async def rerank(
@@ -61,7 +52,7 @@ class Reranker:
         query: str,
         chunks: list[ScoredChunk],
         *,
-        top_n: int = 6,
+        top_n: int = 15,
         score_threshold: float | None = None,
     ) -> list[RankedChunk]:
         if not chunks:
@@ -74,20 +65,4 @@ class Reranker:
         if score_threshold is not None:
             ranked = [(c, s) for c, s in ranked if s >= score_threshold]
 
-        return [
-            RankedChunk(
-                chunk_id=c.chunk_id,
-                book_id=c.book_id,
-                book_title=c.book_title,
-                text=c.text,
-                embedded_text=c.embedded_text,
-                headings=c.headings,
-                node_type=c.node_type,
-                chunk_index=c.chunk_index,
-                score=c.score,
-                source_path=c.source_path,
-                language=c.language,
-                rerank_score=float(score),
-            )
-            for c, score in ranked[:top_n]
-        ]
+        return [RankedChunk(**asdict(c), rerank_score=float(score)) for c, score in ranked[:top_n]]

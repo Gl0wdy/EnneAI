@@ -1,0 +1,18 @@
+{
+    "dual.pdf": {
+        "book_id": "dual",
+        "title": "The dual nature of man",
+        "author": "Aušra Augustinavičiūtė",
+        "language": "en",
+        "category": "socio",
+        "about": "BURMALDA."
+    },
+    "intertype.pdf": {
+        "book_id": "intertype.pdf",
+        "title": "Intertype relationship",
+        "author": "Aušra Augustinavičiūtė",
+        "language": "en",
+        "category": "socio",
+        "about": "BURMALDA."
+    }
+}

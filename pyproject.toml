@@ -21,6 +21,8 @@ dependencies = [
     "sentence-transformers>=5.7.0",
     "trafilatura>=2.0.0",
     "torch",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
 ]
 
 [tool.uv.sources]
