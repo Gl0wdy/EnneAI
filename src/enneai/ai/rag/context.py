@@ -1,14 +1,9 @@
-from __future__ import annotations
-
 import hashlib
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 
-try: 
-    from .reranker import RankedChunk
-except ImportError: 
-    from enneai.ai.rag.reranker import RankedChunk
+from enneai.ai.rag.reranker import RankedChunk
 
-DEFAULT_MAX_CONTEXT_CHARS = 6000
+DEFAULT_MAX_CONTEXT_CHARS = 12000
 
 
 @dataclass(slots=True)
@@ -19,12 +14,15 @@ class SourceRef:
     headings: list[str]
     chunk_id: str
     score: float
+    book_author: str | None = None
+    category: str | None = None
 
 
 @dataclass(slots=True)
 class RagContext:
     text: str
     sources: list[SourceRef] = field(default_factory=list)
+    chunks: list[dict] = field(default_factory=list)  # raw chunk data, все поля включая rerank_score
 
     @property
     def is_empty(self) -> bool:
@@ -42,9 +40,10 @@ def build_context(
     max_chars: int = DEFAULT_MAX_CONTEXT_CHARS,
     dedupe: bool = True,
 ) -> RagContext:
-    parts: list[str] = []
-    sources: list[SourceRef] = []
-    seen: set[str] = set()
+    parts = []
+    sources = []
+    raw_chunks = []
+    seen = set()
     used_chars = 0
 
     for chunk in chunks:
@@ -55,7 +54,8 @@ def build_context(
             seen.add(key)
 
         heading_path = " > ".join(chunk.headings) if chunk.headings else None
-        header_line = f"[{len(sources) + 1}] {chunk.book_title}" + (
+        by_line = f" (автор: {chunk.book_author})" if chunk.book_author else ""
+        header_line = f"[{len(sources) + 1}] {chunk.book_title}{by_line}" + (
             f" -- {heading_path}" if heading_path else ""
         )
         block = f"{header_line}\n{chunk.text.strip()}"
@@ -73,7 +73,10 @@ def build_context(
                 headings=chunk.headings,
                 chunk_id=chunk.chunk_id,
                 score=chunk.rerank_score,
+                book_author=chunk.book_author,
+                category=chunk.category,
             )
         )
+        raw_chunks.append(asdict(chunk))
 
-    return RagContext(text="\n\n".join(parts), sources=sources)
+    return RagContext(text="\n\n".join(parts), sources=sources, chunks=raw_chunks)

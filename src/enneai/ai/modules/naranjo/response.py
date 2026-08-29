@@ -28,9 +28,10 @@ class Naranjo(ChatClient):
             rerank_top_n=25,
             **rag_kwargs,
         )
+        print(query, rag_data.is_empty)
 
         prompt = self._build_prompt(
-            rag_context=str(rag_data),
+            rag_context=f'sources:\n{rag_data.sources}\n\ntext:\n{rag_data.text}',
             context=self.get_context(typology),
         )
 

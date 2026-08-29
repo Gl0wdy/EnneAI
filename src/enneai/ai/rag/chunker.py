@@ -8,7 +8,7 @@ from enneai.ai.modules.chat import ChatClient
 from enneai.utils.reader import PROJECT_ROOT, load_file
 
 TYPOLOGIES = {"ennea", "psychosophy", "socio", "jungian"}
-CHUNKER_PROMPT_PATH = "data/prompts/chunker_system.txt"
+CHUNKER_PROMPT_PATH = "data/prompts/chunker.txt"
 
 
 class ChunkerClient(ChatClient):
@@ -23,13 +23,20 @@ class ChunkerClient(ChatClient):
         payload["response_format"] = {"type": "json_object"}
         return payload
 
-    async def chunk_window(self, window, book_title, typology, api_key=None, max_retries=3):
+    async def chunk_window(self, window, book_title, typology, prev_context="", next_context="", api_key=None, max_retries=100):
+        user_content = (
+            f"Книга: {book_title}\n"
+            f"Типология по умолчанию: {typology}\n\n"
+            f"=== КОНЕЦ ПРЕДЫДУЩЕГО ФРАГМЕНТА (только контекст, НЕ разбивать) ===\n"
+            f"{prev_context or '(это начало книги)'}\n\n"
+            f"=== ТЕКУЩЕЕ ОКНО (разбить на чанки только этот текст) ===\n"
+            f"{window}\n\n"
+            f"=== НАЧАЛО СЛЕДУЮЩЕГО ФРАГМЕНТА (только контекст, НЕ разбивать) ===\n"
+            f"{next_context or '(это конец книги)'}"
+        )
         messages = [
             {"role": "system", "content": self.prompt},
-            {
-                "role": "user",
-                "content": f"Книга: {book_title}\nТипология по умолчанию: {typology}\n\nТекст:\n\n{window}",
-            },
+            {"role": "user", "content": user_content},
         ]
 
         last_error = None
@@ -57,8 +64,10 @@ class ChunkerClient(ChatClient):
 
 class BookChunker:
     WINDOW_SIZE = 6000
+    MAX_CONCURRENT_REQUESTS = 5
+    NEIGHBOR_CONTEXT_CHARS = 1500
 
-    def __init__(self, typology, filename, model=None, api_key=None):
+    def __init__(self, typology, filename, model=None, api_key=None, max_concurrent=None):
         if typology not in TYPOLOGIES:
             raise ValueError(f"Неизвестная типология '{typology}', ожидалось одно из {TYPOLOGIES}")
 
@@ -67,25 +76,59 @@ class BookChunker:
         self.book_title = Path(filename).stem
         self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
         self.client = ChunkerClient(model=model)
+        self.max_concurrent = max_concurrent or self.MAX_CONCURRENT_REQUESTS
         self.chunks = []
 
     async def run(self, save=True):
         text = load_file(f"data/{self.typology}/books/{self.filename}")
         windows = self._split_into_windows(text)
+        semaphore = asyncio.Semaphore(self.max_concurrent)
+        total = len(windows)
 
-        for i, window in enumerate(windows):
-            result = await self.client.chunk_window(window, self.book_title, self.typology, api_key=self.api_key)
+        tasks = [
+            self._process_window(window, self._prev_context(windows, i), self._next_context(windows, i), semaphore, i, total)
+            for i, window in enumerate(windows)
+        ]
+        results = await asyncio.gather(*tasks)
+
+        for i, result in enumerate(results):
             raw_chunks = result.get("chunks", [])
 
             for raw_chunk in raw_chunks:
-                self.chunks.append(self._build_record(raw_chunk, i))
+                if not isinstance(raw_chunk, dict):
+                    print(f"[{self.book_title}] окно {i + 1}: чанк пришёл не объектом ({type(raw_chunk).__name__}), пропускаю")
+                    continue
 
-            print(f"[{self.book_title}] окно {i + 1}/{len(windows)} -> {len(raw_chunks)} чанков")
+                self.chunks.append(self._build_record(raw_chunk, i))
 
         if save:
             self._save()
 
         return self.chunks
+
+    def _prev_context(self, windows, index):
+        if index == 0:
+            return ""
+        return windows[index - 1][-self.NEIGHBOR_CONTEXT_CHARS :]
+
+    def _next_context(self, windows, index):
+        if index == len(windows) - 1:
+            return ""
+        return windows[index + 1][: self.NEIGHBOR_CONTEXT_CHARS]
+
+    async def _process_window(self, window, prev_context, next_context, semaphore, index, total):
+        async with semaphore:
+            result = await self.client.chunk_window(
+                window,
+                self.book_title,
+                self.typology,
+                prev_context=prev_context,
+                next_context=next_context,
+                api_key=self.api_key,
+            )
+            raw_chunks = result.get("chunks", [])
+            print(f"[{self.book_title}] окно {index + 1}/{total} -> {len(raw_chunks)} чанков")
+            return result
 
     def _build_record(self, raw_chunk, window_index):
         return {
@@ -154,13 +197,33 @@ class TypologyChunker:
         if not books_dir.exists():
             raise FileNotFoundError(f"Не найдена папка: {books_dir}")
 
+        book_paths = [p for p in sorted(books_dir.iterdir()) if p.suffix.lower() in {".pdf", ".docx"}]
+
+        if not book_paths:
+            print(f"В {books_dir} нет .pdf/.docx файлов — обрабатывать нечего")
+            return {}
+
         results = {}
 
-        for book_path in sorted(books_dir.iterdir()):
-            if book_path.suffix.lower() not in {".pdf", ".docx"}:
-                continue
-
+        for book_path in book_paths:
+            print(f"Начинаю обработку: {book_path.name}")
             chunker = BookChunker(self.typology, book_path.name, model=self.model, api_key=self.api_key)
             results[book_path.name] = await chunker.run()
 
         return results
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="LLM semantic chunker для книг по типологии")
+    parser.add_argument("typology", choices=sorted(TYPOLOGIES))
+    parser.add_argument("filename", nargs="?", help="Имя файла в data/<typology>/books/, иначе все книги")
+    parser.add_argument("--model")
+
+    args = parser.parse_args()
+
+    if args.filename:
+        asyncio.run(BookChunker(args.typology, args.filename, model=args.model).run())
+    else:
+        asyncio.run(TypologyChunker(args.typology, model=args.model).run())

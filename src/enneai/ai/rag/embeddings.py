@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import asyncio
 import logging
 import os
@@ -15,9 +13,7 @@ logger = logging.getLogger(__name__)
 
 DENSE_MODEL_NAME = os.getenv("RAG_DENSE_MODEL", "intfloat/multilingual-e5-base")
 DENSE_VECTOR_SIZE = int(os.getenv("RAG_DENSE_VECTOR_SIZE", "768"))
-
 SPARSE_MODEL_NAME = os.getenv("RAG_SPARSE_MODEL", "Qdrant/bm25")
-
 DEVICE = os.getenv("RAG_EMBED_DEVICE", "cpu")
 ENCODE_BATCH_SIZE = int(os.getenv("RAG_ENCODE_BATCH_SIZE", "16"))
 
@@ -26,12 +22,8 @@ _E5_PASSAGE_PREFIX = "passage: "
 
 _torch_threads = os.getenv("RAG_TORCH_THREADS")
 if _torch_threads:
-    try:
-        import torch
-
-        torch.set_num_threads(int(_torch_threads))
-    except Exception:
-        logger.warning("Could not set torch thread count", exc_info=True)
+    import torch
+    torch.set_num_threads(int(_torch_threads))
 
 _model_lock = threading.Lock()
 
@@ -48,11 +40,10 @@ class SparseVector:
 class EmbeddingService:
     _instance: "EmbeddingService | None" = None
 
-    def __init__(self) -> None:
+    def __init__(self):
         logger.info("Loading dense encoder %r on %r", DENSE_MODEL_NAME, DEVICE)
         self._dense = SentenceTransformer(DENSE_MODEL_NAME, device=DEVICE)
-
-        logger.info("Loading sparse (BM25) encoder %r", SPARSE_MODEL_NAME)
+        logger.info("Loading sparse encoder %r", SPARSE_MODEL_NAME)
         self._sparse = SparseTextEmbedding(model_name=SPARSE_MODEL_NAME)
 
     @classmethod

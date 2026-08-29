@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, date, timezone
 from typing import  Literal
 
 from beanie import Document, Link
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian", "auto"]
@@ -31,11 +31,23 @@ class User(Document):
     id: int     # telegram id actually
     new: bool = True  
     username: str
-    settings: UserSettings = UserSettings()
+    settings: UserSettings = Field(default_factory=UserSettings)
     typologies: str = ''
     request_limit: int = 15
     request_remain: int = 15
+    burmaldate: date = datetime.now().date()
     encrypted_key: str = ""
 
     class Settings:
         name = "users"
+
+
+class AdminStatsSnapshot(Document):
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    users_count: int
+    active_users: int
+    messages_count: int
+    requests_left: int
+
+    class Settings:
+        name = "admin_stats_snapshots"

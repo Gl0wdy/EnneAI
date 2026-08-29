@@ -1,7 +1,7 @@
 from pymongo import AsyncMongoClient
 from beanie import init_beanie
 
-from enneai.db.models import User, UserMessage
+from enneai.db.models import AdminStatsSnapshot, User, UserMessage
 
 
 class MongoDB:
@@ -20,6 +20,7 @@ class MongoDB:
             document_models=[
                 User,
                 UserMessage,
+                AdminStatsSnapshot,
             ],
         )
 
