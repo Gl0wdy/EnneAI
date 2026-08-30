@@ -12,6 +12,7 @@ from enneai.db import User
 from enneai.db.repositories import UserMessageRepository, UserRepository
 from enneai.ai.modules.naranjo.response import Naranjo
 from enneai.ai.modules.jung.response import Jung
+from enneai.ai.llm.keys_rotation import KeyRotator
 
 import enneai.telegram.fsm as fsm
 import enneai.telegram.keyboards.user as user_kb
@@ -21,13 +22,11 @@ from ..stream import TelegramStream
 from enneai.config import OPENROUTER_API_KEY, ENCRYPTION_KEY
 from enneai.utils.openrouter import check_openrouter_key
 from enneai.utils.encryption import Encryptor
-from enneai.ai.llm.keys_rotation import KeyRotator
 from datetime import datetime as dt
 
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY is not set in the environment variables.")
 
-keychain = KeyRotator(map(str, OPENROUTER_API_KEY.split(',')))
 naranjo = Naranjo()
 jung = Jung()
 router = Router(name='user')
@@ -182,7 +181,12 @@ async def wait_for_key_handler(message: Message, user: User, state: FSMContext):
     await message.answer(text, reply_markup=user_kb.register_key_keyboard)
 
 @router.message(fsm.CommandStates.waiting_for_key)
-async def fetch_key_handler(message: Message, user: User, state: FSMContext):
+async def fetch_key_handler(
+    message: Message,
+    user: User,
+    state: FSMContext,
+    keychain: KeyRotator
+):
     key = message.text
     if key.lower() == 'бурмалда':
         await message.answer('Отменено...', reply_markup=user_kb.main_menu_keyboard)
@@ -191,9 +195,10 @@ async def fetch_key_handler(message: Message, user: User, state: FSMContext):
 
     is_valid = await check_openrouter_key(key)
     if is_valid:
+        keychain.add_key(key)
         await msg.edit_text(
             '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.',
-            reply_markup=ReplyKeyboardRemove()
+            reply_markup=user_kb.main_menu_keyboard
         )
         user.request_remain = 40
         user.request_limit = 40
@@ -202,7 +207,7 @@ async def fetch_key_handler(message: Message, user: User, state: FSMContext):
     else:
         await message.edit_text(
             '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.',
-            reply_markup=ReplyKeyboardRemove()
+            reply_markup=user_kb.main_menu_keyboard
         )
 
     await state.clear()
@@ -275,7 +280,12 @@ async def get_chat_history(user_id: int):
     return chat_history
 
 @router.message(F.text)
-async def request_handler(message: Message, user: User, state: FSMContext):
+async def request_handler(
+    message: Message, 
+    user: User, 
+    state: FSMContext,
+    keychain: KeyRotator
+):
     if user.new:
         await message.answer(
             'Желаете ли вы персонализировать бота под себя? Это займет пару секунд.',
