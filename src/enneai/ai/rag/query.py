@@ -1,11 +1,11 @@
 import asyncio
 import logging
 
-from .context import RagContext, build_context
-from .embeddings import EmbeddingService
-from .reranker import Reranker
-from .retrieval import hybrid_search
-from .storage import ensure_collection
+from enneai.ai.rag.context import RagContext, build_context
+from enneai.ai.rag.embeddings import EmbeddingService
+from enneai.ai.rag.reranker import Reranker
+from enneai.ai.rag.retrieval import hybrid_search
+from enneai.ai.rag.storage import ensure_collection
 
 logger = logging.getLogger(__name__)
 
