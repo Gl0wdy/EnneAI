@@ -9,7 +9,8 @@ from enneai.config import (
     TELEGRAM_DEBUG_TOKEN,
     TELEGRAM_ADMIN_ID,
     MONGO_URI,
-    ENCRYPTION_KEY
+    ENCRYPTION_KEY,
+    OPENROUTER_API_KEY
 )
 from enneai.db import MongoDB
 from enneai.db.repositories import UserRepository
@@ -52,7 +53,6 @@ async def load_api_keys(user_repo: UserRepository, encryptor: Encryptor) -> list
 
 @dp.startup()
 async def startup():
-    await mongo.init()
     await warmup()
 
     await bot.delete_webhook(
@@ -84,10 +84,12 @@ async def main():
     )
     dp.callback_query.middleware(
         UserMiddleware()
-    )  
+    ) 
+    await mongo.init()
     encryptor = Encryptor(ENCRYPTION_KEY)
     user_repo = UserRepository()
-    keychain = KeyRotator(await load_api_keys(user_repo, encryptor))
+    mongo_keys = await load_api_keys(user_repo, encryptor)
+    keychain = KeyRotator(mongo_keys + OPENROUTER_API_KEY.split(','))
 
     await dp.start_polling(
         bot,

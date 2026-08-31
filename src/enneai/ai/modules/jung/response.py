@@ -27,13 +27,10 @@ class Jung(ChatClient):
     async def prepare_messages(
         self,
         query: str,
+        web_text: str,
         history: list[dict],
-        web_query: str | None = None,
         typology: str | None = "null",
-        **web_kwargs,
     ) -> tuple[WebContext, list[dict]]:
-        web_text = await scraper(web_query or query, **web_kwargs)
-
         prompt = (
                 self.prompt
                 .replace("<SUBJECT>", web_text or "None")
@@ -56,6 +53,7 @@ class Jung(ChatClient):
     async def response(
         self,
         query: str,
+        web_text: str,
         history: list[dict],
         rag_query: str | None = None,
         typology: str | None = "null",
@@ -66,7 +64,7 @@ class Jung(ChatClient):
     ):
         web_data, messages = await self.prepare_messages(
             query=query,
-            web_query=rag_query,
+            web_text=web_text,
             history=history,
             typology=typology,
             **kwargs,

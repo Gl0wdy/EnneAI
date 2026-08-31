@@ -39,7 +39,7 @@ class Naranjo(ChatClient):
     ) -> tuple[RagContext, list[dict]]:
         rag_data: RagContext = await retrieve(
             rag_query or query,
-            metadata={'category': typology},
+            category=typology,
             rerank_top_n=25,
             **rag_kwargs,
         )

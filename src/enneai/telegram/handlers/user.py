@@ -22,6 +22,9 @@ from ..stream import TelegramStream
 from enneai.config import OPENROUTER_API_KEY, ENCRYPTION_KEY
 from enneai.utils.openrouter import check_openrouter_key
 from enneai.utils.encryption import Encryptor
+from enneai.utils.lang import is_not_english
+from enneai.scraper import scraper
+
 from datetime import datetime as dt
 
 if not OPENROUTER_API_KEY:
@@ -61,6 +64,10 @@ async def start_handler(message: Message):
 
 
 # ========== ХЭНДЛЕР ОЧЕРЕДИ (!!!) ================
+@router.message(Command('cancel'))
+async def command_cancel_handler(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer('Запрос отменен.')
 
 @router.message(fsm.ProfileStates.in_progress)
 async def in_progress_handler(message: Message):
@@ -70,7 +77,6 @@ async def in_progress_handler(message: Message):
 
 
 # =========== ХЭНДЛЕРЫ КОМАНД ================
-
 @router.message(Command('clear'))
 async def command_clear_handler(message: Message, state: FSMContext):
     content = Text(
@@ -320,6 +326,7 @@ async def request_handler(
                     )
                     rag_query = await keychain.rotate(
                         naranjo.requery,
+                        typology=user.settings.system,
                         query=message.text,
                         history=chat_history
                     )
@@ -337,24 +344,34 @@ async def request_handler(
                     stream=True
                 )
                 api_calls += 1
+
             case 'jung':
+                if is_not_english(message.text):
+                    content = Text(CustomEmojis.warning, " Полезный совет: пиши имя нужного тебе персонажа на латинице (будет лучше индексация -> лучше и ответ)\n:3")
+                    await message.answer(**content.as_kwargs())
+
+                content = Text(CustomEmojis.rika_thinking, " Юнг углубляется в ваш piece of media...")
+                msg = await message.answer(**content.as_kwargs())
+                web_text = await scraper(message.text)
+                await msg.edit_text('*Найдена информация по вашему запросу*. Формирую ответ.')
+
                 if user.settings.requery:
-                    content = Text(CustomEmojis.rika_thinking, " Юнг переделывает ваш запрос...")
-                    msg = await message.answer(
-                        **content.as_kwargs()
-                    )
                     rag_query = await keychain.rotate(
                         jung.requery,
-                        query=message.text,
+                        typology=user.settings.system,
+                        query=web_text,
                         history=chat_history
                     )
                     api_calls += 1
                     await msg.delete()
                 else:
+                    content = Text(CustomEmojis.warning, ' Предупреждение: работа Юнга может значительно ухудшиться с выключенным requery.\nСменить это можно в /settings')
+                    await message.answer(**content.as_kwargs())
                     rag_query = message.text
                 
                 rag_data, chunks = await keychain.rotate(
                     jung.response,
+                    web_text=web_text,
                     rag_query=rag_query,
                     query=message.text,
                     history=chat_history,
