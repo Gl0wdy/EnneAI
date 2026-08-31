@@ -43,7 +43,7 @@ class Jung(ChatClient):
                 "role": "system",
                 "content": prompt,
             }
-        ] + history + [
+        ] + [
             {
                 "role": "user",
                 "content": query,
