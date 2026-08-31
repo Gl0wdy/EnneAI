@@ -12,25 +12,30 @@ from enneai.db import User
 from enneai.db.repositories import UserMessageRepository, UserRepository
 from enneai.ai.modules.naranjo.response import Naranjo
 from enneai.ai.modules.jung.response import Jung
+from enneai.ai.llm.keys_rotation import KeyRotator
 
 import enneai.telegram.fsm as fsm
 import enneai.telegram.keyboards.user as user_kb
 from enneai.telegram.utils.custom_emoji import CustomEmojis
 from ..stream import TelegramStream
 
-from enneai.config import OPENROUTER_API_KEY, TELEGRAM_ADMIN_ID
-from enneai.ai.llm.keys_rotation import KeyRotator
+from enneai.config import OPENROUTER_API_KEY, ENCRYPTION_KEY
+from enneai.utils.openrouter import check_openrouter_key
+from enneai.utils.encryption import Encryptor
+from enneai.utils.lang import is_not_english
+from enneai.scraper import scraper
+
 from datetime import datetime as dt
 
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY is not set in the environment variables.")
 
-keychain = KeyRotator(map(str, OPENROUTER_API_KEY.split(',')))
 naranjo = Naranjo()
 jung = Jung()
 router = Router(name='user')
 message_rep = UserMessageRepository()
 user_rep = UserRepository()
+encryptor = Encryptor(ENCRYPTION_KEY)
 
 
 @router.message(CommandStart())
@@ -59,6 +64,10 @@ async def start_handler(message: Message):
 
 
 # ========== ХЭНДЛЕР ОЧЕРЕДИ (!!!) ================
+@router.message(Command('cancel'))
+async def command_cancel_handler(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer('Запрос отменен.')
 
 @router.message(fsm.ProfileStates.in_progress)
 async def in_progress_handler(message: Message):
@@ -68,7 +77,6 @@ async def in_progress_handler(message: Message):
 
 
 # =========== ХЭНДЛЕРЫ КОМАНД ================
-
 @router.message(Command('clear'))
 async def command_clear_handler(message: Message, state: FSMContext):
     content = Text(
@@ -147,7 +155,7 @@ async def show_settings_handler(message: Message, user: User):
     )
 
 @router.callback_query(F.data.startswith('settings'))
-async def switch_settings(callback: CallbackQuery, user: User):
+async def switch_settings_handler(callback: CallbackQuery, user: User):
     _, field, value = callback.data.split(':')
     match field:
         case 'mode':
@@ -167,6 +175,49 @@ async def switch_settings(callback: CallbackQuery, user: User):
     )
 
     await callback.answer(f'Вы успешно сменили {field}!')
+
+@router.message(Command('key'))
+async def wait_for_key_handler(message: Message, user: User, state: FSMContext):
+    if user.encrypted_key:
+        text = 'Вы уже зарегистрировали свой ключ. Если хотите поменять его, просто пришлите новый.'
+    else:
+        text = 'Зарегистрируйте свой ключ [здесь](https://openrouter.ai/workspaces/default/keys) и пришлите его ниже ("бурмалда" для отмены).'
+
+    await state.set_state(fsm.CommandStates.waiting_for_key)
+    await message.answer(text, reply_markup=user_kb.register_key_keyboard)
+
+@router.message(fsm.CommandStates.waiting_for_key)
+async def fetch_key_handler(
+    message: Message,
+    user: User,
+    state: FSMContext,
+    keychain: KeyRotator
+):
+    key = message.text
+    if key.lower() == 'бурмалда':
+        await message.answer('Отменено...', reply_markup=user_kb.main_menu_keyboard)
+        return
+    msg = await message.answer('Проверяем ваш ключ...')
+
+    is_valid = await check_openrouter_key(key)
+    if is_valid:
+        keychain.add_key(key)
+        await msg.edit_text(
+            '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.',
+            reply_markup=user_kb.main_menu_keyboard
+        )
+        user.request_remain = 40
+        user.request_limit = 40
+        user.encrypted_key = encryptor.encrypt(key)
+        await user.save()
+    else:
+        await message.edit_text(
+            '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.',
+            reply_markup=user_kb.main_menu_keyboard
+        )
+
+    await state.clear()
+    
 
 
 # =========== ХЭНДЛЕРЫ ПЕРСОНАЛИЗАЦИИ ================
@@ -235,7 +286,12 @@ async def get_chat_history(user_id: int):
     return chat_history
 
 @router.message(F.text)
-async def request_handler(message: Message, user: User, state: FSMContext):
+async def request_handler(
+    message: Message, 
+    user: User, 
+    state: FSMContext,
+    keychain: KeyRotator
+):
     if user.new:
         await message.answer(
             'Желаете ли вы персонализировать бота под себя? Это займет пару секунд.',
@@ -250,7 +306,7 @@ async def request_handler(message: Message, user: User, state: FSMContext):
     # if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
     #     text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
     #     if not user.encrypted_key:
-    #         text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys)'
+    #         text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys) с помощью команды /key'
     #         await message.answer(text, reply_markup=user_kb.register_key_keyboard)
     #     else:
     #         await message.answer(text)
@@ -270,6 +326,7 @@ async def request_handler(message: Message, user: User, state: FSMContext):
                     )
                     rag_query = await keychain.rotate(
                         naranjo.requery,
+                        typology=user.settings.system,
                         query=message.text,
                         history=chat_history
                     )
@@ -287,24 +344,34 @@ async def request_handler(message: Message, user: User, state: FSMContext):
                     stream=True
                 )
                 api_calls += 1
+
             case 'jung':
+                if is_not_english(message.text):
+                    content = Text(CustomEmojis.warning, " Полезный совет: пиши имя нужного тебе персонажа на латинице (будет лучше индексация -> лучше и ответ)\n:3")
+                    await message.answer(**content.as_kwargs())
+
+                content = Text(CustomEmojis.rika_thinking, " Юнг углубляется в ваш piece of media...")
+                msg = await message.answer(**content.as_kwargs())
+                web_text = await scraper(message.text)
+                await msg.edit_text('*Найдена информация по вашему запросу*. Формирую ответ.')
+
                 if user.settings.requery:
-                    content = Text(CustomEmojis.rika_thinking, " Юнг переделывает ваш запрос...")
-                    msg = await message.answer(
-                        **content.as_kwargs()
-                    )
                     rag_query = await keychain.rotate(
                         jung.requery,
-                        query=message.text,
+                        typology=user.settings.system,
+                        query=web_text,
                         history=chat_history
                     )
                     api_calls += 1
                     await msg.delete()
                 else:
+                    content = Text(CustomEmojis.warning, ' Предупреждение: работа Юнга может значительно ухудшиться с выключенным requery.\nСменить это можно в /settings')
+                    await message.answer(**content.as_kwargs())
                     rag_query = message.text
                 
                 rag_data, chunks = await keychain.rotate(
                     jung.response,
+                    web_text=web_text,
                     rag_query=rag_query,
                     query=message.text,
                     history=chat_history,

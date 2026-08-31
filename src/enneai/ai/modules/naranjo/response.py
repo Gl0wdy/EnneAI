@@ -2,6 +2,8 @@ from enneai.ai.modules.chat import ChatClient
 from enneai.ai.rag import retrieve, RagContext
 from enneai.config import OPENROUTER_PRIMARY_MODEL
 
+import json
+
 
 class Naranjo(ChatClient):
     def __init__(
@@ -14,6 +16,19 @@ class Naranjo(ChatClient):
             model=model
         )
 
+    def _chunks_for_prompt(self, chunks: list[dict]) -> str:
+        lean = [
+            {
+                "book": c["book_title"],
+                "author": c["book_author"],
+                "category": c["category"],
+                "section": " > ".join(c["headings"]) if c["headings"] else None,
+                "text": c["text"],
+            }
+            for c in chunks
+        ]
+        return json.dumps(lean, ensure_ascii=False, indent=2)
+
     async def prepare_messages(
         self,
         query: str,
@@ -24,14 +39,12 @@ class Naranjo(ChatClient):
     ) -> tuple[RagContext, list[dict]]:
         rag_data: RagContext = await retrieve(
             rag_query or query,
-            metadata={'category': typology},
+            category=typology,
             rerank_top_n=25,
             **rag_kwargs,
         )
-        print(query, rag_data.is_empty)
-
         prompt = self._build_prompt(
-            rag_context=f'sources:\n{rag_data.sources}\n\ntext:\n{rag_data.text}',
+            rag_context=self._chunks_for_prompt(rag_data.chunks),
             context=self.get_context(typology),
         )
 

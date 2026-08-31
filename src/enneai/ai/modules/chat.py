@@ -160,6 +160,7 @@ class ChatClient(abc.ABC):
 
     async def requery(
         self,
+        typology: str,
         query: str,
         history: list[dict],
         api_key: str | None = None
@@ -167,7 +168,7 @@ class ChatClient(abc.ABC):
         if not self.requery_prompt:
             return query
         prompt = self.requery_prompt.replace(
-            '<CONTEXT>', self.contexts['ennea']
+            '<CONTEXT>', self.contexts[typology]
         )
         history = [
             {'role': 'system', 'content': prompt}
@@ -177,9 +178,7 @@ class ChatClient(abc.ABC):
             history,
             api_key=api_key,
             model=OPENROUTER_SECONDARY_MODEL,
-            reasoning=False,
-            max_tokens=50
+            reasoning=False
         )
-        # print(response['choices'][0]['message']['content'])
         
         return response['choices'][0]['message']['content']
