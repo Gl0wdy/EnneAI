@@ -18,10 +18,7 @@ from enneai.ai.rag.query import warmup
 from enneai.ai.llm.keys_rotation import KeyRotator
 from enneai.utils.encryption import Encryptor
 
-import logging
-
-
-logger = logging.getLogger(__name__)
+from enneai.utils.logger import logger
 
 
 bot = Bot(
@@ -91,6 +88,7 @@ async def main():
     mongo_keys = await load_api_keys(user_repo, encryptor)
     keychain = KeyRotator(mongo_keys + OPENROUTER_API_KEY.split(','))
 
+    logger.info("Starting bot with %d API keys", len(keychain.keys))
     await dp.start_polling(
         bot,
         skip_updates=True,

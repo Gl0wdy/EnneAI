@@ -22,6 +22,9 @@ main_keyboard = InlineKeyboardMarkup(
 		[
 			InlineKeyboardButton(text='Рассылка', callback_data='admin:newsletter'),
 			InlineKeyboardButton(text='Обновить', callback_data='admin:refresh')
+		],
+		[
+			InlineKeyboardButton(text='Логи', callback_data='admin:logs')
 		]
 	]
 )
