@@ -136,6 +136,9 @@ async def admin_callback_handler(callback: CallbackQuery, state: FSMContext, bot
 			'Введите текст рассылки одним сообщением. Для отмены отправьте /cancel.',
 			reply_markup=admin_kb.build_admin_back_keyboard(),
 		)
+	elif action == 'logs':
+		with open('app.log', 'rb') as log_file:
+			await bot.send_document(callback.from_user.id, log_file, caption='Логи бота')
 
 	await callback.answer()
 

@@ -10,6 +10,7 @@ from ddgs import DDGS
 from trafilatura import extract
 
 from urllib.parse import urlparse
+from enneai.utils.logger import logger
 
 # DOMAINS = {
 #     "wikipedia.org",
@@ -110,12 +111,12 @@ async def fetch_page(
     include_links=False,
 )
 
-    print(
-    f"[extract] url={url} "
-    f"html={len(html)} "
-    f"parsed={len(parsed) if parsed else None}"
-)
-    
+    logger.debug(
+        f"[extract] url={url} "
+        f"html={len(html)} "
+        f"parsed={len(parsed) if parsed else None}"
+    )
+
     if parsed and len(parsed) >= 2000:
         return parsed
     return None

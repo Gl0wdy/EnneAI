@@ -8,6 +8,7 @@ from collections.abc import AsyncIterator
 from enneai.utils.reader import load_file
 
 from enneai.config import OPENROUTER_ENDPOINT, OPENROUTER_PRIMARY_MODEL, OPENROUTER_SECONDARY_MODEL
+from enneai.utils.logger import logger
 
 
 class ChatClient(abc.ABC):
@@ -100,7 +101,7 @@ class ChatClient(abc.ABC):
         async with aiohttp.ClientSession() as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
                 if response.status != 200:
-                    raise Exception(f"Request failed with status code {response.status}")
+                    logger.error(f"Request failed with status code {response.status}")
                 
                 buffer = ""
                 async for chunk in response.content.iter_any():
@@ -153,9 +154,7 @@ class ChatClient(abc.ABC):
                 result = await response.json()
 
                 if response.status != 200:
-                    raise Exception(
-                        f"OpenRouter error {response.status}: {result}"
-                )
+                    logger.error(f"Request failed with status code {response.status}")
                 return result
 
     async def requery(
