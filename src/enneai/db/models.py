@@ -10,7 +10,7 @@ SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian", "auto"]
 class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
     reasoning: Literal['low', 'medium', 'high'] = "medium"
-    system: SYSTEMS = "auto"
+    system: SYSTEMS = "ennea"
     instructions: str = ""
     requery: bool = True
 

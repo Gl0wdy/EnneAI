@@ -43,7 +43,7 @@ def build_settings_keyboard(user: User):
     next_reasoning = reasoning[
         (reasoning.index(user.settings.reasoning) + 1) % len(reasoning)
     ]
-    systems = ['ennea', 'socio', 'psychosophy', 'jungian', 'auto']
+    systems = ['ennea', 'socio', 'psychosophy', 'jungian']  # без auto (пока что)
     next_system = systems[
         (systems.index(user.settings.system) + 1) % len(systems)
     ]
