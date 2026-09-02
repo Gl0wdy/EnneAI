@@ -39,6 +39,9 @@ class ChatClient(abc.ABC):
             "psychosophy": load_file(
                 "data/psychosophy/context.txt"
             ),
+            'jungian': load_file(
+                "data/jungian/context.txt"
+            ),
             "null": "",
         }
 
