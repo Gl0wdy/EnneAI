@@ -10,7 +10,7 @@ from qdrant_client import models as qm
 
 from enneai.ai.rag.embeddings import DENSE_VECTOR_SIZE, get_embedding_service
 
-logger = logging.getLogger(__name__)
+from enneai.utils.logger import logger
 
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None

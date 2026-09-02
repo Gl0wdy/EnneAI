@@ -1,5 +1,4 @@
 import asyncio
-import logging
 
 from qdrant_client import models as qm
 
@@ -12,7 +11,7 @@ from enneai.ai.rag.storage import (
     get_client,
 )
 
-logger = logging.getLogger(__name__)
+from enneai.utils.logger import logger
 
 DEFAULT_LIMIT = 8
 DEFAULT_PREFETCH_LIMIT = 25

@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import os
 import threading
 from dataclasses import asdict, dataclass
@@ -7,8 +6,7 @@ from dataclasses import asdict, dataclass
 from sentence_transformers import CrossEncoder
 
 from enneai.ai.rag.storage import ScoredChunk
-
-logger = logging.getLogger(__name__)
+from enneai.utils.logger import logger
 
 RERANKER_MODEL_NAME = os.getenv("RAG_RERANKER_MODEL", "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
 DEVICE = os.getenv("RAG_EMBED_DEVICE", "cpu")

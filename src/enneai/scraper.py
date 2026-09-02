@@ -9,16 +9,7 @@ import aiohttp
 from ddgs import DDGS
 from trafilatura import extract
 
-from urllib.parse import urlparse
 from enneai.utils.logger import logger
-
-# DOMAINS = {
-#     "wikipedia.org",
-#     "fandom.com",
-#     "reddit.com",
-#     "personality-database.com",
-#     "medium.com",
-# }
 
 
 LIMIT = 50
@@ -29,23 +20,6 @@ MAX_PAGE_BYTES = 8_000_000
 HEADERS = {
     "User-Agent": "EnneAI/0.1, +https://github.com/Gl0wdy/EnneAI"
 }
-
-# def ensure(url: str) -> bool:
-#     try:
-#         hostname = urlparse(url).hostname
-#     except ValueError:
-#         return False
-
-#     if not hostname:
-#         return False
-
-#     hostname = hostname.lower().rstrip(".")
-
-#     return any(
-#         hostname == domain
-#         or hostname.endswith("." + domain)
-#         for domain in DOMAINS
-#     )
 
 def normalize_text(text: str) -> str:
     text = unescape(text).replace("\xa0", " ")
