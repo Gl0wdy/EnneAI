@@ -1,5 +1,4 @@
-import pytest
-from enneai.ai.rag import retrieve, RagContext
+from enneai.ai.rag import retrieve
 
 
 async def test_retrieve():

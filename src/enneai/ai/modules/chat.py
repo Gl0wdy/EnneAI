@@ -1,8 +1,7 @@
-from __future__ import annotations
-
 import aiohttp
 import json
 import abc
+from string import Template
 from collections.abc import AsyncIterator
 
 from enneai.utils.reader import load_file
@@ -21,8 +20,8 @@ class ChatClient(abc.ABC):
     ):
 
         self.model = model
-        self.prompt = load_file(prompt)
-        self.requery_prompt = load_file(requery_prompt) if requery_prompt else ""
+        self.prompt = Template(load_file(prompt))
+        self.requery_prompt = Template(load_file(requery_prompt)) if requery_prompt else Template("")
         self.corr = (
             load_file(corr)
             if corr
@@ -59,11 +58,10 @@ class ChatClient(abc.ABC):
         rag_context: str,
         context: str,
     ) -> str:
-        return (
-            self.prompt
-            .replace("<RAG>", rag_context)
-            .replace("<CONTEXT>", context)
-            .replace("<CORR>", self.corr)
+        return self.prompt.substitute(
+            RAG=rag_context,
+            CONTEXT=context,
+            CORR=self.corr
         )
 
     def _build_headers(self, api_key: str | None) -> dict:
@@ -181,10 +179,10 @@ class ChatClient(abc.ABC):
         history: list[dict],
         api_key: str | None = None
     ) -> str:
-        if not self.requery_prompt:
+        if not self.requery_prompt.template:
             return query
-        prompt = self.requery_prompt.replace(
-            '<CONTEXT>', self.contexts[typology]
+        prompt = self.requery_prompt.substitute(
+            CONTEXT=self.contexts[typology]
         )
         history = [
             {'role': 'system', 'content': prompt}

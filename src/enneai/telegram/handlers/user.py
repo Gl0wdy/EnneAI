@@ -26,7 +26,7 @@ from enneai.utils.lang import is_not_english
 from enneai.scraper import scraper
 from enneai.utils.logger import logger
 
-from datetime import datetime as dt
+from datetime import datetime as dt, timezone
 
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY is not set in the environment variables.")
@@ -301,7 +301,7 @@ async def request_handler(
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
-    if user.burmaldate != dt.now().date():
+    if user.burmaldate != dt.now(timezone.utc).date():
         user.request_remain = user.request_remain
 
     if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
@@ -355,7 +355,7 @@ async def request_handler(
                 content = Text(CustomEmojis.rika_thinking, " Юнг углубляется в ваш piece of media...")
                 msg = await message.answer(**content.as_kwargs())
                 web_text = await scraper(message.text)
-                await msg.edit_text('*Найдена информация по вашему запросу*. Формирую ответ.')
+                await msg.edit_text('*Найдена информация по вашему запросу*. Один момент...')
 
                 if user.settings.requery:
                     rag_query = await keychain.rotate(
@@ -391,7 +391,6 @@ async def request_handler(
         response = await telegram_stream.stream(chunks)
 
         await message_rep.create(
-            created_at=dt.now(),
             user_id=user.id,
             user_query=message.text,
             response=response,
@@ -418,5 +417,5 @@ async def request_handler(
             logger.exception("Error generating response for user %s: %s", user.id, exc)
     finally:
         await state.clear()
-        user.burmaldate = dt.now().date()
+        user.burmaldate = dt.now(timezone.utc).date()
         await user.save()
