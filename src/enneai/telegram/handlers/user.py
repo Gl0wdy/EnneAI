@@ -342,7 +342,8 @@ async def request_handler(
                     query=message.text,
                     history=chat_history,
                     typology=user.settings.system,
-                    stream=True
+                    stream=True,
+                    reasoning_effort=user.settings.reasoning
                 )
                 api_calls += 1
 
@@ -377,7 +378,8 @@ async def request_handler(
                     query=message.text,
                     history=chat_history,
                     typology=user.settings.system,
-                    stream=True
+                    stream=True,
+                    reasoning_effort=user.settings.reasoning
                 )
                 api_calls += 1
             case _:
