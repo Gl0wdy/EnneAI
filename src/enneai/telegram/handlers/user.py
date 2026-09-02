@@ -332,7 +332,7 @@ async def request_handler(
                         history=chat_history
                     )
                     api_calls += 1
-                    await msg.delete()
+                    await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
                 else:
                     rag_query = message.text
                 
@@ -365,7 +365,7 @@ async def request_handler(
                         history=chat_history
                     )
                     api_calls += 1
-                    await msg.delete()
+                    await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
                 else:
                     content = Text(CustomEmojis.warning, ' Предупреждение: работа Юнга может значительно ухудшиться с выключенным requery.\nСменить это можно в /settings')
                     await message.answer(**content.as_kwargs())
@@ -374,7 +374,6 @@ async def request_handler(
                 rag_data, chunks = await keychain.rotate(
                     jung.response,
                     web_text=web_text,
-                    rag_query=rag_query,
                     query=message.text,
                     history=chat_history,
                     typology=user.settings.system,
@@ -406,11 +405,17 @@ async def request_handler(
         try:
             await message.answer(
                 f'Произошла ошибка при обработке запроса: {exc}.\n'
-                f'Осталось запросов на сегодня: {user.request_remain}.'
+                f'Осталось запросов на сегодня: {user.request_remain}.',
+                parse_mode=None
             )
             logger.exception("Error processing request for user %s: %s", user.id, exc)
         except Exception:
-            pass
+            await message.answer(
+                f'Произошла ошибка при генерации ответа на запрос: {exc}.\n'
+                f'Осталось запросов на сегодня: {user.request_remain}.',
+                parse_mode=None
+            )
+            logger.exception("Error generating response for user %s: %s", user.id, exc)
     finally:
         await state.clear()
         user.burmaldate = dt.now().date()

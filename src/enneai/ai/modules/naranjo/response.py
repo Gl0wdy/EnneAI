@@ -69,6 +69,7 @@ class Naranjo(ChatClient):
         stream: bool = False,
         api_key: str | None = None, # - наранхо откуда ключи? - вертолет дает
         model: str | None = None,
+        reasoning_effort: str = "medium",
         **kwargs,
     ):
         rag_data, messages = await self.prepare_messages(
@@ -83,11 +84,13 @@ class Naranjo(ChatClient):
             return rag_data, self.get_stream(
                 messages=messages,
                 api_key=api_key,
-                model=model
+                model=model,
+                reasoning_effort=reasoning_effort
             )
 
         return rag_data, await self.get_discrete(
             messages=messages,
             api_key=api_key,
-            model=model
+            model=model,
+            reasoning_effort=reasoning_effort
         )

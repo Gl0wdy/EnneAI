@@ -87,7 +87,7 @@ class ChatClient(abc.ABC):
             "stream": stream,
             "reasoning": {
                 "enabled": reasoning,
-                'reasoning_effort': reasoning_effort
+                'effort': reasoning_effort
             },
             "max_tokens": max_tokens
         }
@@ -116,7 +116,7 @@ class ChatClient(abc.ABC):
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
                 if response.status != 200:
                     logger.error(f"Request failed with status code {response.status}")
-                
+            
                 buffer = ""
                 async for chunk in response.content.iter_any():
                     if chunk:
