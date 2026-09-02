@@ -19,11 +19,12 @@ import enneai.telegram.keyboards.user as user_kb
 from enneai.telegram.utils.custom_emoji import CustomEmojis
 from ..stream import TelegramStream
 
-from enneai.config import OPENROUTER_API_KEY, ENCRYPTION_KEY
+from enneai.config import OPENROUTER_API_KEY, ENCRYPTION_KEY, TELEGRAM_ADMIN_ID
 from enneai.utils.openrouter import check_openrouter_key
 from enneai.utils.encryption import Encryptor
 from enneai.utils.lang import is_not_english
 from enneai.scraper import scraper
+from enneai.utils.logger import logger
 
 from datetime import datetime as dt
 
@@ -302,15 +303,15 @@ async def request_handler(
 
     if user.burmaldate != dt.now().date():
         user.request_remain = user.request_remain
-    # НА ПРОДЕ РАСКОММЕНТИРОВАТЬ!!
-    # if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
-    #     text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
-    #     if not user.encrypted_key:
-    #         text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys) с помощью команды /key'
-    #         await message.answer(text, reply_markup=user_kb.register_key_keyboard)
-    #     else:
-    #         await message.answer(text)
-    #     return
+
+    if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
+        text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
+        if not user.encrypted_key:
+            text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys) с помощью команды /key'
+            await message.answer(text, reply_markup=user_kb.register_key_keyboard)
+        else:
+            await message.answer(text)
+        return
 
     chat_history = await get_chat_history(user.id)
     await state.set_state(fsm.ProfileStates.in_progress)
@@ -405,6 +406,7 @@ async def request_handler(
                 f'Произошла ошибка при обработке запроса: {exc}.\n'
                 f'Осталось запросов на сегодня: {user.request_remain}.'
             )
+            logger.exception("Error processing request for user %s: %s", user.id, exc)
         except Exception:
             pass
     finally:

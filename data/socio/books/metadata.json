@@ -14,5 +14,21 @@
         "language": "en",
         "category": "socio",
         "about": "BURMALDA."
+    },
+    "socionics.pdf": {
+        "book_id": "socionics.pdf",
+        "title": "Socionics",
+        "author": "Aušra Augustinavičiūtė",
+        "language": "en",
+        "category": "socio",
+        "about": "BURMALDA."
+    },
+    "reinin.pdf": {
+        "book_id": "reinin.pdf",
+        "title": "Reinin relationship",
+        "author": "Reinin",
+        "language": "en",
+        "category": "socio",
+        "about": "BURMALDA."
     }
 }
