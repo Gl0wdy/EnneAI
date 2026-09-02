@@ -39,6 +39,9 @@ class ChatClient(abc.ABC):
             "psychosophy": load_file(
                 "data/psychosophy/context.txt"
             ),
+            'jungian': load_file(
+                "data/jungian/context.txt"
+            ),
             "null": "",
         }
 
@@ -75,6 +78,7 @@ class ChatClient(abc.ABC):
         model: str | None = None,
         stream: bool = False,
         reasoning: bool = True,
+        reasoning_effort: str = "medium",
         max_tokens: int | None = None
     ) -> dict:
         payload = {
@@ -82,7 +86,8 @@ class ChatClient(abc.ABC):
             "messages": messages,
             "stream": stream,
             "reasoning": {
-                "enabled": reasoning
+                "enabled": reasoning,
+                'reasoning_effort': reasoning_effort
             },
             "max_tokens": max_tokens
         }
@@ -93,10 +98,19 @@ class ChatClient(abc.ABC):
         messages: list[dict], 
         api_key: str | None = None,
         model: str | None = OPENROUTER_PRIMARY_MODEL,
-        reasoning: bool = True
+        reasoning: bool = True,
+        reasoning_effort: str = "medium",
+        max_tokens: int | None = None
     ) -> AsyncIterator[str]:
         headers = self._build_headers(api_key)
-        payload = self._build_payload(messages, stream=True, model=model, reasoning=reasoning)
+        payload = self._build_payload(
+            messages,
+            model=model,
+            stream=True,
+            reasoning=reasoning,
+            reasoning_effort=reasoning_effort,
+            max_tokens=max_tokens
+        )
 
         async with aiohttp.ClientSession() as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
@@ -138,6 +152,7 @@ class ChatClient(abc.ABC):
         api_key: str | None = None,
         model: str | None = None,
         reasoning: bool = True,
+        reasoning_effort: str = "medium",
         max_tokens: int | None = None
     ) -> str:
         headers = self._build_headers(api_key)
@@ -146,7 +161,9 @@ class ChatClient(abc.ABC):
             model=model,
             stream=False,
             reasoning=reasoning,
-            max_tokens=max_tokens
+            reasoning_effort=reasoning_effort,
+            max_tokens=max_tokens,
+
         )
 
         async with aiohttp.ClientSession() as session:

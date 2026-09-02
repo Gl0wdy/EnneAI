@@ -1,7 +1,3 @@
-from dataclasses import dataclass
-
-from aiogram.utils.formatting import CustomEmoji
-
 from aiogram.utils.formatting import CustomEmoji
 
 

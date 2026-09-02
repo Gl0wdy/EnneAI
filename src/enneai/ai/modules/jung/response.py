@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from enneai.ai.modules.chat import ChatClient
-from enneai.scraper import scraper
 from enneai.config import OPENROUTER_PRIMARY_MODEL
 
 
@@ -55,7 +54,6 @@ class Jung(ChatClient):
         query: str,
         web_text: str,
         history: list[dict],
-        rag_query: str | None = None,
         typology: str | None = "null",
         stream: bool = False,
         api_key: str | None = None,
