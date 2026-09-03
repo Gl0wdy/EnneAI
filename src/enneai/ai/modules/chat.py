@@ -200,7 +200,8 @@ class ChatClient(abc.ABC):
             messages,
             api_key=api_key,
             model=OPENROUTER_SECONDARY_MODEL,
-            reasoning=False
+            reasoning_effort='medium',
+            max_tokens=120
         )
         if "error" in response:
             logger.error("LLM error response: %s", response)
