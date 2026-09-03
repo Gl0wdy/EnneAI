@@ -332,7 +332,10 @@ async def request_handler(
                         history=chat_history
                     )
                     api_calls += 1
-                    await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
+                    if rag_query == 'None':
+                        await msg.edit_text('Дополнительный поиск не требуется. Формирую ответ...')
+                    else:
+                        await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
                 else:
                     rag_query = message.text
                 

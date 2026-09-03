@@ -194,5 +194,8 @@ class ChatClient(abc.ABC):
             model=OPENROUTER_SECONDARY_MODEL,
             reasoning=False
         )
+        if "error" in response:
+            logger.error("LLM error response: %s", response)
+            raise Exception(response["error"])
         
         return response['choices'][0]['message']['content']

@@ -37,17 +37,20 @@ class Naranjo(ChatClient):
         typology: str | None = "null",
         **rag_kwargs,
     ) -> tuple[RagContext, list[dict]]:
-        rag_data: RagContext = await retrieve(
-            rag_query or query,
-            category=typology,
-            rerank_top_n=25,
-            **rag_kwargs,
-        )
+        if rag_query != 'None':
+            rag_data: RagContext = await retrieve(
+                rag_query or query,
+                category=typology,
+                rerank_top_n=25,
+                **rag_kwargs,
+            )
+        else:
+            rag_data = RagContext(text="", sources=[], chunks=[])
+
         prompt = self._build_prompt(
             rag_context=self._chunks_for_prompt(rag_data.chunks),
             context=self.get_context(typology),
         )
-
         return rag_data, [
             {
                 "role": "system",
