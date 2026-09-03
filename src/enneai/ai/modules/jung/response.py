@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 
 from enneai.ai.modules.chat import ChatClient
@@ -30,19 +28,18 @@ class Jung(ChatClient):
         history: list[dict],
         typology: str | None = "null",
     ) -> tuple[WebContext, list[dict]]:
-        prompt = (
-                self.prompt
-                .replace("<SUBJECT>", web_text or "None")
-                .replace("<CONTEXT>", self.get_context(typology))
-                .replace("<CORR>", self.corr)
-            )
+        prompt = self.prompt.substitute(
+            SUBJECT=web_text or "None",
+            CONTEXT=self.get_context(typology),
+            CORR=self.corr
+        )
 
         return WebContext(text=(web_text or "None")), [
             {
                 "role": "system",
                 "content": prompt,
             }
-        ] + [
+        ] + history + [
             {
                 "role": "user",
                 "content": query,
@@ -58,6 +55,7 @@ class Jung(ChatClient):
         stream: bool = False,
         api_key: str | None = None,
         model: str | None = None,
+        reasoning_effort: str = "medium",
         **kwargs,
     ):
         web_data, messages = await self.prepare_messages(
@@ -73,10 +71,12 @@ class Jung(ChatClient):
                 messages=messages,
                 api_key=api_key,
                 model=model,
+                reasoning_effort=reasoning_effort
             )
 
         return web_data, await self.get_discrete(
             messages=messages,
             api_key=api_key,
             model=model,
+            reasoning_effort=reasoning_effort
         )

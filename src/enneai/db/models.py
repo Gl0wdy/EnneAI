@@ -1,7 +1,7 @@
 from datetime import datetime, date, timezone
 from typing import  Literal
 
-from beanie import Document, Link
+from beanie import Document
 from pydantic import BaseModel, Field
 
 
@@ -16,7 +16,7 @@ class UserSettings(BaseModel):
 
 
 class UserMessage(Document):
-    created_at: datetime
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     user_id: int
     user_query: str
     response: str
@@ -35,7 +35,7 @@ class User(Document):
     typologies: str = ''
     request_limit: int = 15
     request_remain: int = 15
-    burmaldate: date = datetime.now().date()
+    burmaldate: date = datetime.now(timezone.utc).date()
     encrypted_key: str = ""
 
     class Settings:

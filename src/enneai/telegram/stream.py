@@ -1,5 +1,6 @@
 import asyncio
 import random
+import re
 import time
 
 from aiogram import Bot
@@ -69,6 +70,8 @@ class TelegramStream:
                 continue
 
             text += chunk
+            if not self.has_visible_content(text):
+                continue
 
             now = time.monotonic()
 
@@ -94,3 +97,11 @@ class TelegramStream:
         )
 
         return text
+
+    def has_visible_content(self, text: str) -> bool:
+        if not text or not text.strip():
+            return False
+
+        stripped = re.sub(r'[#*_`~>\-\s]', '', text)
+
+        return bool(stripped)

@@ -13,5 +13,5 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
 
 OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
-OPENROUTER_PRIMARY_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'
-OPENROUTER_SECONDARY_MODEL = 'nvidia/nemotron-3.5-lightning:free'
+OPENROUTER_PRIMARY_MODEL = 'nvidia/nemotron-3-ultra-550b-a55b:free'
+OPENROUTER_SECONDARY_MODEL = 'nvidia/nemotron-3-super-120b-a12b:free'

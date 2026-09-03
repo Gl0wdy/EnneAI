@@ -37,17 +37,20 @@ class Naranjo(ChatClient):
         typology: str | None = "null",
         **rag_kwargs,
     ) -> tuple[RagContext, list[dict]]:
-        rag_data: RagContext = await retrieve(
-            rag_query or query,
-            category=typology,
-            rerank_top_n=25,
-            **rag_kwargs,
-        )
+        if rag_query != 'None':
+            rag_data: RagContext = await retrieve(
+                rag_query or query,
+                category=typology,
+                rerank_top_n=25,
+                **rag_kwargs,
+            )
+        else:
+            rag_data = RagContext(text="", sources=[], chunks=[])
+
         prompt = self._build_prompt(
             rag_context=self._chunks_for_prompt(rag_data.chunks),
             context=self.get_context(typology),
         )
-
         return rag_data, [
             {
                 "role": "system",
@@ -69,6 +72,7 @@ class Naranjo(ChatClient):
         stream: bool = False,
         api_key: str | None = None, # - наранхо откуда ключи? - вертолет дает
         model: str | None = None,
+        reasoning_effort: str = "medium",
         **kwargs,
     ):
         rag_data, messages = await self.prepare_messages(
@@ -83,11 +87,13 @@ class Naranjo(ChatClient):
             return rag_data, self.get_stream(
                 messages=messages,
                 api_key=api_key,
-                model=model
+                model=model,
+                reasoning_effort=reasoning_effort
             )
 
         return rag_data, await self.get_discrete(
             messages=messages,
             api_key=api_key,
-            model=model
+            model=model,
+            reasoning_effort=reasoning_effort
         )

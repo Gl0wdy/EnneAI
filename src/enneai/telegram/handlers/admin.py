@@ -4,7 +4,7 @@ from aiogram import Bot, F, Router
 from aiogram.filters import Command, StateFilter
 from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
-from aiogram.types import BufferedInputFile, CallbackQuery, Message
+from aiogram.types import BufferedInputFile, CallbackQuery, Message, FSInputFile
 
 from enneai.config import TELEGRAM_ADMIN_ID
 from enneai.db.repositories import (
@@ -134,11 +134,11 @@ async def admin_callback_handler(callback: CallbackQuery, state: FSMContext, bot
 		await state.set_state(fsm.AdminStates.waiting_for_broadcast)
 		await callback.message.edit_text(
 			'Введите текст рассылки одним сообщением. Для отмены отправьте /cancel.',
-			reply_markup=admin_kb.build_admin_back_keyboard(),
+			reply_markup=admin_kb.back_keyboard,
 		)
 	elif action == 'logs':
-		with open('app.log', 'rb') as log_file:
-			await bot.send_document(callback.from_user.id, log_file, caption='Логи бота')
+		input_file = FSInputFile('logs/app.log', filename='app.log')
+		await bot.send_document(callback.from_user.id, input_file, caption='Логи бота')
 
 	await callback.answer()
 
@@ -152,7 +152,7 @@ async def broadcast_handler(message: Message, state: FSMContext, bot: Bot):
 		return
 	if message.text.strip().lower() == '/cancel':
 		await state.clear()
-		await message.answer('Рассылка отменена.', reply_markup=admin_kb.build_admin_keyboard())
+		await message.answer('Рассылка отменена.', reply_markup=admin_kb.main_keyboard)
 		return
 
 	users = await user_rep.get_all()
@@ -169,5 +169,5 @@ async def broadcast_handler(message: Message, state: FSMContext, bot: Bot):
 	await state.clear()
 	await message.answer(
 		f'Рассылка завершена. Доставлено: {sent}. Недоступно: {failed}.',
-		reply_markup=admin_kb.build_admin_keyboard(),
+		reply_markup=admin_kb.main_keyboard,
 	)

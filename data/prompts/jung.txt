@@ -18,13 +18,13 @@ Always imply a single answer for each typology system. Never leave user with mul
 Sources
 
 Context data:
-<CONTEXT>
+$CONTEXT
 
 Correlation data:
-<CORR>
+$CORR
 
 Subject data:
-<SUBJECT>
+$SUBJECT
 
 Analysis and typing:
 

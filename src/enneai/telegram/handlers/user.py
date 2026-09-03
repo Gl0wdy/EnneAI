@@ -26,7 +26,7 @@ from enneai.utils.lang import is_not_english
 from enneai.scraper import scraper
 from enneai.utils.logger import logger
 
-from datetime import datetime as dt
+from datetime import datetime as dt, timezone
 
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY is not set in the environment variables.")
@@ -301,7 +301,7 @@ async def request_handler(
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
-    if user.burmaldate != dt.now().date():
+    if user.burmaldate != dt.now(timezone.utc).date():
         user.request_remain = user.request_remain
 
     if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
@@ -332,7 +332,10 @@ async def request_handler(
                         history=chat_history
                     )
                     api_calls += 1
-                    await msg.delete()
+                    if rag_query == 'None':
+                        await msg.edit_text('Дополнительный поиск не требуется. Формирую ответ...')
+                    else:
+                        await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
                 else:
                     rag_query = message.text
                 
@@ -355,7 +358,7 @@ async def request_handler(
                 content = Text(CustomEmojis.rika_thinking, " Юнг углубляется в ваш piece of media...")
                 msg = await message.answer(**content.as_kwargs())
                 web_text = await scraper(message.text)
-                await msg.edit_text('*Найдена информация по вашему запросу*. Формирую ответ.')
+                await msg.edit_text('*Найдена информация по вашему запросу*. Один момент...')
 
                 if user.settings.requery:
                     rag_query = await keychain.rotate(
@@ -365,7 +368,7 @@ async def request_handler(
                         history=chat_history
                     )
                     api_calls += 1
-                    await msg.delete()
+                    await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
                 else:
                     content = Text(CustomEmojis.warning, ' Предупреждение: работа Юнга может значительно ухудшиться с выключенным requery.\nСменить это можно в /settings')
                     await message.answer(**content.as_kwargs())
@@ -374,7 +377,6 @@ async def request_handler(
                 rag_data, chunks = await keychain.rotate(
                     jung.response,
                     web_text=web_text,
-                    rag_query=rag_query,
                     query=message.text,
                     history=chat_history,
                     typology=user.settings.system,
@@ -392,7 +394,6 @@ async def request_handler(
         response = await telegram_stream.stream(chunks)
 
         await message_rep.create(
-            created_at=dt.now(),
             user_id=user.id,
             user_query=message.text,
             response=response,
@@ -406,12 +407,18 @@ async def request_handler(
         try:
             await message.answer(
                 f'Произошла ошибка при обработке запроса: {exc}.\n'
-                f'Осталось запросов на сегодня: {user.request_remain}.'
+                f'Осталось запросов на сегодня: {user.request_remain}.',
+                parse_mode=None
             )
             logger.exception("Error processing request for user %s: %s", user.id, exc)
         except Exception:
-            pass
+            await message.answer(
+                f'Произошла ошибка при генерации ответа на запрос: {exc}.\n'
+                f'Осталось запросов на сегодня: {user.request_remain}.',
+                parse_mode=None
+            )
+            logger.exception("Error generating response for user %s: %s", user.id, exc)
     finally:
         await state.clear()
-        user.burmaldate = dt.now().date()
+        user.burmaldate = dt.now(timezone.utc).date()
         await user.save()
