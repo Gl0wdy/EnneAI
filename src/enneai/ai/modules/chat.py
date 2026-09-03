@@ -173,29 +173,37 @@ class ChatClient(abc.ABC):
                 return result
 
     async def requery(
-        self,
-        typology: str,
-        query: str,
-        history: list[dict],
-        api_key: str | None = None
-    ) -> str:
+    self,
+    typology: str,
+    query: str,
+    history: list[dict],
+    api_key: str | None = None
+) -> str:
         if not self.requery_prompt.template:
             return query
+
+        history_text = "\n".join(
+            f"{m['role']}: {m['content']}" for m in history
+        ) or "(empty)"
+
         prompt = self.requery_prompt.substitute(
-            CONTEXT=self.contexts[typology]
+            CONTEXT=self.contexts[typology],
+            HISTORY=history_text
         )
-        history = [
-            {'role': 'system', 'content': prompt}
-        ] + history + [{'role': 'user', 'content': query}]
+
+        messages = [
+            {'role': 'system', 'content': prompt},
+            {'role': 'user', 'content': query}
+        ]
 
         response = await self.get_discrete(
-            history,
+            messages,
             api_key=api_key,
             model=OPENROUTER_SECONDARY_MODEL,
-            reasoning=False
+            reasoning_effort='medium',
+            max_tokens=120
         )
         if "error" in response:
             logger.error("LLM error response: %s", response)
             raise Exception(response["error"])
-        
         return response['choices'][0]['message']['content']
