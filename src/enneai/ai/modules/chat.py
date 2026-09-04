@@ -192,7 +192,7 @@ class ChatClient(abc.ABC):
         )
 
         messages = [
-            {'roСle': 'system', 'content': prompt},
+            {'role': 'system', 'content': prompt},
             {'role': 'user', 'content': query}
         ]
 
