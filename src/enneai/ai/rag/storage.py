@@ -226,7 +226,7 @@ async def upsert_document_chunks(
                 )
             )
 
-        await client.upsert(collection_name=COLLECTION_NAME, points=points, wait=True)
+        await client.upsert(collection_name=COLLECTION_NAME, points=points, wait=False)
         total += len(points)
         logger.info("Upserted %d chunks for book_id=%r", len(points), metadata.book_id)
 

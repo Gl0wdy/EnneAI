@@ -4,11 +4,13 @@ import json
 import logging
 from pathlib import Path
 from typing import Any
+from qdrant_client import models as qm
 
 from enneai.ai.rag.storage import BookMetadata
 from enneai.ai.rag.ingest import ingest_one
+from enneai.ai.rag import storage
 
-logger = logging.getLogger(__name__)
+from enneai.utils.logger import logger
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SUPPORTED_EXTENSIONS = {".pdf", ".docx"}
@@ -90,6 +92,14 @@ async def ingest_all(*, data_dir: Path, chunk_size: int, overlap: int, replace: 
         return
 
     logger.info("Found typologies: %d", len(books_dirs))
+
+    await storage.ensure_collection()
+    client = await storage.get_client()
+    await client.update_collection(
+        collection_name=storage.COLLECTION_NAME,
+        optimizers_config=qm.OptimizersConfigDiff(indexing_threshold=0),
+    )
+
     grand_total = 0
 
     for books_dir in books_dirs:
@@ -98,6 +108,11 @@ async def ingest_all(*, data_dir: Path, chunk_size: int, overlap: int, replace: 
         total = await ingest_books_dir(books_dir, chunk_size=chunk_size, overlap=overlap, replace=replace)
         grand_total += total
         logger.info("%s: indexed %d chunks", typology, total)
+
+    await client.update_collection(
+        collection_name=storage.COLLECTION_NAME,
+        optimizers_config=qm.OptimizersConfigDiff(indexing_threshold=20000),
+    )
 
     logger.info("========== DONE: %d chunks ==========", grand_total)
 

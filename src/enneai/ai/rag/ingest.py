@@ -9,7 +9,7 @@ from docchunker import DocChunker
 
 from enneai.ai.rag import storage
 
-logger = logging.getLogger("ingest")
+from enneai.utils.logger import logger
 
 
 def _slug(text: str) -> str:
