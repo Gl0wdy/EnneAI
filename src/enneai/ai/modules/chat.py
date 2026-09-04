@@ -192,7 +192,7 @@ class ChatClient(abc.ABC):
         )
 
         messages = [
-            {'role': 'system', 'content': prompt},
+            {'roСle': 'system', 'content': prompt},
             {'role': 'user', 'content': query}
         ]
 
@@ -200,7 +200,7 @@ class ChatClient(abc.ABC):
             messages,
             api_key=api_key,
             model=OPENROUTER_SECONDARY_MODEL,
-            reasoning_effort='medium',
+            reasoning=False,
             max_tokens=120
         )
         if "error" in response:
