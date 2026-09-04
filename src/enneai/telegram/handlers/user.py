@@ -229,9 +229,14 @@ async def fetch_key_handler(
         fsm.ProfileStates.waiting_for_confirmation
     )
 )
-async def custom_username_handler(message: Message, state: FSMContext):
-    if message.text != 'Да':
+async def custom_username_handler(message: Message, state: FSMContext, user: User):
+    if message.text not in ('Да', '/persona'):
         await state.clear()
+        # ВОТ ЭТА ХУЙНЯ УНИЧТОЖИЛА ПРОД 
+        user.new = False
+        user.username = message.from_user.full_name
+        await user.save()
+
         await message.answer('Хорошо. Повторите свой запрос.', reply_markup=ReplyKeyboardRemove())
         return
 
