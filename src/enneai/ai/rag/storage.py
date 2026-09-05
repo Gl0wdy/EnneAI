@@ -64,7 +64,11 @@ async def get_client() -> AsyncQdrantClient:
     if _client is None:
         async with _client_lock:
             if _client is None:
-                _client = AsyncQdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+                _client = AsyncQdrantClient(
+                    url=QDRANT_URL,
+                    api_key=QDRANT_API_KEY,
+                    timeout=30,
+                )
     return _client
 
 
@@ -250,6 +254,7 @@ async def collection_stats() -> dict[str, Any]:
     info = await client.get_collection(COLLECTION_NAME)
     return {
         "points_count": info.points_count,
-        "vectors_count": info.vectors_count,
         "status": info.status,
+        "indexed_vectors_count": getattr(info, "indexed_vectors_count", None),
+        "optimizer_status": info.optimizer_status,
     }
