@@ -452,14 +452,18 @@ async def request_handler(
         try:
             await message.answer(
                 f'Произошла ошибка при обработке запроса: {exc}.\n'
-                f'Осталось запросов на сегодня: {user.request_remain}.',
+                f'Осталось запросов на сегодня: {user.request_remain}.\n',
+                f'Попробуйте ещё раз или зарегистрируйте свой личный ключ OpenRouter с помощью команды /key, чтобы расширить лимиты.',
+                reply_markup=user_kb.register_key_keyboard,
                 parse_mode=None
             )
             logger.exception("Error processing request for user %s: %s", user.tg_id, exc)
         except Exception:
             await message.answer(
                 f'Произошла ошибка при генерации ответа на запрос: {exc}.\n'
-                f'Осталось запросов на сегодня: {user.request_remain}.',
+                f'Осталось запросов на сегодня: {user.request_remain}.\n'
+                f'Попробуйте ещё раз или зарегистрируйте свой личный ключ OpenRouter с помощью команды /key, чтобы расширить лимиты.',
+                reply_markup=user_kb.register_key_keyboard,
                 parse_mode=None
             )
             logger.exception("Error generating response for user %s: %s", user.tg_id, exc)

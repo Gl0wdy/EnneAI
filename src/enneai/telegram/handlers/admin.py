@@ -32,6 +32,7 @@ async def build_admin_overview() -> str:
 	messages = await message_rep.get_all()
 	active_users = sum(not user.new for user in users)
 	requests_left = sum(user.request_remain for user in users)
+	keys = sum(bool(user.encrypted_key) for user in users)
 	await snapshot_rep.create(
 		users_count=len(users),
 		active_users=active_users,
@@ -44,7 +45,8 @@ async def build_admin_overview() -> str:
 		f'Пользователей: *{len(users)}*\n'
 		f'Заполнили профиль: *{active_users}*\n'
 		f'Запросов обработано: *{len(messages)}*\n'
-		f'Осталось запросов: *{requests_left}*'
+		f'Осталось запросов: *{requests_left}*',
+		f'Ключей: *{keys}*'
 	)
 
 
