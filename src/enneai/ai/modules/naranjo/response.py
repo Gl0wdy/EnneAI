@@ -84,7 +84,7 @@ class Naranjo(ChatClient):
         )
 
         if stream:
-            return rag_data, self.get_stream(
+            return rag_data, await self.get_stream(
                 messages=messages,
                 api_key=api_key,
                 model=model,
