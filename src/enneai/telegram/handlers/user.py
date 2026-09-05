@@ -211,8 +211,7 @@ async def fetch_key_handler(
         if is_valid:
             keychain.add_key(key)
             await msg.edit_text(
-                '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.',
-                reply_markup=user_kb.main_menu_keyboard
+                '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.'
             )
             user.request_remain = 40
             user.request_limit = 40
@@ -220,8 +219,7 @@ async def fetch_key_handler(
             await user.save()
         else:
             await msg.edit_text(
-                '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.',
-                reply_markup=user_kb.main_menu_keyboard
+                '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.'
             )
     finally:
         await state.clear()
