@@ -45,7 +45,7 @@ async def build_admin_overview() -> str:
 		f'Пользователей: *{len(users)}*\n'
 		f'Заполнили профиль: *{active_users}*\n'
 		f'Запросов обработано: *{len(messages)}*\n'
-		f'Осталось запросов: *{requests_left}*',
+		f'Осталось запросов: *{requests_left}*'
 		f'Ключей: *{keys}*'
 	)
 
