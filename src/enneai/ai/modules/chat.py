@@ -97,8 +97,8 @@ class ChatClient(abc.ABC):
         return payload
 
     async def get_stream(
-        self, 
-        messages: list[dict], 
+        self,
+        messages: list[dict],
         api_key: str | None = None,
         model: str | None = OPENROUTER_PRIMARY_MODEL,
         reasoning: bool = True,
@@ -107,88 +107,78 @@ class ChatClient(abc.ABC):
     ) -> AsyncIterator[str]:
         headers = self._build_headers(api_key)
         payload = self._build_payload(
-            messages,
-            model=model,
-            stream=True,
-            reasoning=reasoning,
-            reasoning_effort=reasoning_effort,
-            max_tokens=max_tokens
+            messages, model=model, stream=True, reasoning=reasoning,
+            reasoning_effort=reasoning_effort, max_tokens=max_tokens
         )
 
-        timeout = aiohttp.ClientTimeout(total=OPENROUTER_TIMEOUT)
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
-                if response.status != 200:
-                    body = await response.text()
-                    logger.error("Request failed with status code %s: %s", response.status, body)
-                    raise RuntimeError(f"OpenRouter request failed ({response.status})")
-            
-                buffer = ""
-                async for chunk in response.content.iter_any():
-                    if chunk:
-                        buffer += chunk.decode('utf-8')
-                        while True:
-                            try:
-                                line_end = buffer.find('\n')
-                                if line_end == -1:
-                                    break
-                                line = buffer[:line_end].strip()
-                                buffer = buffer[line_end + 1:]
-                                if line.startswith(':'):
-                                    continue
+        session = aiohttp.ClientSession()
+        response = await session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload)
 
-                                if line.startswith('data: '):
-                                    data = line[6:]
-                                    if data == '[DONE]':
-                                        break
+        if response.status != 200:
+            body = await response.text()
+            await response.release()
+            await session.close()
+            logger.error(f"Request failed with status code {response.status}")
+            raise RuntimeError(f"OpenRouter request failed ({response.status}): {body}")
 
-                                    try:
-                                        data_obj = json.loads(data)
-                                        content = data_obj["choices"][0]["delta"].get("content")
-                                        if content:
-                                            yield content
-                                    except json.JSONDecodeError:
-                                        pass
-                            except Exception:
+        return self._iter_stream(response, session)
+
+    async def _iter_stream(self, response, session) -> AsyncIterator[str]:
+        try:
+            buffer = ""
+            async for chunk in response.content.iter_any():
+                if chunk:
+                    buffer += chunk.decode('utf-8')
+                    while True:
+                        line_end = buffer.find('\n')
+                        if line_end == -1:
+                            break
+                        line = buffer[:line_end].strip()
+                        buffer = buffer[line_end + 1:]
+                        if line.startswith(':'):
+                            continue
+                        if line.startswith('data: '):
+                            data = line[6:]
+                            if data == '[DONE]':
                                 break
+                            try:
+                                data_obj = json.loads(data)
+                                content = data_obj["choices"][0]["delta"].get("content")
+                                if content:
+                                    yield content
+                            except json.JSONDecodeError:
+                                pass
+        finally:
+            response.release()
+            await session.close()
 
     async def get_discrete(
         self,
         messages: list[dict],
         api_key: str | None = None,
-        model: str | None = None,
+        model: str | None = OPENROUTER_PRIMARY_MODEL,
         reasoning: bool = True,
         reasoning_effort: str = "medium",
         max_tokens: int | None = None
     ) -> str:
         headers = self._build_headers(api_key)
-        payload = self._build_payload(
-            messages, 
-            model=model,
-            stream=False,
-            reasoning=reasoning,
-            reasoning_effort=reasoning_effort,
-            max_tokens=max_tokens,
+        payload = self._build_payload(messages, model=model, stream=False, reasoning=reasoning, reasoning_effort=reasoning_effort, max_tokens=max_tokens)
 
-        )
-
-        timeout = aiohttp.ClientTimeout(total=OPENROUTER_TIMEOUT)
-        async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with aiohttp.ClientSession() as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
                 result = await response.json()
-
                 if response.status != 200:
-                    logger.error("Request failed with status code %s: %s", response.status, result)
-                    raise RuntimeError(f"OpenRouter request failed ({response.status})")
+                    logger.error(f"Request failed with status code {response.status}")
+                    raise RuntimeError(f"OpenRouter request failed ({response.status}): {result}")
                 return result
 
     async def requery(
-    self,
-    typology: str,
-    query: str,
-    history: list[dict],
-    api_key: str | None = None
-) -> str:
+        self,
+        typology: str,
+        query: str,
+        history: list[dict],
+        api_key: str | None = None
+    ) -> str:
         if not self.requery_prompt.template:
             return query
 
