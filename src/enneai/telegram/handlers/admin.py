@@ -102,11 +102,6 @@ async def admin_callback_handler(callback: CallbackQuery, state: FSMContext, bot
 			await build_users_report(),
 			reply_markup=admin_kb.back_keyboard,
 		)
-	elif action == 'newsletter':
-		await callback.message.edit_text(
-			'Пришлите сообщение, которое хотите разослать всем пользователям:',
-			reply_markup=admin_kb.back_keyboard
-		)
 	elif action == 'infographic':
 		users = await user_rep.get_all()
 		messages = await message_rep.get_all()
@@ -132,7 +127,7 @@ async def admin_callback_handler(callback: CallbackQuery, state: FSMContext, bot
 	await callback.answer()
 
 
-@admin_router.message(StateFilter(fsm.AdminStates.waiting_for_broadcast))
+@admin_router.message(fsm.AdminStates.waiting_for_broadcast)
 async def broadcast_handler(message: Message, state: FSMContext, bot: Bot):
 	if message.from_user is None or not is_admin(message.from_user.id):
 		return
@@ -149,7 +144,11 @@ async def broadcast_handler(message: Message, state: FSMContext, bot: Bot):
 	failed = 0
 	for user in users:
 		try:
-			await bot.send_message(user.tg_id, message.text, parse_mode=None)
+			await bot.copy_message(
+				chat_id=user.tg_id,
+				from_chat_id=message.chat.id,
+				message_id=message.message_id,
+			)
 			sent += 1
 		except TelegramAPIError:
 			failed += 1
@@ -160,14 +159,3 @@ async def broadcast_handler(message: Message, state: FSMContext, bot: Bot):
 		f'Рассылка завершена. Доставлено: {sent}. Недоступно: {failed}.',
 		reply_markup=admin_kb.main_keyboard,
 	)
-
-
-@admin_router.message(fsm.CommandStates.waiting_for_newsletter)
-async def send_newsletter(message: Message, state: FSMContext):
-	users = await user_rep.get_all()
-	tasks = (message.copy_to(u.tg_id) for u in users)
-	result = await asyncio.gather(*tasks, return_exceptions=True)
-
-	succesful_count = sum(1 for r in result if not isinstance(r, Exception))
-	await message.answer(f'Успешно разослано {succesful_count} пользователям.')
-	await state.clear()
