@@ -218,20 +218,17 @@ async def fetch_key_handler(
     try:
         is_valid = await check_openrouter_key(key)
         if is_valid:
-            await msg.delete()
-            await message.answer(
-                '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.',
-                reply_markup=user_kb.main_menu_keyboard
+            keychain.add_key(key)
+            await msg.edit_text(
+                '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.'
             )
             user.request_remain = 40
             user.request_limit = 40
             user.encrypted_key = encryptor.encrypt(key)
             await user.save()
         else:
-            await msg.delete()
-            await message.answer(
-                '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.',
-                reply_markup=user_kb.main_menu_keyboard
+            await msg.edit_text(
+                '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.'
             )
     except Exception:
         logger.exception("Ошибка при проверке ключа пользователя %s", user.tg_id)
