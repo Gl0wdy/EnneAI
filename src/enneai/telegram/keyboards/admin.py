@@ -7,7 +7,7 @@ main_keyboard = InlineKeyboardMarkup(
 			InlineKeyboardButton(text='Пользователи', callback_data='admin:users')
 		],
 		[
-			InlineKeyboardButton(text='Рассылка', callback_data='admin:newsletter'),
+			InlineKeyboardButton(text='Рассылка', callback_data='admin:broadcast'),
 			InlineKeyboardButton(text='Обновить', callback_data='admin:refresh')
 		],
 		[
