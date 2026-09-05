@@ -78,17 +78,6 @@ async def admin_handler(message: Message):
 	)
 
 
-@admin_router.message(fsm.CommandStates.waiting_for_newsletter)
-async def send_newsletter(message: Message, state: FSMContext):
-	users = await user_rep.get_all()
-	tasks = (message.copy_to(u.tg_id) for u in users)
-	result = await asyncio.gather(*tasks, return_exceptions=True)
-
-	succesful_count = len((r for r in result if not isinstance(r, Exception)))
-	await message.answer(f'Успешно разослано {succesful_count} пользователям.')
-	await state.clear()
-
-
 @admin_router.callback_query(F.data.startswith('admin:'))
 async def admin_callback_handler(callback: CallbackQuery, state: FSMContext, bot: Bot):
 	if callback.from_user is None or not is_admin(callback.from_user.id):
@@ -171,3 +160,14 @@ async def broadcast_handler(message: Message, state: FSMContext, bot: Bot):
 		f'Рассылка завершена. Доставлено: {sent}. Недоступно: {failed}.',
 		reply_markup=admin_kb.main_keyboard,
 	)
+
+
+@admin_router.message(fsm.CommandStates.waiting_for_newsletter)
+async def send_newsletter(message: Message, state: FSMContext):
+	users = await user_rep.get_all()
+	tasks = (message.copy_to(u.tg_id) for u in users)
+	result = await asyncio.gather(*tasks, return_exceptions=True)
+
+	succesful_count = sum(1 for r in result if not isinstance(r, Exception))
+	await message.answer(f'Успешно разослано {succesful_count} пользователям.')
+	await state.clear()
