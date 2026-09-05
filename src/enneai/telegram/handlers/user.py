@@ -9,6 +9,7 @@ from aiogram.utils.formatting import (
 )
 
 from enneai.db import User
+from enneai.db.models import quota_date
 from enneai.db.repositories import UserMessageRepository, UserRepository
 from enneai.ai.modules.naranjo.response import Naranjo
 from enneai.ai.modules.jung.response import Jung
@@ -26,8 +27,6 @@ from enneai.utils.lang import is_not_english
 from enneai.scraper import scraper
 from enneai.utils.logger import logger
 
-from datetime import datetime as dt
-from zoneinfo import ZoneInfo
 
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY is not set in the environment variables.")
@@ -38,6 +37,15 @@ router = Router(name='user')
 message_rep = UserMessageRepository()
 user_rep = UserRepository()
 encryptor = Encryptor(ENCRYPTION_KEY)
+active_requests: set[int] = set()
+
+
+async def refresh_quota(user: User) -> None:
+    current_quota_date = quota_date()
+    if user.burmaldate != current_quota_date:
+        user.request_remain = user.request_limit
+        user.burmaldate = current_quota_date
+        await user.save()
 
 
 @router.message(CommandStart())
@@ -118,6 +126,7 @@ async def clear_confirmation_handler(message: Message, state: FSMContext):
     )
 )
 async def show_profile_handler(message: Message, user: User):
+    await refresh_quota(user)
     content = Text(
         CustomEmojis.account,
         " Это вы, ",
@@ -221,6 +230,12 @@ async def fetch_key_handler(
             await msg.edit_text(
                 '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.'
             )
+    except Exception:
+        logger.exception("Ошибка при проверке ключа пользователя %s", user.tg_id)
+        await msg.edit_text(
+            'Не удалось проверить ключ из-за временной ошибки. Попробуйте ещё раз позже.',
+            reply_markup=None
+        )
     finally:
         await state.clear()
     
@@ -314,11 +329,7 @@ async def request_handler(
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
-    today = dt.now(ZoneInfo("Europe/Moscow")).date()
-    if user.burmaldate != today:
-        user.request_remain = user.request_limit
-        user.burmaldate = today
-        await user.save()
+    await refresh_quota(user)
 
     preferred_key = None
     if user.encrypted_key:
@@ -327,8 +338,13 @@ async def request_handler(
         except Exception:
             logger.warning("Не удалось расшифровать пользовательский ключ %s", user.tg_id)
 
-    if user.request_remain == 0 and user.tg_id != TELEGRAM_ADMIN_ID:
-        text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
+    request_cost = 2 if user.settings.requery else 1
+    if user.request_remain < request_cost and user.tg_id != TELEGRAM_ADMIN_ID:
+        text = (
+            f'*Недостаточно запросов на сегодня* '
+            f'({user.request_remain}/{request_cost} нужно). '
+            'Лимиты сбрасываются в 03:00 по МСК.'
+        )
         if not user.encrypted_key:
             text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys) с помощью команды /key'
             await message.answer(text, reply_markup=user_kb.register_key_keyboard)
@@ -337,8 +353,12 @@ async def request_handler(
         return
 
     chat_history = await get_chat_history(user.tg_id)
+    if user.tg_id in active_requests:
+        await message.answer('Ваш предыдущий запрос ещё обрабатывается. Пожалуйста, подождите.')
+        return
+
+    active_requests.add(user.tg_id)
     await state.set_state(fsm.ProfileStates.in_progress)
-    api_calls = 0
 
     try:
         match user.settings.mode:
@@ -355,7 +375,6 @@ async def request_handler(
                         query=message.text,
                         history=chat_history
                     )
-                    api_calls += 1
                     if rag_query == 'None':
                         await msg.edit_text('Дополнительный поиск не требуется. Формирую ответ...')
                     else:
@@ -373,8 +392,6 @@ async def request_handler(
                     stream=True,
                     reasoning_effort=user.settings.reasoning
                 )
-                api_calls += 1
-
             case 'jung':
                 if is_not_english(message.text):
                     content = Text(CustomEmojis.warning, " Полезный совет: пиши имя нужного тебе персонажа на латинице (будет лучше индексация -> лучше и ответ)\n:3")
@@ -393,7 +410,6 @@ async def request_handler(
                         query=web_text,
                         history=chat_history
                     )
-                    api_calls += 1
                     await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
                 else:
                     content = Text(CustomEmojis.warning, ' Предупреждение: работа Юнга может значительно ухудшиться с выключенным requery.\nСменить это можно в /settings')
@@ -410,7 +426,6 @@ async def request_handler(
                     stream=True,
                     reasoning_effort=user.settings.reasoning
                 )
-                api_calls += 1
             case _:
                 await message.answer('Выберите режим работы бота с помощью /settings.')
                 return
@@ -419,6 +434,11 @@ async def request_handler(
             message.bot, message.chat.id
         )
         response = await telegram_stream.stream(chunks)
+        if not response.strip():
+            raise RuntimeError('Пустой ответ не был отправлен пользователю')
+
+        user.request_remain -= request_cost
+        await user.save()
 
         await message_rep.create(
             user_id=user.tg_id,
@@ -427,8 +447,6 @@ async def request_handler(
             rag_context=rag_data.text,
             system=user.settings.system
         )
-
-        user.request_remain -= api_calls
 
     except Exception as exc:
         try:
@@ -447,5 +465,5 @@ async def request_handler(
             logger.exception("Error generating response for user %s: %s", user.tg_id, exc)
     finally:
         await state.clear()
-        user.burmaldate = dt.now(ZoneInfo("Europe/Moscow")).date()
+        active_requests.discard(user.tg_id)
         await user.save()

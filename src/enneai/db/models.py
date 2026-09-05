@@ -1,4 +1,4 @@
-from datetime import datetime, date, timezone
+from datetime import datetime, date, timedelta, timezone
 from zoneinfo import ZoneInfo
 from typing import  Literal
 
@@ -7,6 +7,10 @@ from pydantic import BaseModel, Field
 
 
 SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian", "auto"]
+
+
+def quota_date() -> date:
+    return (datetime.now(ZoneInfo("Europe/Moscow")) - timedelta(hours=3)).date()
 
 class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
@@ -37,7 +41,7 @@ class User(Document):
     request_limit: int = 15
     request_remain: int = 15
     burmaldate: date = Field(
-        default_factory=lambda: datetime.now(ZoneInfo("Europe/Moscow")).date()
+        default_factory=quota_date
     )
     encrypted_key: str = ""
 
