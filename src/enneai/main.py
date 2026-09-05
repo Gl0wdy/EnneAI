@@ -9,14 +9,11 @@ from enneai.config import (
     TELEGRAM_DEBUG_TOKEN,
     TELEGRAM_ADMIN_ID,
     MONGO_URI,
-    ENCRYPTION_KEY,
     OPENROUTER_API_KEY
 )
 from enneai.db import MongoDB
-from enneai.db.repositories import UserRepository
 from enneai.ai.rag.query import warmup
 from enneai.ai.llm.keys_rotation import KeyRotator
-from enneai.utils.encryption import Encryptor
 
 from enneai.utils.logger import logger
 
@@ -34,19 +31,6 @@ mongo = MongoDB(
     uri=MONGO_URI,
     database="enneai",
 )
-
-async def load_api_keys(user_repo: UserRepository, encryptor: Encryptor) -> list[str]:
-    users = await user_repo.get_all()
-    keys = []
-    for u in users:
-        if not u.encrypted_key:
-            continue
-        try:
-            keys.append(encryptor.decrypt(u.encrypted_key))
-        except Exception:
-            logger.warning("Не смог расшифровать ключ юзера %s", u.tg_id)
-    return keys
-
 
 @dp.startup()
 async def startup():
@@ -83,10 +67,8 @@ async def main():
         UserMiddleware()
     ) 
     await mongo.init()
-    encryptor = Encryptor(ENCRYPTION_KEY)
-    user_repo = UserRepository()
-    mongo_keys = await load_api_keys(user_repo, encryptor)
-    keychain = KeyRotator(mongo_keys + [key for key in OPENROUTER_API_KEY.split(',') if key])
+    system_keys = [key.strip() for key in OPENROUTER_API_KEY.split(',') if key.strip()]
+    keychain = KeyRotator(system_keys)
 
     logger.info("Starting bot with %d API keys", len(keychain.keys))
     await dp.start_polling(
