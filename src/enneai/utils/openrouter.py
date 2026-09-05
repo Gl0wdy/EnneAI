@@ -1,3 +1,5 @@
+import asyncio
+
 import aiohttp
 
 async def check_openrouter_key(api_key: str) -> bool:
@@ -7,8 +9,14 @@ async def check_openrouter_key(api_key: str) -> bool:
     }
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=5)) as response:
+        timeout = aiohttp.ClientTimeout(
+            total=5,
+            connect=5,
+            sock_connect=5,
+            sock_read=5,
+        )
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(url, headers=headers) as response:
                 return response.status == 200
-    except (aiohttp.ClientError, TimeoutError):
+    except (aiohttp.ClientError, asyncio.TimeoutError):
         return False

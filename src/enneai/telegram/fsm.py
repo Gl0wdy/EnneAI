@@ -2,7 +2,6 @@ from aiogram.fsm.state import State, StatesGroup
 
 class CommandStates(StatesGroup):
     waiting_for_clear = State()
-    waiting_for_newsletter = State()
     waiting_for_key = State()
 
 
