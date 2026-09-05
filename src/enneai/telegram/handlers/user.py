@@ -195,30 +195,36 @@ async def fetch_key_handler(
     state: FSMContext,
     keychain: KeyRotator
 ):
-    key = message.text
+    key = (message.text or '').strip()
     if key.lower() == 'бурмалда':
         await message.answer('Отменено...', reply_markup=user_kb.main_menu_keyboard)
+        await state.clear()
         return
+
+    if not key:
+        await message.answer('Пришлите ключ текстом или отправьте «бурмалда» для отмены.')
+        return
+
     msg = await message.answer('Проверяем ваш ключ...')
-
-    is_valid = await check_openrouter_key(key)
-    if is_valid:
-        keychain.add_key(key)
-        await msg.edit_text(
-            '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.',
-            reply_markup=user_kb.main_menu_keyboard
-        )
-        user.request_remain = 40
-        user.request_limit = 40
-        user.encrypted_key = encryptor.encrypt(key)
-        await user.save()
-    else:
-        await message.edit_text(
-            '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.',
-            reply_markup=user_kb.main_menu_keyboard
-        )
-
-    await state.clear()
+    try:
+        is_valid = await check_openrouter_key(key)
+        if is_valid:
+            keychain.add_key(key)
+            await msg.edit_text(
+                '*Ключ успешно зарегистрирован!*\nВаши лимиты были расширены.',
+                reply_markup=user_kb.main_menu_keyboard
+            )
+            user.request_remain = 40
+            user.request_limit = 40
+            user.encrypted_key = encryptor.encrypt(key)
+            await user.save()
+        else:
+            await msg.edit_text(
+                '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.',
+                reply_markup=user_kb.main_menu_keyboard
+            )
+    finally:
+        await state.clear()
     
 
 
