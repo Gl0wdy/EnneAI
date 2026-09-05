@@ -58,7 +58,7 @@ async def build_users_report() -> str:
 		username = user.username or 'без имени'
 		profile = 'готов' if not user.new else 'новый'
 		lines.append(
-			f'• `{user.id}` {username} | {profile} | '
+			f'• `{user.tg_id}` {username} | {profile} | '
 			f'{user.request_remain}/{user.request_limit}'
 		)
 
@@ -81,7 +81,7 @@ async def admin_handler(message: Message):
 @admin_router.message(fsm.CommandStates.waiting_for_newsletter)
 async def send_newsletter(message: Message, state: FSMContext):
 	users = await user_rep.get_all()
-	tasks = (message.copy_to(u.id) for u in users)
+	tasks = (message.copy_to(u.tg_id) for u in users)
 	result = await asyncio.gather(*tasks, return_exceptions=True)
 
 	succesful_count = len((r for r in result if not isinstance(r, Exception)))
@@ -160,7 +160,7 @@ async def broadcast_handler(message: Message, state: FSMContext, bot: Bot):
 	failed = 0
 	for user in users:
 		try:
-			await bot.send_message(user.id, message.text, parse_mode=None)
+			await bot.send_message(user.tg_id, message.text, parse_mode=None)
 			sent += 1
 		except TelegramAPIError:
 			failed += 1

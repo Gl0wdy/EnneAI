@@ -20,6 +20,11 @@ TRIADS:
 		Rejection triad: E2, E5, E8
 
 
+WINGS:
+	An Enneagram wing is one of the two types adjacent to the core type on the Enneagram circle.
+	You DON`T use or mention them, never. Only subtype (e.g. SO5, SP7, etc.)
+
+
 SUBTYPES:
 	SP - self-preservation, SX - sexual, SO - social. usage example:
 	SO5 = social E5; SX3 = sexual E3

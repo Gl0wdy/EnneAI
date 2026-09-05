@@ -26,7 +26,8 @@ from enneai.utils.lang import is_not_english
 from enneai.scraper import scraper
 from enneai.utils.logger import logger
 
-from datetime import datetime as dt, timezone
+from datetime import datetime as dt
+from zoneinfo import ZoneInfo
 
 if not OPENROUTER_API_KEY:
     raise ValueError("OPENROUTER_API_KEY is not set in the environment variables.")
@@ -298,6 +299,9 @@ async def request_handler(
     state: FSMContext,
     keychain: KeyRotator
 ):
+    if message.chat.type != 'private':
+        return # на первое время пока вообще офф
+
     if user.new:
         await message.answer(
             'Желаете ли вы персонализировать бота под себя? Это займет пару секунд.',
@@ -306,10 +310,20 @@ async def request_handler(
         await state.set_state(fsm.ProfileStates.waiting_for_confirmation)
         return
 
-    if user.burmaldate != dt.now(timezone.utc).date():
-        user.request_remain = user.request_remain
+    today = dt.now(ZoneInfo("Europe/Moscow")).date()
+    if user.burmaldate != today:
+        user.request_remain = user.request_limit
+        user.burmaldate = today
+        await user.save()
 
-    if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
+    preferred_key = None
+    if user.encrypted_key:
+        try:
+            preferred_key = encryptor.decrypt(user.encrypted_key)
+        except Exception:
+            logger.warning("Не удалось расшифровать пользовательский ключ %s", user.tg_id)
+
+    if user.request_remain == 0 and user.tg_id != TELEGRAM_ADMIN_ID:
         text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
         if not user.encrypted_key:
             text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys) с помощью команды /key'
@@ -318,7 +332,7 @@ async def request_handler(
             await message.answer(text)
         return
 
-    chat_history = await get_chat_history(user.id)
+    chat_history = await get_chat_history(user.tg_id)
     await state.set_state(fsm.ProfileStates.in_progress)
     api_calls = 0
 
@@ -332,6 +346,7 @@ async def request_handler(
                     )
                     rag_query = await keychain.rotate(
                         naranjo.requery,
+                        preferred_key=preferred_key,
                         typology=user.settings.system,
                         query=message.text,
                         history=chat_history
@@ -346,6 +361,7 @@ async def request_handler(
                 
                 rag_data, chunks = await keychain.rotate(
                     naranjo.response,
+                    preferred_key=preferred_key,
                     rag_query=rag_query,
                     query=message.text,
                     history=chat_history,
@@ -368,6 +384,7 @@ async def request_handler(
                 if user.settings.requery:
                     rag_query = await keychain.rotate(
                         jung.requery,
+                        preferred_key=preferred_key,
                         typology=user.settings.system,
                         query=web_text,
                         history=chat_history
@@ -381,6 +398,7 @@ async def request_handler(
                 
                 rag_data, chunks = await keychain.rotate(
                     jung.response,
+                    preferred_key=preferred_key,
                     web_text=web_text,
                     query=message.text,
                     history=chat_history,
@@ -399,7 +417,7 @@ async def request_handler(
         response = await telegram_stream.stream(chunks)
 
         await message_rep.create(
-            user_id=user.id,
+            user_id=user.tg_id,
             user_query=message.text,
             response=response,
             rag_context=rag_data.text,
@@ -415,15 +433,15 @@ async def request_handler(
                 f'Осталось запросов на сегодня: {user.request_remain}.',
                 parse_mode=None
             )
-            logger.exception("Error processing request for user %s: %s", user.id, exc)
+            logger.exception("Error processing request for user %s: %s", user.tg_id, exc)
         except Exception:
             await message.answer(
                 f'Произошла ошибка при генерации ответа на запрос: {exc}.\n'
                 f'Осталось запросов на сегодня: {user.request_remain}.',
                 parse_mode=None
             )
-            logger.exception("Error generating response for user %s: %s", user.id, exc)
+            logger.exception("Error generating response for user %s: %s", user.tg_id, exc)
     finally:
         await state.clear()
-        user.burmaldate = dt.now(timezone.utc).date()
+        user.burmaldate = dt.now(ZoneInfo("Europe/Moscow")).date()
         await user.save()

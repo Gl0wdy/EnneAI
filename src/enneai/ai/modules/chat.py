@@ -6,7 +6,12 @@ from collections.abc import AsyncIterator
 
 from enneai.utils.reader import load_file
 
-from enneai.config import OPENROUTER_ENDPOINT, OPENROUTER_PRIMARY_MODEL, OPENROUTER_SECONDARY_MODEL
+from enneai.config import (
+    OPENROUTER_ENDPOINT,
+    OPENROUTER_PRIMARY_MODEL,
+    OPENROUTER_SECONDARY_MODEL,
+    OPENROUTER_TIMEOUT,
+)
 from enneai.utils.logger import logger
 
 
@@ -110,10 +115,13 @@ class ChatClient(abc.ABC):
             max_tokens=max_tokens
         )
 
-        async with aiohttp.ClientSession() as session:
+        timeout = aiohttp.ClientTimeout(total=OPENROUTER_TIMEOUT)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
                 if response.status != 200:
-                    logger.error(f"Request failed with status code {response.status}")
+                    body = await response.text()
+                    logger.error("Request failed with status code %s: %s", response.status, body)
+                    raise RuntimeError(f"OpenRouter request failed ({response.status})")
             
                 buffer = ""
                 async for chunk in response.content.iter_any():
@@ -164,12 +172,14 @@ class ChatClient(abc.ABC):
 
         )
 
-        async with aiohttp.ClientSession() as session:
+        timeout = aiohttp.ClientTimeout(total=OPENROUTER_TIMEOUT)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
                 result = await response.json()
 
                 if response.status != 200:
-                    logger.error(f"Request failed with status code {response.status}")
+                    logger.error("Request failed with status code %s: %s", response.status, result)
+                    raise RuntimeError(f"OpenRouter request failed ({response.status})")
                 return result
 
     async def requery(

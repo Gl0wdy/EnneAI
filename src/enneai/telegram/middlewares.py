@@ -16,10 +16,10 @@ class UserMiddleware(BaseMiddleware):
         data: dict[str, Any],
     ) -> Any:
         user_id = event.from_user.id
-        user = await user_rep.get_by_id(user_id)
+        user = await user_rep.get_by_telegram_id(user_id)
         if user is None:
             user = await user_rep.create(
-                id=user_id,
+                tg_id=user_id,
                 username=event.from_user.username
             )
 

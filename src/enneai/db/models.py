@@ -1,4 +1,5 @@
 from datetime import datetime, date, timezone
+from zoneinfo import ZoneInfo
 from typing import  Literal
 
 from beanie import Document
@@ -28,14 +29,16 @@ class UserMessage(Document):
 
 
 class User(Document):
-    id: int     # telegram id actually
+    tg_id: int     # telegram id actually
     new: bool = True  
     username: str
     settings: UserSettings = Field(default_factory=UserSettings)
     typologies: str = ''
     request_limit: int = 15
     request_remain: int = 15
-    burmaldate: date = datetime.now(timezone.utc).date()
+    burmaldate: date = Field(
+        default_factory=lambda: datetime.now(ZoneInfo("Europe/Moscow")).date()
+    )
     encrypted_key: str = ""
 
     class Settings:

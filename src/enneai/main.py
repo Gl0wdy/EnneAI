@@ -86,7 +86,7 @@ async def main():
     encryptor = Encryptor(ENCRYPTION_KEY)
     user_repo = UserRepository()
     mongo_keys = await load_api_keys(user_repo, encryptor)
-    keychain = KeyRotator(mongo_keys + OPENROUTER_API_KEY.split(','))
+    keychain = KeyRotator(mongo_keys + [key for key in OPENROUTER_API_KEY.split(',') if key])
 
     logger.info("Starting bot with %d API keys", len(keychain.keys))
     await dp.start_polling(

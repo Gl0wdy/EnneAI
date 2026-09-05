@@ -23,13 +23,16 @@ class KeyRotator:
         self.index = (self.index + 1) % len(self.keys)
         return key
 
-    async def rotate(self, fn, *args, **kwargs):
+    async def rotate(self, fn, *args, preferred_key=None, **kwargs):
         if not self.keys:
             raise ValueError("No API keys available")
 
         last_error = None
-        for _ in range(len(self.keys)):
-            key = self._next()
+        keys = []
+        if preferred_key and preferred_key in self.keys:
+            keys.append(preferred_key)
+        keys.extend(key for key in self.keys if key != preferred_key)
+        for key in keys:
             try:
                 return await fn(*args, api_key=key, **kwargs)
             except Exception as exc:
