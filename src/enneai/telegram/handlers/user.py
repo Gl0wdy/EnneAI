@@ -213,7 +213,7 @@ async def fetch_key_handler(
         user.encrypted_key = encryptor.encrypt(key)
         await user.save()
     else:
-        await message.edit_text(
+        await msg.edit_text(    # ...
             '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.',
             reply_markup=user_kb.main_menu_keyboard
         )
