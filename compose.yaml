@@ -36,7 +36,7 @@ services:
       - qdrant_storage:/qdrant/storage
 
   mongo:
-    image: mongo:8
+    image: mongo:7
     container_name: enneai-mongo
     restart: unless-stopped
 
