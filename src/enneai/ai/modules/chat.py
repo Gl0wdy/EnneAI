@@ -118,7 +118,7 @@ class ChatClient(abc.ABC):
             body = await response.text()
             await response.release()
             await session.close()
-            logger.error(f"Request failed with status code {response.status}")
+            logger.error("Request failed with status code {}", response.status)
             raise RuntimeError(f"OpenRouter request failed ({response.status}): {body}")
 
         return self._iter_stream(response, session)
@@ -126,33 +126,46 @@ class ChatClient(abc.ABC):
     async def _iter_stream(self, response, session) -> AsyncIterator[str]:
         try:
             buffer = ""
-            async for chunk in response.content.iter_any():
-                if chunk:
-                    buffer += chunk.decode('utf-8')
-                    while True:
-                        line_end = buffer.find('\n')
-                        if line_end == -1:
-                            break
-                        line = buffer[:line_end].strip()
-                        buffer = buffer[line_end + 1:]
-                        if line.startswith(':'):
-                            continue
-                        if line.startswith('data: '):
-                            data = line[6:]
-                            if data == '[DONE]':
-                                break
-                            try:
-                                data_obj = json.loads(data)
-                                content = (
-                                    data_obj.get("choices", [{}])[0]
-                                    .get("delta", {})
-                                    .get("content")
-                                )
 
-                                if content:
-                                    yield content
-                            except json.JSONDecodeError:
-                                pass
+            async for chunk in response.content.iter_any():
+                if not chunk:
+                    continue
+
+                buffer += chunk.decode("utf-8")
+                while "\n" in buffer:
+                    line, buffer = buffer.split("\n", 1)
+                    line = line.strip()
+
+                    if not line or line.startswith(":"):
+                        continue
+
+                    if not line.startswith("data:"):
+                        continue
+
+                    data = line[5:].strip()
+                    if data == "[DONE]":
+                        return
+
+                    try:
+                        data_obj = json.loads(data)
+                    except json.JSONDecodeError:
+                        continue
+
+                    choice = next(
+                        iter(data_obj.get("choices", [])),
+                        None
+                    )
+                    if not choice:
+                        continue
+
+                    content = (
+                        choice
+                        .get("delta", {})
+                        .get("content")
+                    )
+                    if content:
+                        yield content
+
         finally:
             response.release()
             await session.close()
