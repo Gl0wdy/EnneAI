@@ -143,7 +143,12 @@ class ChatClient(abc.ABC):
                                 break
                             try:
                                 data_obj = json.loads(data)
-                                content = data_obj["choices"][0]["delta"].get("content")
+                                content = (
+                                    data_obj.get("choices", [{}])[0]
+                                    .get("delta", {})
+                                    .get("content")
+                                )
+
                                 if content:
                                     yield content
                             except json.JSONDecodeError:
@@ -206,4 +211,5 @@ class ChatClient(abc.ABC):
         if "error" in response:
             logger.error("LLM error response: %s", response)
             raise Exception(response["error"])
+
         return response['choices'][0]['message']['content']
