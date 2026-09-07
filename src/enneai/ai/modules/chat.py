@@ -173,7 +173,7 @@ class ChatClient(abc.ABC):
             async with session.post(OPENROUTER_ENDPOINT, headers=headers, json=payload) as response:
                 result = await response.json()
                 if response.status != 200:
-                    logger.error(f"Request failed with status code {response.status}")
+                    logger.error("Request failed with status code {}", response.status)
                     raise RuntimeError(f"OpenRouter request failed ({response.status}): {result}")
                 return result
 
@@ -209,7 +209,7 @@ class ChatClient(abc.ABC):
             max_tokens=120
         )
         if "error" in response:
-            logger.error("LLM error response: %s", response)
+            logger.error("LLM error response: {}", response)
             raise Exception(response["error"])
 
         return response['choices'][0]['message']['content']

@@ -230,8 +230,8 @@ async def fetch_key_handler(
             await msg.edit_text(
                 '*Ключ невалиден*. Попробуйте команду /key снова и проверьте целостность своего ключа.'
             )
-    except Exception:
-        logger.exception("Ошибка при проверке ключа пользователя %s", user.tg_id)
+    except Exception as exc:
+        logger.exception("Ошибка при проверке ключа пользователя {}: {}", user.tg_id, exc)
         await msg.edit_text(
             'Не удалось проверить ключ из-за временной ошибки. Попробуйте ещё раз позже.',
             reply_markup=None
@@ -336,7 +336,7 @@ async def request_handler(
         try:
             preferred_key = encryptor.decrypt(user.encrypted_key)
         except Exception:
-            logger.warning("Не удалось расшифровать пользовательский ключ %s", user.tg_id)
+            logger.warning("Не удалось расшифровать пользовательский ключ {}: {}", user.tg_id, exc)
 
     request_cost = 2 if user.settings.requery else 1
     if user.request_remain < request_cost and user.tg_id != TELEGRAM_ADMIN_ID:
@@ -460,14 +460,14 @@ async def request_handler(
                 reply_markup=user_kb.register_key_keyboard,
                 parse_mode=None
             )
-            logger.exception("Error processing request for user %s: %s", user.tg_id, exc)
+            logger.exception("Error processing request for user {}: {}", user.tg_id, exc)
         except Exception as send_exc:
             await message.answer(
                 error_text,
                 reply_markup=user_kb.register_key_keyboard,
                 parse_mode=None
             )
-            logger.exception("Error generating response for user %s: %s", user.tg_id, send_exc)
+            logger.exception("Error generating response for user {}: {}", user.tg_id, send_exc)
     finally:
         await state.clear()
         active_requests.discard(user.tg_id)
