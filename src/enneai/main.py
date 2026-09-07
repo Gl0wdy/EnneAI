@@ -70,7 +70,7 @@ async def main():
     system_keys = [key.strip() for key in OPENROUTER_API_KEY.split(',') if key.strip()]
     keychain = KeyRotator(system_keys)
 
-    logger.info("Starting bot with %d API keys", len(keychain.keys))
+    logger.info("Starting bot with {} API keys", len(keychain.keys))
     await dp.start_polling(
         bot,
         skip_updates=True,

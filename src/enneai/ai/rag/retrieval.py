@@ -82,7 +82,7 @@ async def hybrid_search(
     )
 
     chunks = [_point_to_chunk(p) for p in result.points]
-    logger.debug("hybrid_search(%r) -> %d chunks", query, len(chunks))
+    logger.debug("hybrid_search({}, {}, {}, {}) -> {} chunks", query, book_id, category, heading_query, len(chunks))
     return chunks
 
 
