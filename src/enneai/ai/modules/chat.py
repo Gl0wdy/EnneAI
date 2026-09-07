@@ -126,7 +126,6 @@ class ChatClient(abc.ABC):
     async def _iter_stream(self, response, session) -> AsyncIterator[str]:
         try:
             buffer = ""
-
             async for chunk in response.content.iter_any():
                 if not chunk:
                     continue
@@ -138,7 +137,6 @@ class ChatClient(abc.ABC):
 
                     if not line or line.startswith(":"):
                         continue
-
                     if not line.startswith("data:"):
                         continue
 
@@ -165,7 +163,6 @@ class ChatClient(abc.ABC):
                     )
                     if content:
                         yield content
-
         finally:
             response.release()
             await session.close()

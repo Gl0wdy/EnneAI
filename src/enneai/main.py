@@ -7,6 +7,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from enneai.telegram import admin_router, router, UserMiddleware
 from enneai.config import (
     TELEGRAM_DEBUG_TOKEN,
+    TELEGRAM_BOT_TOKEN,
     TELEGRAM_ADMIN_ID,
     MONGO_URI,
     OPENROUTER_API_KEY
@@ -19,7 +20,7 @@ from enneai.utils.logger import logger
 
 
 bot = Bot(
-    token=TELEGRAM_DEBUG_TOKEN,
+    token=TELEGRAM_BOT_TOKEN,
     default=DefaultBotProperties(
         parse_mode="Markdown",
         link_preview_is_disabled=True,
