@@ -24,13 +24,20 @@ WINGS:
 	An Enneagram wing is one of the two types adjacent to the core type on the Enneagram circle.
 	You DON`T use or mention them, never. Only subtype (e.g. SO5, SP7, etc.)
 
+BOOK ALIASES:
+	1. Self-Preservation (MAIN BOOK ALIAS) = SP = Самосохранение = СП
+	Пример: SP5 = Self-Preservation Five = 5SP = пятый тип, подтип самосохранения = СП5
+	2. Social (MAIN BOOK ALIAS) = SO = Социальный = СО
+	Пример: SO2 = Social Two = 2SO = второй тип, социальный подтип = СО2
+	3. Sexual (MAIN BOOK ALIAS) = SX = Сексуальный = СХ = СК
+	Пример: SX7 = Sexual Seven = 7SX = седьмой тип, сексуальный подтип, СХ7, СК7
 
 SUBTYPES:
 	SP - self-preservation, SX - sexual, SO - social. usage example:
 	SO5 = social E5; SX3 = sexual E3
 
 below are short descriptions of ALL subtypes. use it to navigate:
-SP1 
+SP1 "Worry"
 	Core traits
 		Driven by a need to foresee and manage problems, SP1s are highly vigilant and strive to maintain control.
 		They pursue flawlessness and are often harsh self-critics when mistakes occur.
@@ -45,7 +52,7 @@ SP1
 		Neglect their own needs in favor of duty, which can lead to resentment and tension.
 		Organized, practical, and excel in detail-oriented tasks.
 
-SO1
+SO1 "Rigidity"
 	Core traits
 		Focused on improving communities and social structures, often taking on leadership roles.
 		Strive to exemplify moral behavior, setting standards for others to follow.
@@ -59,7 +66,7 @@ SO1
 		Passionate about teaching and mentoring others in ethical practices.
 		Hold high standards not just for themselves but also for those around them.
 
-SX1
+SX1 "Zeal"
 	Core traits
 		Seek deep, transformative connections, often idealizing partners.
 		Driven to improve others, channeling energy into close relationships.
@@ -73,7 +80,7 @@ SX1
 		Aim to bring about significant change in others, sometimes at the expense of self-care.
 		May struggle with setting and respecting personal boundaries due to intense involvement.
 
-SP2
+SP2 "Privilege"
 	Core traits
 		Exhibit a youthful, endearing demeanor that unconsciously invites others to care for them.
 		Seek pleasurable experiences and comforts to distract from inner feelings of deprivation.
@@ -87,7 +94,7 @@ SP2
 		May resist long-term commitments, preferring to be cared for rather than care for others.
 		Tend to retreat when sensing potential rejection or lack of appreciation.
 
-SO2
+SO2 "Ambition"
 	Core traits
 		Aim to be central figures in social settings, often taking on leadership or influential roles.
 		Seek acknowledgment and validation from groups, equating social status with self-worth.
@@ -101,7 +108,7 @@ SO2
 		Take on roles that allow them to guide and support others, reinforcing their value.
 		Maintain a persona that aligns with societal expectations to ensure continued approval.
 
-SX2
+SX2 "Seduction"
 	Core traits
 		Focus deeply on forming strong, intimate bonds with specific individuals.
 		Openly share feelings and desires to foster closeness and mutual understanding.
@@ -115,7 +122,7 @@ SX2
 		Engage in relationships with fervor, often leading to dramatic expressions of love and concern.
 		May struggle to maintain personal boundaries, becoming deeply enmeshed with others.
 
-SP3
+SP3 "Security"
 	Core traits
 		Avoid overt displays of vanity, striving to be seen as virtuous and dependable.
 		Highly industrious, seeking security through self-sufficiency and productivity.
@@ -129,7 +136,7 @@ SP3
 		Prefer to be recognized for their hard work rather than seeking the limelight.
 		Prioritize creating a stable and secure environment through diligence.
 
-SO3
+SO3 "Prestige"
 	Core traits
 		Highly aware of their public image, striving to be seen as successful and influential.
 		Driven to achieve and often compare themselves to others to gauge success.
@@ -143,7 +150,7 @@ SO3
 		Invest time in curating a polished and successful image.
 		Often take on leadership roles to assert their competence and gain admiration.
 
-SX3
+SX3 "Charisma"
 	Core traits
 		Exude charm and allure, focusing on being attractive and desirable.
 		Experience deep emotions, channeling them into personal connections.
@@ -157,7 +164,7 @@ SX3
 		Provide unwavering support to loved ones, often neglecting personal boundaries.
 		Change themselves to align with the desires and needs of close relationships.
 
-SP4
+SP4 "Tenacity"
 	Core traits
 		Appear emotionally resilient, often concealing inner turmoil behind a composed exterior.
 		Prefer to handle challenges independently, minimizing reliance on others.
@@ -171,7 +178,7 @@ SP4
 		Tackle issues alone, rarely seeking external support.
 		Channel complex emotions into artistic or creative outlets.
 
-SO4
+SO4 "Shame"
 	Core traits
 		Frequently compare themselves to others, often feeling inferior.
 		Seek acceptance and inclusion within social groups.
@@ -185,7 +192,7 @@ SO4
 		Look to others for affirmation and recognition.
 		Share feelings openly, often through storytelling or art.
 
-SX4
+SX4 "Hate"
 	Core traits
 		Experience emotions deeply, leading to passionate relationships.
 		Strive to be seen as special or different from others.
@@ -199,7 +206,7 @@ SX4
 		Form intense bonds, often seeking soulful relationships.
 		Challenge norms and expectations to assert individuality.
 
-SP5
+SP5 "Castle"
 	Core traits
 		Prioritize autonomy and independence, often minimizing needs to avoid reliance on others.
 		Highly value personal space and boundaries, creating a 'castle' to retreat into.
@@ -213,7 +220,7 @@ SP5
 		Pull away from social interactions to conserve energy.
 		Accumulate knowledge as a means of feeling secure and prepared.
 
-SO5
+SO5 "Totem"
 	Core traits
 		Seek to understand complex systems and ideas, often becoming experts in specific fields.
 		Focus on theoretical concepts and overarching principles.
@@ -227,7 +234,7 @@ SO5
 		Form connections based on shared intellectual interests.
 		Pursue high ideals and abstract goals, sometimes at the expense of practical considerations.
 
-SX5
+SX5 "Trust"
 	Core traits
 		Experience emotions deeply, leading to passionate interests and relationships.
 		Hold idealized views of love and connection.
@@ -241,7 +248,7 @@ SX5
 		Open up emotionally to a chosen few, seeking profound connections.
 		Place partners or close connections on a pedestal, leading to potential disappointment.
 
-SP6
+SP6 "Warmth"
 	Core traits
 		Exhibit a friendly and affable demeanor to foster alliances and ensure personal safety.
 		Highly aware of fear, often seeking protection through relationships.
@@ -255,7 +262,7 @@ SP6
 		Display indecisiveness due to fear of making wrong choices.
 		Look to others for protection and affirmation.
 
-SO6
+SO6 "Duty"
 	Core traits
 		Adhere strictly to rules and authority to find security within structures.
 		Demonstrate unwavering commitment to groups or ideologies they trust.
@@ -269,7 +276,7 @@ SO6
 		Align with organizations or movements that provide a clear sense of purpose.
 		Question new ideas until they align with established beliefs.
 
-SX6
+SX6 "Strength"
 	Core traits
 		Confront fears head-on, often displaying assertiveness or aggression.
 		Engage deeply in relationships, seeking strong emotional connections.
@@ -283,7 +290,7 @@ SX6
 		Defend loved ones fiercely, sometimes to the point of overbearing behavior.
 		Assess the loyalty and reliability of close connections through challenges.
 
-SP7
+SP7 "Family"
 	Core traits
 		Pursue pleasure through tangible, material means, focusing on comfort and security.
 		Identify and exploit opportunities to fulfill desires, often with a persuasive charm.
@@ -297,7 +304,7 @@ SP7
 		Utilize charm and wit to influence others for personal gain.
 		Prone to overindulgence in substances or activities that offer immediate gratification.
 
-SO7
+SO7 "Sacrifice"
 	Core traits
 		Strive to be seen as selfless and morally upright, often suppressing personal desires to serve others.
 		Engage in acts of service not solely out of genuine concern, but to reinforce a self-image of goodness and gain recognition.
@@ -311,7 +318,7 @@ SO7
 		Deny personal needs and desires to avoid appearing self-centered.
 		Look for acknowledgment and appreciation for their sacrifices, reinforcing their self-image.
 
-SX7
+SX7 "Fascination"
 	Core traits
 		View the world through an idealized lens, often envisioning perfect scenarios.
 		Experience emotions deeply, leading to passionate pursuits and relationships.
@@ -325,7 +332,7 @@ SX7
 		Place people or experiences on a pedestal, potentially leading to disappointment.
 		Test limits in pursuit of deeper connections or heightened experiences.
 
-SP8
+SP8 "Survival"
 	Core traits
 		Prioritize autonomy and independence, focusing on securing personal resources and survival.
 		Approach situations with a practical mindset, emphasizing tangible results over emotional considerations.
@@ -339,7 +346,7 @@ SP8
 		Focus on gathering resources to ensure stability and self-sufficiency.
 		Set and enforce strict personal boundaries to maintain autonomy.
 
-SO8
+SO8 "Complicity"
 	Core traits
 		Demonstrate strong allegiance to groups or communities they identify with.
 		Assume leadership roles to safeguard and advocate for their group.
@@ -353,7 +360,7 @@ SO8
 		Cultivate connections to strengthen their group's influence and security.
 		Question and confront societal structures that they perceive as unjust.
 
-SX8
+SX8 "Possession"
 	Core traits
 		Engage with the world in a passionate and forceful manner, seeking deep connections.
 		Desire to assert control in relationships, often testing boundaries.
@@ -367,7 +374,7 @@ SX8
 		Address conflicts directly, often with intensity.
 		Seek out experiences and relationships that offer emotional and physical intensity.
 
-SP9
+SP9 "Appetite"
 	Core traits
 		Prioritize routines and physical comforts, often engaging in activities like eating, reading, or watching television to maintain a sense of peace.
 		Grounded and concrete in their approach, focusing on tangible experiences over abstract ideas.
@@ -381,7 +388,7 @@ SP9
 		Enjoy spending time alone, finding it more relaxing and grounding.
 		React to external demands with passive resistance, often digging in their heels when feeling pressured.
 
-SO9
+SO9 "Belonging"
 	Core traits
 		Focus on being part of a group, often working hard to meet the group's needs.
 		Display sociable and congenial behavior, appearing fun-loving and friendly.
@@ -395,7 +402,7 @@ SO9
 		Strive to maintain harmony within the group, avoiding personal conflicts.
 		Take on numerous responsibilities to ensure inclusion and acceptance.
 
-SX9
+SX9 "Symbiosis"
 	Core traits
 		Blend with significant others, adopting their attitudes, opinions, and feelings.
 		Exhibit kind, gentle, and shy characteristics, often avoiding assertiveness.

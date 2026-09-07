@@ -1,3 +1,13 @@
+BOOK ALIASES:
+	1. Will (MAIN BOOK ALIAS) = V = Воля = В
+	Пример: 1В = first Will = 1V = первая воля = first Volition
+	2. Physics (MAIN BOOK ALIAS) = F = Физика = Ф
+	Пример: 3Ф = Third Physics = 3F = третья физика
+	3. Emotion (MAIN BOOK ALIAS) = E = Эмоция = Э
+	Пример: 2Э = Second Emotion = 2E = вторая эмоция
+	4. Logic (MAIN BOOK ALIAS) = L = Логика = Л
+	Пример: 4Л = Fourth Logic = 4L = четвертая логика
+
 aspect: Volition (V)
 position_traits:
 	1V:
@@ -34,7 +44,7 @@ position_traits:
 			- Exhibits traits of all other 4th aspects (4E, 4L, 4F).
 
 
-aspect: Emotion (E)
+aspect: Emotion (E) 
 position_traits:
 	1E:
 		description: Emotion is a state that every living being has. In the process of communication, we transmit our emotional state to others or accept other people's states. In this case, a feature of 1E is their closeness to other people's emotional states, their attention is simply riveted to themselves and they do not know how to adopt someone else's state without experiencing it on themselves. That is, 1E it is difficult to understand other people's experiences until they themselves go through a similar experience. In such situations, if it is necessary to feel sorry for someone and show their involvement, 1E can say 'yes, it happened to me too' or 'I feel sorry for you, I can’t imagine how you feel'. 1E likes to feel strong emotions, experience them in oneself. One way or another, they live in “their own world”, it can be both magical and beautiful, as well as tragic or dull, but it is always fenced off from reality and autonomous, the owner of 1E is immersed in himself most of the time. From the outside, such people are striking with their increased expression, free expression of feelings, infectious laughter, often with bright facial expressions and a radiant look, or vice versa, with an expression of universal sorrow on their faces. They are not characterized by clamps of the vocal cords, so the voice is usually deep and full, or sonorous. Often they involuntarily begin to raise their voice, not controlling themselves. Their emotions are easy to see, they do not pretend and do not hide the manifestations of their inner world.

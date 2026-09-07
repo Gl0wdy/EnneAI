@@ -14,6 +14,24 @@ DICHOTOMIES AND ORGANIZING PRINCIPLES:
 	Extroverted primary function: Driven to external action and expression
 	Introverted primary function: Driven to internal reflection and understanding
 
+BOOK ALIASES:
+	1. Белая логика (MAIN BOOK ALIAS) = БЛ = Ti = White Logic
+	Пример: БЛ = Белая логика = Ti = White Logic
+	2. Чёрная логика (MAIN BOOK ALIAS) = ЧЛ = Te = Black Logic
+	Пример: ЧЛ = Чёрная логика = Te = Black Logic
+	3. Белая этика (MAIN BOOK ALIAS) = БЭ = Fi = White Ethics
+	Пример: БЭ = Белая этика = Fi = White Ethics
+	4. Чёрная этика (MAIN BOOK ALIAS) = ЧЭ = Fe = Black Ethics
+	Пример: ЧЭ = Чёрная этика = Fe = Black Ethics
+	5. Белая интуиция (MAIN BOOK ALIAS) = БИ = Ni = White Intuition
+	Пример: БИ = Белая интуиция = Ni = White Intuition
+	6. Чёрная интуиция (MAIN BOOK ALIAS) = ЧИ = Ne = Black Intuition
+	Пример: ЧИ = Чёрная интуиция = Ne = Black Intuition
+	7. Белая сенсорика (MAIN BOOK ALIAS) = БС = Si = White Sensing
+	Пример: БС = Белая сенсорика = Si = White Sensing
+	8. Чёрная сенсорика (MAIN BOOK ALIAS) = ЧС = Se = Black Sensing
+	Пример: ЧС = Чёрная сенсорика = Se = Black Sensing
+
 THE 16 TYPES:
 
 EIE (Fe Ni ego) - "Hamlet" - Ethical Intuitive Extrovert
