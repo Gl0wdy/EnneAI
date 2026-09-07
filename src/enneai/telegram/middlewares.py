@@ -20,7 +20,7 @@ class UserMiddleware(BaseMiddleware):
         if user is None:
             user = await user_rep.create(
                 tg_id=user_id,
-                username=event.from_user.username
+                username=event.from_user.full_name
             )
 
         data['user'] = user
