@@ -43,7 +43,7 @@ def build_settings_keyboard(user: User):
     next_reasoning = reasoning[
         (reasoning.index(user.settings.reasoning) + 1) % len(reasoning)
     ]
-    systems = ['ennea', 'socio', 'psychosophy', 'jungian']  # без auto (пока что)
+    systems = ['ennea', 'socio', 'psychosophy', 'jungian']
     next_system = systems[
         (systems.index(user.settings.system) + 1) % len(systems)
     ]
@@ -69,6 +69,16 @@ def build_settings_keyboard(user: User):
         callback_data=f'settings:requery:{next_requery}',
         icon_custom_emoji_id="5370546867786523009"
     )
-    builder.adjust(1)
+    builder.button(
+        text='Инструкции', 
+        callback_data='settings:instructions',
+        icon_custom_emoji_id="5258430848218176413"
+    )
+    builder.button(
+        text='LLM Модель', 
+        callback_data='settings:model',
+        icon_custom_emoji_id="5323761960829862762"
+    )
+    builder.adjust(2)
 
     return builder.as_markup()

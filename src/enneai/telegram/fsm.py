@@ -1,9 +1,10 @@
 from aiogram.fsm.state import State, StatesGroup
 
 class CommandStates(StatesGroup):
+    waiting_for_instructions = State()
     waiting_for_clear = State()
     waiting_for_key = State()
-
+    waiting_for_model = State()
 
 class AdminStates(StatesGroup):
     waiting_for_broadcast = State()

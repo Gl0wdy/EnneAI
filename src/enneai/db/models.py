@@ -5,6 +5,8 @@ from typing import  Literal
 from beanie import Document
 from pydantic import BaseModel, Field
 
+from enneai.config import OPENROUTER_PRIMARY_MODEL
+
 
 SYSTEMS = Literal["ennea", "socio", "psychosophy", "jungian", "auto"]
 
@@ -15,6 +17,7 @@ def quota_date() -> date:
 class UserSettings(BaseModel):
     mode: Literal['naranjo', 'jung'] = "naranjo"
     reasoning: Literal['low', 'medium', 'high'] = "medium"
+    model: str = OPENROUTER_PRIMARY_MODEL
     system: SYSTEMS = "ennea"
     instructions: str = ""
     requery: bool = True

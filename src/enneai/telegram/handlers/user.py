@@ -148,7 +148,8 @@ def build_settings_message(user: User):
         f'$ Режим > {user.settings.mode}\n',
         f'- Уровень рассуждения > {user.settings.reasoning}\n',
         f'- База знаний > {user.settings.system}\n',
-        f'$ Re-query > {["❌ OFF", "✅ ON"][user.settings.requery]}'
+        f'- Re-query > {["❌ OFF", "✅ ON"][user.settings.requery]}\n',
+        f'$ LLM Модель > {user.settings.model}\n'
     )
     return text.as_kwargs()
 
@@ -166,7 +167,7 @@ async def show_settings_handler(message: Message, user: User):
     )
 
 @router.callback_query(F.data.startswith('settings'))
-async def switch_settings_handler(callback: CallbackQuery, user: User):
+async def switch_settings_handler(callback: CallbackQuery, user: User, state: FSMContext):
     _, field, value = callback.data.split(':')
     match field:
         case 'mode':
@@ -177,7 +178,30 @@ async def switch_settings_handler(callback: CallbackQuery, user: User):
             user.settings.system = value
         case 'requery':
             user.settings.requery = value == 'on'
-
+        case 'instructions':
+            await callback.message.reply(
+                'Введите дополнительные инструкции (промпт) для LLM. Они будут использоваться при формировании ответа на ваш запрос.',
+                reply_markup=user_kb.build_reply_keyboard('Без инструкций')
+            )
+            await state.set_state(fsm.CommandStates.waiting_for_instructions)
+            await callback.answer()
+            return
+        case 'model':
+            text = (
+                "Список бесплатных моделей доступен по [ссылке](https://openrouter.ai/models?max_price=0&output_modalities=text)\n"
+                "Введите название модели, которую хотите использовать (например, _nvidia/nemotron-3.5-lightning:free_).\n"
+                "Это может сказаться на работе бота, так что используйте с осторожностью. Если хотите сбросить модель на дефолтную, просто нажмите на кнопку."
+            )
+            await callback.message.reply(
+                text, 
+                reply_markup=user_kb.build_reply_keyboard('По умолчанию')
+            )
+            await state.set_state(fsm.CommandStates.waiting_for_model)
+            await callback.answer()
+            return
+        case _:
+            await callback.answer('Неизвестная настройка.')
+            
     await user.save()
     text = build_settings_message(user)
     await callback.message.edit_text(
@@ -186,6 +210,37 @@ async def switch_settings_handler(callback: CallbackQuery, user: User):
     )
 
     await callback.answer(f'Вы успешно сменили {field}!')
+
+
+@router.message(fsm.CommandStates.waiting_for_instructions)
+async def instructions_handler(message: Message, user: User, state: FSMContext):
+    if message.text == 'Без инструкций':
+        user.settings.instructions = ''
+    else:
+        user.settings.instructions = message.text
+
+    await user.save()
+    text = build_settings_message(user)['text']
+    await message.answer(
+        **text,
+        reply_markup=user_kb.build_settings_keyboard(user)
+    )
+    await state.clear()
+
+@router.message(fsm.CommandStates.waiting_for_model)
+async def model_handler(message: Message, user: User, state: FSMContext):
+    if message.text == 'По умолчанию':
+        user.settings.model = ''
+    else:
+        user.settings.model = message.text
+
+    await user.save()
+    text = build_settings_message(user)['text']
+    await message.answer(
+        **text,
+        reply_markup=user_kb.build_settings_keyboard(user)
+    )
+    await state.clear()
 
 @router.message(Command('key'))
 async def wait_for_key_handler(message: Message, user: User, state: FSMContext):
@@ -353,6 +408,9 @@ async def request_handler(
         return
 
     chat_history = await get_chat_history(user.tg_id)
+    chat_history = [
+        {'role': 'system', 'content': f'Additional instructions from USER: {user.settings.instructions}'}
+    ] + chat_history[-25:]
     if user.tg_id in active_requests:
         await message.answer('Ваш предыдущий запрос ещё обрабатывается. Пожалуйста, подождите.')
         return
@@ -385,6 +443,7 @@ async def request_handler(
                 rag_data, chunks = await keychain.rotate(
                     naranjo.response,
                     preferred_key=preferred_key,
+                    model=user.settings.model,
                     rag_query=rag_query,
                     query=message.text,
                     history=chat_history,
@@ -419,6 +478,7 @@ async def request_handler(
                 rag_data, chunks = await keychain.rotate(
                     jung.response,
                     preferred_key=preferred_key,
+                    model=user.settings.model,
                     web_text=web_text,
                     query=message.text,
                     history=chat_history,
