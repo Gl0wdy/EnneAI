@@ -1,7 +1,7 @@
 from datetime import datetime, date, timezone
 from typing import  Literal
 
-from beanie import Document
+from beanie import Document, Link
 from pydantic import BaseModel, Field
 
 
@@ -40,6 +40,16 @@ class User(Document):
 
     class Settings:
         name = "users"
+
+
+class Group(Document):
+    id: int
+    name: str
+
+
+class GroupMessage(UserMessage):
+    group: Link[Group]
+    reply_message_id: int
 
 
 class AdminStatsSnapshot(Document):
