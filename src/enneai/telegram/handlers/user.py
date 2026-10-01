@@ -1,6 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, InputRichMessage, ReplyKeyboardRemove
-from aiogram.filters import Command, CommandStart, or_f
+from aiogram.enums import ChatType
+from aiogram.filters import Command, CommandStart, or_f, and_f
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.formatting import (
     Text,
@@ -9,7 +10,11 @@ from aiogram.utils.formatting import (
 )
 
 from enneai.db import User
-from enneai.db.repositories import UserMessageRepository, UserRepository
+from enneai.db.repositories import (
+    UserMessageRepository,
+    UserRepository, UserMessage,
+    GroupMessageRepository, GroupMessage
+)
 from enneai.ai.modules.naranjo.response import Naranjo
 from enneai.ai.modules.jung.response import Jung
 from enneai.ai.llm.keys_rotation import KeyRotator
@@ -35,6 +40,7 @@ naranjo = Naranjo()
 jung = Jung()
 router = Router(name='user')
 message_rep = UserMessageRepository()
+group_rep = GroupMessageRepository()
 user_rep = UserRepository()
 encryptor = Encryptor(ENCRYPTION_KEY)
 
@@ -278,20 +284,32 @@ async def custom_typologies_handler(message: Message, user: User, state: FSMCont
 
 # =========== ХЭНДЛЕРЫ ЗАПРОСОВ ================
 
-async def get_chat_history(user_id: int):
-    chat = await message_rep.get_all(user_id=user_id)
+async def get_chat_history(user_id: int | None = None, group_id: int | None = None):
+    if user_id and group_id:
+        raise RuntimeError("Either a user id or a group id is required. Cannot use both.")
+
+    if user_id:
+        chat = await message_rep.get_all(**{UserMessage.user.id == user_id})
+    if group_id:
+        chat = await group_rep.get_all(**{GroupMessage.group.id == group_id})
+
     chat_history = []
     for msg in chat:
+        if user_id:
+            user_content = f'META:\ndate:{msg.created_at}\nsystem: {msg.system}\n\nCONTENT: {msg.user_query}'
+        if group_id:
+            user_content = f'META:\ndate:{msg.created_at}\nsystem: {msg.system}\nfrom user: {msg.user}\n\nCONTENT: {msg.user_query}'
+            
         chat_history.extend(
             (
-                {'role': 'user', 'content': msg.user_query},
+                {'role': 'user', 'content': user_content},
                 {'role': 'assistant', 'content': msg.response}
             )
         )
 
     return chat_history
 
-@router.message(F.text)
+@router.message(and_f(F.text, F.chat.type == ChatType.PRIVATE))
 async def request_handler(
     message: Message, 
     user: User, 
@@ -427,3 +445,100 @@ async def request_handler(
         await state.clear()
         user.burmaldate = dt.now(timezone.utc).date()
         await user.save()
+
+
+@router.message(F.text)
+async def group_request_handler(
+    message: Message, 
+    user: User,
+    keychain: KeyRotator
+):
+    if user.request_remain == 0 and user.id != TELEGRAM_ADMIN_ID:
+        text = f'*Ваш лимит запросов на сегодня был исчерпан* ({user.request_limit}). Лимиты сбрасываются в 03:00 по МСК.'
+        if not user.encrypted_key:
+            text += '\nЧтобы расширить лимиты, создайте свой [ключ OpenRouter](https://openrouter.ai/settings/keys) с помощью команды /key'
+            await message.answer(text, reply_markup=user_kb.register_key_keyboard)
+        else:
+            await message.answer(text)
+        return
+    
+    query = message.text
+    bot = await message.bot.me()
+    group = await group_rep.get_by_id(message.chat.id)
+    mentioned = False
+    for alias in group.aliases + [bot.username]:
+        if query.lower().startswith('@' + alias.lower()):
+            mentioned = True
+            break
+
+    if not mentioned:
+        await group_rep.create(
+            group=group,
+            user=user,
+            user_query=query,
+            response="",
+            rag_context="",
+            system=user.settings.system
+        )
+    else:
+        messages = await group_rep.get_all()
+        chat_history = get_chat_history(messages)
+        api_calls = 0
+
+        try:
+            if user.settings.requery:
+                content = Text(CustomEmojis.rika_thinking, " Наранхо переделывает ваш запрос...")
+                msg = await message.answer(
+                    **content.as_kwargs()
+                )
+                rag_query = await keychain.rotate(
+                    naranjo.requery,
+                    typology=user.settings.system,
+                    query=message.text,
+                    history=chat_history
+                )
+                api_calls += 1
+                if rag_query == 'None':
+                    await msg.edit_text('Дополнительный поиск не требуется. Формирую ответ...')
+                else:
+                    await msg.edit_text(f'Уточняю информацию по запросу _"{rag_query}"_. Формирую ответ...')
+            else:
+                rag_query = message.text
+
+            rag_data, response = await keychain.rotate(
+                naranjo.response,
+                rag_query=rag_query,
+                query=message.text,
+                history=chat_history,
+                typology=user.settings.system,
+                reasoning_effort=user.settings.reasoning
+            )
+            api_calls += 1
+            await group_rep.create(
+                        group=group,
+                        user=user,
+                        user_query=query,
+                        response=response,
+                        rag_context=rag_data,
+                        system=user.settings.system
+                    )
+
+            await msg.delete()
+            await message.answer_rich(
+                InputRichMessage(markdown=f'>{response}')
+            )
+        except Exception as exc:
+            try:
+                await message.answer(
+                    f'Произошла ошибка при обработке запроса: {exc}.\n'
+                    f'Осталось запросов на сегодня: {user.request_remain}.',
+                    parse_mode=None
+                )
+                logger.exception("Error processing request for user %s: %s", user.id, exc)
+            except Exception:
+                await message.answer(
+                    f'Произошла ошибка при генерации ответа на запрос: {exc}.\n'
+                    f'Осталось запросов на сегодня: {user.request_remain}.',
+                    parse_mode=None
+                )
+                logger.exception("Error generating response for user %s: %s", user.id, exc)

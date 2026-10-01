@@ -15,9 +15,36 @@ class UserSettings(BaseModel):
     requery: bool = True
 
 
+from datetime import datetime, date, timezone
+from beanie import Document, Link, BackLink, Indexed
+from pydantic import Field
+
+
+class User(Document):
+    id: int  # telegram id
+    new: bool = True
+    username: str
+    settings: UserSettings = Field(default_factory=UserSettings)
+    typologies: str = ""
+    request_limit: int = 15
+    request_remain: int = 15
+    burmaldate: date = Field(default_factory=lambda: datetime.now(timezone.utc).date())
+    encrypted_key: str = ""
+
+    messages: list[BackLink["UserMessage"]] = Field(
+        default_factory=list, original_field="user"
+    )
+
+    class Settings:
+        name = "users"
+
+    def __str__(self):
+        return f'ID: {self.id}\nUsername: {self.username}\nTypologies: {self.typologies}'
+
+
 class UserMessage(Document):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    user_id: int
+    user: Link[User]
     user_query: str
     response: str
     rag_context: str
@@ -27,23 +54,11 @@ class UserMessage(Document):
         name = "user_messages"
 
 
-class User(Document):
-    id: int     # telegram id actually
-    new: bool = True  
-    username: str
-    settings: UserSettings = Field(default_factory=UserSettings)
-    typologies: str = ''
-    request_limit: int = 15
-    request_remain: int = 15
-    burmaldate: date = datetime.now(timezone.utc).date()
-    encrypted_key: str = ""
-
-    class Settings:
-        name = "users"
-
-
 class Group(Document):
     id: int
+    bot_aliases: list[str] = Field(default_factory=list)
+    floodwait: int = 15     # seconds
+    last_request: datetime = Field(default=lambda: datetime.now(timezone.utc))
     name: str
 
 
